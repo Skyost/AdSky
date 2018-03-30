@@ -1,0 +1,74 @@
+{% if message == 'create_success' %}
+
+    <h1><i class="fas fa-gamepad"></i> Ad created !</h1>
+
+    <div class="alert alert-success" role="alert">
+        <p>Your has been created with success and will be displayed from tomorrow.</p>
+        <hr>
+        <p class="mb-0"><a href="admin.php#create"><i class="fas fa-angle-double-right"></i> Create another one</a></p>
+    </div>
+
+{% else %}
+
+    <h1><i class="fas fa-gamepad"></i> New ad</h1>
+
+    <div class="alert alert-danger" role="alert"{% if message != 'create_error' %} style="display: none;"{% endif %}>
+        <p class="mb-0">Ad creation cancelled.</p>
+    </div>
+
+    <form class="clearfix">
+        <div class="form-group">
+            <label for="form-ad-type">Ad type :</label>
+            <select id="form-ad-type" class="form-control">
+                <option value="0">Title</option>
+                <option value="1">Chat</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="form-ad-title">Ad title :</label>
+            <input id="form-ad-title" class="form-control" type="text" placeholder="Ad title" aria-describedby="form-ad-title-help">
+            <small id="form-ad-title-help" class="form-text text-muted">
+                Please enter a text between <span class="ad-limitation">x</span> and <span class="ad-limitation">x</span> characters.
+                ChatColor codes are supported.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="form-ad-message">Ad message :</label>
+            <input id="form-ad-message" class="form-control" type="text" placeholder="Ad message" aria-describedby="form-ad-message-help">
+            <small id="form-ad-message-help" class="form-text text-muted">
+                Please enter a text between <span class="ad-limitation">x</span> and <span class="ad-limitation">x</span> characters.
+                ChatColor codes are supported.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="form-ad-day">Times to display ad per day :</label>
+            <input id="form-ad-day" class="form-control" type="number" placeholder="Ad display per day" aria-describedby="form-ad-message-help" value="0">
+            <small id="form-ad-day-help" class="form-text text-muted">
+                Please enter a number between <span class="ad-limitation">x</span> and <span class="ad-limitation">x</span>.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="form-ad-duration">Ad display duration (in seconds) :</label>
+            <input id="form-ad-duration" class="form-control" type="number" placeholder="Ad duration" aria-describedby="form-ad-duration-help" value="0">
+            <small id="form-ad-duration-help" class="form-text text-muted">
+                Please enter a number between <span class="ad-limitation">x</span> and <span class="ad-limitation">x</span>.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="form-ad-expiration">Until this day :</label>
+            <input id="form-ad-expiration" class="form-control" type="date" aria-describedby="form-ad-expiration-help">
+            <small id="form-ad-expiration-help" class="form-text text-muted">
+                Please enter a date between <span class="ad-limitation">x</span> and <span class="ad-limitation">x</span>.
+            </small>
+        </div>
+
+            <button id="btn-create" type="submit" class="btn btn-primary">{% if user.type == 0 %}<i class="fas fa-plus"></i> Add{% else %}<i class="fab fa-paypal"></i> Pay by PayPal{% endif %}</button>
+    </form>
+
+    {% if user.type == 0 %}
+        <p>This will cost you <span class="ad-limitation">0</span> dollar because you're an admin. The ad will be displayed from tomorrow.</p>
+    {% else %}
+        <p>This will cost you <span id="ad-cost" class="ad-limitation">x</span> dollar(s). The ad will be displayed from tomorrow.</p>
+    {% endif %}
+
+{% endif %}

@@ -1,0 +1,29 @@
+<div class="nav-section">
+    <small class="nav-caption">Navigation</small>
+    <ul>
+        <li><a href="#home" data-show="home"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#profile" data-show="profile"><i class="fas fa-user"></i> Profile</a></li>
+    </ul>
+</div>
+
+<div class="nav-section">
+    <small class="nav-caption">Publisher</small>
+    <ul>
+        <li><a href="#create" data-show="create"><i class="fas fa-gamepad"></i> New ad</a></li>
+        <li><a href="#list" data-show="list"><i class="fas fa-th-list"></i> My ads</a></li>
+    </ul>
+</div>
+
+{% if user.type == 0 %}
+    <div class="nav-section">
+        <small class="nav-caption">Administration</small>
+        <ul>
+            <li><a href="#users" data-show="users"><i class="fas fa-users"></i> Manage users</a></li>
+            <li><a href="#ads" data-show="ads"><i class="fas fa-desktop"></i> Manage ads</a></li>
+        </ul>
+    </div>
+{% endif %}
+
+<div class="nav-section">
+    <small class="nav-caption">Powered by AdSky, created by <a href="https://www.skyost.eu">Skyost</a>.</small>
+</div>

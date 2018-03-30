@@ -1,0 +1,35 @@
+<h1><i class="fas fa-users"></i> Manage users</h1>
+
+{% if message == 'user_updated' %}
+    <div class="alert alert-success" role="alert">
+        <p class="mb-0">
+            Update done. The user you have edited may still have to log out and then login back
+            to see the changes you made (if you did not deleted him).
+        </p>
+    </div>
+{% endif %}
+
+<div class="alert alert-danger" role="alert" style="display: none;">
+    <p class="mb-0"></p>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Verified</th>
+            <th scope="col">Type</th>
+            <th scope="col">Last login</th>
+            <th scope="col">Registration date</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="7"><em>There is nobody.</em></td></tr>
+        </tbody>
+    </table>
+</div>
+
+{% include 'admin/pagination.twig' %}

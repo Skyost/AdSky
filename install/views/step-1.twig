@@ -1,0 +1,43 @@
+<h2>Requirements</h2>
+
+{% if error == 'php' %}
+    <p class="text-danger">AdSky needs at least PHP 5.6.0 to run !</p>
+{% elseif error == 'pdo' %}
+    <p class="text-danger">AdSky needs the PDO extension with the MySQL Native Driver to run !</p>
+{% elseif error == 'openssl' %}
+    <p class="text-danger">AdSky needs the OpenSSL extension to run !</p>
+{% else %}
+    {% if error == 'form' %}
+        <p class="text-danger">Entered data is incorrect.</p>
+    {% endif %}
+
+    <p>
+        <span class="text-success">You are running PHP 5.6.0 or higher !</span>
+        Now let's check your MySQL version. Please enter your credentials below :
+    </p>
+
+    <form method="POST">
+        <input name="step" type="hidden" value="2"/>
+        <div class="form-group">
+            <label for="form-mysql-host">MySQL Host</label>
+            <input id="form-mysql-host" name="form-mysql-host" class="form-control" type="text" placeholder="Enter your MySQL Host" value="localhost">
+        </div>
+        <div class="form-group">
+            <label for="form-mysql-port">MySQL Port</label>
+            <input id="form-mysql-port" name="form-mysql-port" class="form-control" type="number" placeholder="Enter your MySQL Port" value="3306">
+        </div>
+        <div class="form-group">
+            <label for="form-mysql-db-name">MySQL Database Name</label>
+            <input id="form-mysql-db-name" name="form-mysql-db-name" class="form-control" type="text" placeholder="Enter your MySQL Database Name">
+        </div>
+        <div class="form-group">
+            <label for="form-mysql-db-username">MySQL Username</label>
+            <input id="form-mysql-db-username" name="form-mysql-db-username" class="form-control" type="text" placeholder="Enter your MySQL Username">
+        </div>
+        <div class="form-group">
+            <label for="form-mysql-db-password">MySQL Password</label>
+            <input id="form-mysql-db-password" name="form-mysql-db-password" class="form-control" type="password" placeholder="Enter your MySQL Password">
+        </div>
+        <button type="submit" class="btn btn-primary">Next step</button>
+    </form>
+{% endif %}

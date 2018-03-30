@@ -1,0 +1,107 @@
+#navbar, header {
+    background-color: var(--gray-dark);
+}
+
+#navbar nav {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+header {
+    height: 400px;
+    max-width: 100%;
+    margin: 0 !important;
+    font-size: 2em;
+    font-family: 'SaturdayNights', fantasy;
+    color: #ecf0f1;
+}
+
+header div {
+    display: block;
+    margin: auto;
+}
+
+header .logo {
+    height: 6em;
+    width: 6em;
+}
+
+header h1 {
+    text-transform: none;
+    font-size: 2.5em;
+    margin-bottom: -0.2em;
+}
+
+header .subtitle {
+    position: relative;
+    opacity: 0.7;
+    font-size: 1.3em;
+}
+
+header .subtitle:after {
+    content: '[';
+    position: absolute;
+    bottom: -0.3em;
+    left: 50%;
+}
+
+article {
+    text-align: center;
+}
+
+article section {
+    padding: 60px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+article section:last-of-type {
+    border-bottom: none;
+}
+
+article h2 {
+    font-size: 3em;
+    font-weight: lighter;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+article p {
+    font-size: 1.1em;
+}
+
+article table {
+    table-layout: fixed;
+    margin-top: 40px;
+}
+
+footer {
+    text-align: center;
+    color: lightgray;
+}
+
+footer a {
+    color: white !important;
+}
+
+footer a.social {
+    margin: 0 10px;
+}
+
+footer a:hover {
+    color: lightgray !important;
+}
+
+#copyright {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+@media(max-width: 767px) {
+    header div div, header div img {
+        text-align: center;
+        display: block;
+        margin: auto;
+    }
+
+    header img {
+        position: relative;
+    }
+}

@@ -1,0 +1,22 @@
+<h2>MySQL Tables creation</h2>
+
+{% if error == 'mysql' %}
+    <p class="text-danger">Sounds like MySQL is running a version older than 5.5.3.</p>
+{% elseif error == 'tables' %}
+    <p class="text-error">Unable to create MySQL tables : {{ data }}.</p>
+{% else %}
+    <p>
+        <span class="text-success">You are running MySQL 5.5.3 or higher !</span>
+        Now we are going to create the required tables. Do you allow it ?
+    </p>
+
+    <form method="POST">
+        <input name="step" type="hidden" value="3"/>
+        <button type="submit" class="btn btn-primary">Yes</button>
+    </form>
+
+    <form method="POST">
+        <input name="step" type="hidden" value="1"/>
+        <button type="submit" class="btn btn-danger">No</button>
+    </form>
+{% endif %}

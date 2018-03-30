@@ -1,0 +1,41 @@
+<h2>Website configuration</h2>
+{% if error == 'form' %}
+    <p class="text-danger">Entered data is incorrect.</p>
+{% elseif error == 'auth' %}
+    <p class="text-error">Unable to authenticate with the specified username and password : {{ data }}.</p>
+{% endif %}
+
+<p>Sounds like you've did a good job. We just need a few additional details about your website. Don't worry, you can change it back later !</p>
+
+<form method="POST">
+    <input name="step" type="hidden" value="4"/>
+    <div class="form-group">
+        <label for="form-website-title">Website Title</label>
+        <input id="form-website-title" name="form-website-title" class="form-control" type="text" placeholder="Enter your website title" value="AdSky">
+    </div>
+    <div class="form-group">
+        <label for="form-website-subtitle">Website Subtitle</label>
+        <input id="form-website-subtitle" name="form-website-subtitle" class="form-control" type="text" placeholder="Enter your website slogan" value="Monetize your Minecraft server !">
+    </div>
+    <div class="form-group">
+        <label for="form-website-link">Server Webpage link</label>
+        <input id="form-website-link" name="form-website-link" class="form-control" type="text" placeholder="Enter your homepage" value="http://">
+    </div>
+    <div class="form-group">
+        <label for="form-user-username">Admin Username</label>
+        <input id="form-user-username" name="form-user-username" class="form-control" type="text" placeholder="Enter your admin's username" value="Admin">
+    </div>
+    <div class="form-group">
+        <label for="form-user-email">Admin Email</label>
+        <input id="form-user-email" name="form-user-email" class="form-control" type="email" placeholder="Enter your admin's email">
+    </div>
+    <div class="form-group">
+        <label for="form-user-password">Admin Password</label>
+        <input id="form-user-password" name="form-user-password" class="form-control" type="password" placeholder="Enter your admin's password">
+    </div>
+    <div class="form-group">
+        <label for="form-user-password-confirm">Confirm Admin Password</label>
+        <input id="form-user-password-confirm" name="form-user-password-confirm" class="form-control" type="password" placeholder="Enter your it again">
+    </div>
+    <button type="submit" class="btn btn-primary">Next step</button>
+</form>

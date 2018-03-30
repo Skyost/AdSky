@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ settings.WEBSITE_TITLE }} - {{ settings.WEBSITE_SUBTITLE }}</title>
+
+    <link rel="icon" type="image/png" href="assets/img/logo.png"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+</head>
+<body>
+    {% include 'index/navbar.twig' %}
+    {% include 'index/header.twig' %}
+
+
+    <article class="container">
+
+        <section>
+            <h2 id="welcome">Hello !</h2>
+
+            <p>And welcome on {{ settings.WEBSITE_TITLE }} ad server !
+                <br>As a brand representative (or simply a particular), you may be interested by advertising on this server.</p>
+
+            <p><strong>Well, this is possible !</strong> Let's scroll down to see our pricings.</p>
+        </section>
+
+        <section>
+            <h2 id="pricings">Pricings</h2>
+
+            <p>Our pricings are simple. They are based on the number of times you want to show your ad per day.
+                <br>We only provide two kinds of ads, <a href="assets/img/previews/preview-0.png">title</a> ads and <a href="assets/img/previews/preview-1.png">chat</a> ads.</p>
+
+            {% include 'pricings.twig' %}
+        </section>
+
+    </article>
+
+    {% include 'index/footer.twig' %}
+
+    <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" defer></script>
+</body>
+</html>

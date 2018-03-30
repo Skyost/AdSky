@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>User Panel - {{ settings.WEBSITE_TITLE }}</title>
+
+    <link rel="icon" type="image/png" href="assets/img/logo.png"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body class="row">
+
+<div class="offset-md-4 col-md-4 d-flex align-items-center">
+    <form class="w-100">
+        <div class="form-group visible-register">
+            <input id="form-username" type="text" class="form-control" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <input id="form-email" class="form-control" type="email" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <input id="form-password" class="form-control" type="password" placeholder="Password">
+        </div>
+        <div class="form-group visible-register">
+            <input id="form-password-confirm" type="password" class="form-control" placeholder="Confirmation">
+        </div>
+        <div class="form-check visible-login">
+            <input id="form-rememberme" type="checkbox" class="form-check-input">
+            <label class="form-check-label" for="form-rememberme">Remember me</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary"><span class="visible-login">Login</span><span class="visible-register">Register</span></button>
+
+        <small class="visible-login">Not registered ? <a class="form-switch" href="#">Create an account</a>.</small>
+        <small class="visible-register">Already have an account ? <a class="form-switch" href="#">Login yourself</a>.</small>
+        <small class="visible-login">Forgot your password ? <a href="#">Click here</a>.</small>
+        {% if message == 'updated' %}
+            <small id="form-message" style="color: var(--success);">
+                Your profile has been updated with success.
+                You can now reconnect to the admin panel.
+                If you have changed your email address, you must reconfirm it first.
+            </small>
+        {% else %}
+            <small id="form-message" class="mt-0"></small>
+        {% endif %}
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" defer></script>
+
+{% include 'bootstrap-modal.twig' %}
+{% include 'loader.twig' %}
+
+<script src="assets/js/login.js"></script>
+
+</body>
+</html>

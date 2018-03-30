@@ -1,0 +1,33 @@
+<h1><i class="fas fa-user"></i> Profile</h1>
+
+<div class="alert alert-danger" role="alert" style="display: none;">
+    <p class="mb-0"></p>
+</div>
+
+<form>
+    <div class="form-group">
+        <label for="form-user-username">Username :</label>
+        <input id="form-user-username" class="form-control" type="text" value="{{ user.username }}" disabled>
+    </div>
+    <div class="form-group">
+        <label for="form-user-email">Email address :</label>
+        <input id="form-user-email" class="form-control" type="email" value="{{ user.email }}" placeholder="Change your email">
+    </div>
+    <div class="form-group">
+        <label for="form-user-email-confirm">Confirm new email address :</label>
+        <input id="form-user-email-confirm" class="form-control" type="email" placeholder="Confirm email">
+    </div>
+    <div class="form-group">
+        <label for="form-user-password">New password :</label>
+        <input id="form-user-password" class="form-control" type="password" placeholder="Change your password">
+    </div>
+    <div class="form-group">
+        <label for="form-user-password-confirm">Confirm new password :</label>
+        <input id="form-user-password-confirm" class="form-control" type="password" placeholder="Confirm password">
+    </div>
+    <div class="form-group">
+        <label for="form-user-current-password">Enter your current password to apply changes :</label>
+        <input id="form-user-current-password" class="form-control" type="password" placeholder="Current password">
+    </div>
+    <button id="btn-update" type="submit" class="btn btn-primary"><i class="fas fa-pencil-alt"></i> Apply changes</button>
+</form>

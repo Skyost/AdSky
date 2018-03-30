@@ -1,0 +1,133 @@
+html, body {
+    min-height: 100vh;
+}
+
+.row {
+    margin: 0;
+}
+
+.navbar {
+    padding: 0;
+}
+
+.navbar a {
+    padding: 15px 20px;
+}
+
+.navbar a.navbar-brand {
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-right: 0;
+    font-family: SaturdayNights, fantasy;
+    font-size: 2em;
+    padding: 15px 20px 10px 15px;
+}
+
+#nav-drawer .fa-bars {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+#nav-drawer:hover .fa-bars {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
+#sidenav {
+    background-color: #e9ecef;
+    padding: 10px 0;
+    min-height: calc(100vh - 56px);
+}
+
+#sidenav .nav-section .nav-caption {
+    display: block;
+    text-transform: uppercase;
+    color: #2c3e50;
+    padding: 10px 20px;
+    opacity: 0.8;
+}
+
+#sidenav .nav-section .nav-caption:last-child {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#sidenav ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+#sidenav li a [data-prefix='fas'] {
+    min-width: 30px;
+}
+
+#sidenav li a {
+    display: block;
+    padding: 20px;
+    font-weight: bold;
+    color: #2c3e50 !important;
+    text-decoration: none !important;
+}
+
+#sidenav li a.active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#sidenav li a:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+#sidenav small:last-of-type {
+    margin-top: 10px;
+}
+
+#content {
+    padding: 30px;
+}
+
+#content [id^='fragment'] {
+    display: none;
+}
+
+#content h1 {
+    color: #2c3e50;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+#content .ad-limitation {
+    font-style: italic;
+}
+
+#content .table [class*='fa-'] {
+    cursor: pointer;
+}
+
+#content .table input:disabled, #content .table select:disabled {
+    background-color: white !important;
+    border: none !important;
+    color: black;
+    padding: 0;
+    height: calc(2.25rem + 2px);
+}
+
+#content .table .buttons {
+    line-height: calc(2.25rem + 2px);
+}
+
+#content .table select:disabled {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+#content .table select:disabled::-ms-expand {
+    display: none;
+}
+
+#content .paginator {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#fragment-create p {
+    margin-bottom: 0;
+}

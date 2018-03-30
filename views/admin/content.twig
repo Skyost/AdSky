@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Administration Panel - {{ settings.WEBSITE_TITLE }}</title>
+
+    <link rel="icon" type="image/png" href="assets/img/logo.png"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark">
+    {% include 'admin/navbar.twig' %}
+</nav>
+
+<div class="row">
+    <nav id="sidenav" class="col-xs-12 col-md-2 d-none d-md-block">
+        {% include 'admin/sidenav.twig' %}
+    </nav>
+    <div id="content" class="col-xs-12 col-md-10">
+        <div id="fragment-home">
+            {% include 'admin/fragments/fragment-home.twig' %}
+        </div>
+
+        <div id="fragment-profile">
+            {% include 'admin/fragments/fragment-profile.twig' %}
+        </div>
+
+        <div id="fragment-create">
+            {% include 'admin/fragments/fragment-create.twig' %}
+        </div>
+
+        <div id="fragment-list">
+            {% include 'admin/fragments/fragment-list.twig' %}
+        </div>
+
+        {% if user.type == 0 %}
+            <div id="fragment-users">
+                {% include 'admin/fragments/fragment-users.twig' %}
+            </div>
+
+            <div id="fragment-ads">
+                {% include 'admin/fragments/fragment-ads.twig' %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" defer></script>
+
+{% include 'bootstrap-modal.twig' %}
+{% include 'loader.twig' %}
+
+<script>
+    const USER_DATA = {
+        username: '{{ user.username }}',
+        email: '{{ user.email }}',
+        type: {{ user.type }}
+    };
+
+    const TITLE_SETTINGS = [{{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MIN }}, {{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MAX }}, {{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MIN }}, {{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MAX }}, {{ settings.AD_TITLE_LIMIT_DAY_MIN }}, {{ settings.AD_TITLE_LIMIT_DAY_MAX }}, {{ settings.AD_TITLE_LIMIT_SECONDS_MIN }}, {{ settings.AD_TITLE_LIMIT_SECONDS_MAX }}, {{ settings.AD_TITLE_LIMIT_EXPIRATION_MIN }}, {{ settings.AD_TITLE_LIMIT_EXPIRATION_MAX }}, {{ settings.AD_TITLE_COST }}];
+    const CHAT_SETTINGS = [{{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MIN }}, {{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MAX }}, {{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MIN }}, {{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MAX }}, {{ settings.AD_CHAT_LIMIT_DAY_MIN }}, {{ settings.AD_CHAT_LIMIT_DAY_MAX }}, {{ settings.AD_CHAT_LIMIT_EXPIRATION_MIN }}, {{ settings.AD_CHAT_LIMIT_EXPIRATION_MAX }}, {{ settings.AD_CHAT_COST }}];
+</script>
+<script src="assets/js/panel.js"></script>
+{% if user.type == 0 %}<script src="assets/js/admin.js"></script>{% endif %}
+</body>
+</html>

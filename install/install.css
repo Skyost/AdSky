@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+}
+
+header {
+    padding: 30px 10px;
+    background-color: var(--gray-dark);
+    color: white;
+}
+
+header h1 {
+    text-transform: none;
+    font-family: 'SaturdayNights';
+    font-size: 5em;
+    text-align: center;
+    font-weight: normal;
+    text-shadow: 0.04em 0.04em black;
+    margin: 0;
+}
+
+header h1:after {
+    content: '[';
+}
+
+small {
+    float: right;
+}
+
+#content {
+    padding: 40px;
+}
+
+#content h2 {
+    color: #2c3e50;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+#content h3 {
+    font-weight: lighter;
+    margin-top: 30px;
+}

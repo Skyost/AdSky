@@ -1,0 +1,40 @@
+<h1><i class="fas fa-home"></i> Home</h1>
+
+<p>
+    Welcome on your administration panel ! From here you can create and manage your ads.
+    Currently, we only provide two kinds of ads :
+</p>
+
+<ul>
+    <li>
+        <strong>Title ads :</strong>
+        Limited to <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MAX }}</span> characters for the title,
+        <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MAX }}</span> characters for the subtitle,
+        <span id="ads-title-seconds" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_SECONDS_MAX }}</span> seconds
+        and can only be displayed <span id="ads-title-day" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_DAY_MAX }}</span> times a day max.
+    </li>
+    <li>
+        <strong>Chat ads :</strong>
+        Limited to <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MAX }}</span> characters for the title,
+        <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MAX }}</span> characters for the message,
+        and <span id="ads-chat-seconds" class="ad-limitation">{{ settings.AD_CHAT_LIMIT_DAY_MAX }}</span> times a day max.
+    </li>
+</ul>
+
+{% if user.type == 0 %}
+    <p>
+        As an admin, you can also manage your users (create, modify and delete accounts) and manage your server's ads.
+        Currently you have set the following prices :
+    </p>
+{% else %}
+    <p>The followings rates has been set by the server's admin :</p>
+{% endif %}
+
+{% include 'pricings.twig' %}
+
+{% if user.type == 0 %}
+    <p>
+        If you want to change them, head to <code>api/settings/Ad.php</code> and
+        put the corresponding <em>cost per second</em> you want.
+    </p>
+{% endif %}

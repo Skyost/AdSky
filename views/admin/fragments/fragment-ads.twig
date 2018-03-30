@@ -1,0 +1,26 @@
+<h1><i class="fas fa-desktop"></i> Manage ads</h1>
+
+<div class="alert alert-danger" role="alert" style="display: none;">
+    <p class="mb-0"></p>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Ad title</th>
+            <th scope="col">Ad message</th>
+            <th scope="col">Ad type</th>
+            <th scope="col">Display per day</th>
+            <th scope="col">Expiration</th>
+            <th scope="col">Publisher</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="7"><em>There is no ad.</em></td></tr>
+        </tbody>
+    </table>
+</div>
+
+{% include 'admin/pagination.twig' %}
