@@ -7,7 +7,6 @@ require_once __DIR__ . '/Response.php';
 require_once __DIR__ . '/../Settings.php';
 
 use Delight\Auth;
-
 use PayPal\Api\Amount;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
@@ -373,12 +372,12 @@ class Ad {
             foreach($statement -> fetchAll() as $row) {
                 array_push($data, [
                     'username' => $row['username'],
-                    'type' => $row['type'],
+                    'type' => intval($row['type']),
                     'title' => $row['title'],
                     'message' => $row['message'],
-                    'interval' => $row['interval'],
-                    'expiration' => $row['until'],
-                    'duration' => $row['duration']
+                    'interval' => intval($row['interval']),
+                    'expiration' => intval($row['until']),
+                    'duration' => intval($row['duration'])
                 ]);
             }
 
@@ -553,16 +552,16 @@ class Ad {
         foreach(($result -> fetchAll()) as $row) {
             array_push($object, [
                 'username' => $row['username'],
-                'type' => $row['type'],
+                'type' => intval($row['type']),
                 'title' => $row['title'],
                 'message' => $row['message'],
-                'interval' => $row['interval'],
-                'expiration' => $row['until'],
-                'duration' => $row['duration']
+                'interval' => intval($row['interval']),
+                'expiration' => intval($row['until']),
+                'duration' => intval($row['duration'])
             ]);
         }
 
-        return new Response($lang['API_SUCCESS'], null, $object);
+        return new Response(null, $lang['API_SUCCESS'], $object);
     }
 
     public static function deleteExpired($pdo = null) {
@@ -582,7 +581,7 @@ class Ad {
             return new Response($lang['API_ERROR_MYSQL_ERROR']);
         }
 
-        return new Response($lang['API_SUCCESS']);
+        return new Response(null, $lang['API_SUCCESS']);
     }
 
 }

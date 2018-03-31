@@ -296,8 +296,8 @@ class User {
                 'email' => $row['email'],
                 'type' => $row['roles_mask'] & $admin === $admin ? 0 : 1,
                 'verified' => $row['verified'],
-                'last_login' => $row['last_login'],
-                'registered' => $row['registered']
+                'last_login' => intval($row['last_login']),
+                'registered' => intval($row['registered'])
             ]);
         }
 
