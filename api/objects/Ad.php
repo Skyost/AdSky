@@ -13,6 +13,7 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 
+global $settings;
 define('ADS_TABLE', $settings['DB_PREFIX'] . 'ads');
 
 class Ad {

@@ -38,7 +38,7 @@ function getPDO() {
         return new \PDO('mysql:host=' . $settings['DB_HOST'] . ';port=' . $settings['DB_PORT'] . ';dbname=' . $settings['DB_NAME'] . ';charset=utf8mb4', $settings['DB_USER'], $settings['DB_PASSWORD']);
     }
     catch(PDOException $error) {
-        die('Unable to connect to MySQL database. Please check your settings in api/Settings.php.');
+        die('Unable to connect to MySQL database. Please check your settings in api/settings/MySQL.php.');
     }
 }
 

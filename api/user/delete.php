@@ -3,7 +3,8 @@
 require '../Lang.php';
 require '../objects/User.php';
 
-$auth = createAuth();
+$pdo = getPDO();
+$auth = createAuth($pdo);
 
 $username = empty($_POST['username']) ? $auth -> getEmail() : $_POST['username'];
 if($username != $auth -> getUsername() && !$auth -> hasRole(\Delight\Auth\Role::ADMIN)) {
@@ -11,4 +12,4 @@ if($username != $auth -> getUsername() && !$auth -> hasRole(\Delight\Auth\Role::
 }
 // TODO Vérifier les vulnérabilités : si un utilisateur change son email dans le cookie par exemple.
 
-((new User(null, null, $username)) -> delete($auth)) -> returnResponse();
+((new User(null, null, $username)) -> delete($pdo, $auth)) -> returnResponse();

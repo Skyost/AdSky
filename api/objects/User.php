@@ -68,7 +68,10 @@ class User {
             }
             
             $userId = $auth -> registerWithUniqueUsername($this -> _email, $this -> _password, $this -> _username, function($selector, $token) {
-                $this -> sendConfirmationEmail($selector, $token);
+                $this -> sendEmail('Confirm your email', 'confirm.twig', [
+                    'selector' => $selector,
+                    'token' => $token
+                ]);
             });
 
             if($this -> _type != null) {
@@ -97,38 +100,6 @@ class User {
         }
         catch(Auth\UnknownIdException $error) {
             return new Response($lang['API_ERROR_UNKNOWN_ID'], null, $error);
-        }
-        catch(Exception $error) {
-            return new Response($lang['API_ERROR_GENERIC_ERROR'], null, $error);
-        }
-    }
-
-    public function confirm($selector, $token, $rememberDuration = null, $auth = null) {
-        global $lang;
-
-        try {
-            if($auth == null) {
-                $auth = createAuth();
-            }
-            
-            $auth -> confirmEmailAndSignIn($selector, $token, $rememberDuration);
-
-            return new Response(null, $lang['API_SUCCESS'], null);
-        }
-        catch(Auth\InvalidSelectorTokenPairException $error) {
-            return new Response($lang['API_ERROR_INVALID_SELECTOR'], null, $error);
-        }
-        catch(Auth\TokenExpiredException $error) {
-            return new Response($lang['API_ERROR_TOKEN_EXPIRED'], null, $error);
-        }
-        catch(Auth\UserAlreadyExistsException $error) {
-            return new Response($lang['API_ERROR_EMAIL_ALREADYEXISTS'], null, $error);
-        }
-        catch(Auth\TooManyRequestsException $error) {
-            return new Response($lang['API_ERROR_TOOMANYREQUESTS'], null, $error);
-        }
-        catch(Auth\AuthError $error) {
-            return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'], null, $error);
         }
         catch(Exception $error) {
             return new Response($lang['API_ERROR_GENERIC_ERROR'], null, $error);
@@ -164,7 +135,10 @@ class User {
                         $auth -> confirmEmail($selector, $token);
                         return;
                     }
-                    $this -> sendConfirmationEmail($selector, $token);
+                    $this -> sendEmail('Confirm your email', 'confirm.twig', [
+                        'selector' => $selector,
+                        'token' => $token
+                    ]);
                 });
             }
 
@@ -204,7 +178,7 @@ class User {
         catch(Auth\TooManyRequestsException $error) {
             return new Response($lang['API_ERROR_TOOMANYREQUESTS'], null, $error);
         }
-        catch (Auth\InvalidPasswordException $error) {
+        catch(Auth\InvalidPasswordException $error) {
             return new Response($lang['API_ERROR_INVALID_PASSWORD'], null, $error);
         }
         catch(Auth\AuthError $error) {
@@ -232,9 +206,6 @@ class User {
             ($auth -> admin()) -> deleteUserByUsername($this -> _username);
             return new Response(null, $lang['API_SUCCESS']);
         }
-        catch(Auth\InvalidEmailException $error) {
-            return new Response($lang['API_ERROR_INVALID_EMAIL'], null, $error);
-        }
         catch(Auth\AuthError $error) {
             return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'], null, $error);
         }
@@ -243,10 +214,132 @@ class User {
         }
     }
 
-    // TODO
-    private function sendConfirmationEmail($selector, $token) {
-        //mail($this -> _email, 'Bravo !', 'You are registered. Please click on the following link to confirm : http://localhost:80/confirm/?selector=' . $selector . '&token=' . $token);
-        $this -> confirm($selector, $token);
+    public function forgotPassword($pdo = null, $auth = null) {
+        if($pdo == null) {
+            $pdo = getPDO();
+        }
+
+        if($auth == null) {
+            $auth = createAuth($pdo);
+        }
+
+        global $lang;
+
+        try {
+            if($auth -> isLoggedIn()) {
+                return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR']);
+            }
+
+            $auth -> forgotPassword($this -> _email, function($selector, $token) use ($auth) {
+                $this -> sendEmail('Password reset', 'reset.twig', [
+                    'email' => $this -> _email,
+                    'selector' => $selector,
+                    'token' => $token
+                ]);
+            });
+
+            return new Response(null, $lang['API_SUCCESS']);
+        }
+        catch(\Delight\Auth\InvalidEmailException $error) {
+            return new Response($lang['API_ERROR_INVALID_EMAIL'], null, $error);
+        }
+        catch(\Delight\Auth\EmailNotVerifiedException $error) {
+            return new Response($lang['API_ERROR_NOT_VERIFIED'], null, $error);
+        }
+        catch(\Delight\Auth\ResetDisabledException $error) {
+            return new Response($lang['API_ERROR_RESET_DISABLED'], null, $error);
+        }
+        catch(\Delight\Auth\TooManyRequestsException $error) {
+            return new Response($lang['API_ERROR_TOOMANYREQUESTS'], null, $error);
+        }
+        catch(\Delight\Auth\AuthError $error) {
+            return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'], null, $error);
+        }
+    }
+
+    public function confirmReset($selector, $token, $auth = null) {
+        global $lang;
+
+        try {
+            if($auth == null) {
+                $auth = createAuth();
+            }
+
+            $password = Auth\Auth::createRandomString(10);
+
+            $auth -> canResetPasswordOrThrow($selector, $token);
+            $auth -> resetPassword($selector, $token, $password);
+            $this -> sendEmail('Password reset confirmation', 'password.twig', ['password' => $password]);
+
+            return new Response(null, $lang['API_SUCCESS'], null);
+        }
+        catch(Auth\InvalidSelectorTokenPairException $error) {
+            return new Response($lang['API_ERROR_INVALID_SELECTOR'], null, $error);
+        }
+        catch(Auth\TokenExpiredException $error) {
+            return new Response($lang['API_ERROR_TOKEN_EXPIRED'], null, $error);
+        }
+        catch(Auth\TooManyRequestsException $error) {
+            return new Response($lang['API_ERROR_TOOMANYREQUESTS'], null, $error);
+        }
+        catch(Auth\ResetDisabledException $error) {
+            return new Response($lang['API_ERROR_RESET_DISABLED'], null, $error);
+        }
+        catch(Auth\InvalidPasswordException $error) {
+            return User::confirmReset($selector, $token, $auth);
+        }
+        catch(Auth\AuthError $error) {
+            return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'], null, $error);
+        }
+    }
+
+    private function sendEmail($title, $template, $parameters = []) {
+        $loader = new Twig_Loader_Filesystem(__DIR__ . '/../../views/emails/');
+        $twig = new Twig_Environment($loader);
+
+        global $settings;
+
+        $parameters['url'] = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . str_replace(DIRECTORY_SEPARATOR, '/', str_replace(dirname($_SERVER['DOCUMENT_ROOT']), '', dirname(dirname(__DIR__))));
+        $parameters['settings'] = $settings;
+
+        $headers = 'From: ' . $settings['EMAIL_SENDER'] . "\r\n";
+        $headers .= 'Reply-To: '. $settings['EMAIL_SENDER'] . "\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+        mail($this -> _email, $title, $twig -> render($template, $parameters), $headers);
+    }
+
+    public static function confirmRegistration($selector, $token, $rememberDuration = null, $auth = null) {
+        global $lang;
+
+        try {
+            if($auth == null) {
+                $auth = createAuth();
+            }
+
+            $auth -> confirmEmailAndSignIn($selector, $token, $rememberDuration);
+
+            return new Response(null, $lang['API_SUCCESS'], null);
+        }
+        catch(Auth\InvalidSelectorTokenPairException $error) {
+            return new Response($lang['API_ERROR_INVALID_SELECTOR'], null, $error);
+        }
+        catch(Auth\TokenExpiredException $error) {
+            return new Response($lang['API_ERROR_TOKEN_EXPIRED'], null, $error);
+        }
+        catch(Auth\UserAlreadyExistsException $error) {
+            return new Response($lang['API_ERROR_EMAIL_ALREADYEXISTS'], null, $error);
+        }
+        catch(Auth\TooManyRequestsException $error) {
+            return new Response($lang['API_ERROR_TOOMANYREQUESTS'], null, $error);
+        }
+        catch(Auth\AuthError $error) {
+            return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'], null, $error);
+        }
+        catch(Exception $error) {
+            return new Response($lang['API_ERROR_GENERIC_ERROR'], null, $error);
+        }
     }
 
     public static function getUsers($page = null, $pdo = null) {
@@ -338,7 +431,7 @@ class User {
         try {
             $auth -> logOut();
 
-            return new Response(null, $lang['API_SUCCESS'], null);
+            return new Response(null, $lang['API_SUCCESS']);
         }
         catch(Auth\AuthError $error) {
             return new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'], null, $error);

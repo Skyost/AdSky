@@ -22,6 +22,7 @@ $lang['API_ERROR_USERNAME_ALREADYEXISTS'] = 'Username already exists.';
 $lang['API_ERROR_EMAIL_ALREADYEXISTS'] = 'Email already exists.';
 $lang['API_ERROR_UNKNOWN_ID'] = 'Unknown ID.';
 $lang['API_ERROR_TOKEN_EXPIRED'] = 'Token has expired.';
+$lang['API_ERROR_RESET_DISABLED'] = 'Password reset is disabled.';
 
 $lang['API_ERROR_NOT_FOUND'] = 'Ad not found.';
 $lang['API_ERROR_SAME_NAME'] = 'An ad with the same name already exists.';

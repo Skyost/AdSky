@@ -1,5 +1,15 @@
 <h1><i class="fas fa-home"></i> Home</h1>
 
+{% if message == 'renewed' %}
+    <div class="alert alert-success" role="alert">
+        <p class="mb-0">Successfully renewed ad. Thank you !</p>
+    </div>
+{% elseif message == 'validation_success' %}
+    <div class="alert alert-success" role="alert">
+        <p class="mb-0">Successfully confirmed your account. Welcome on our ad server !</p>
+    </div>
+{% endif %}
+
 <p>
     Welcome on your administration panel ! From here you can create and manage your ads.
     Currently, we only provide two kinds of ads :

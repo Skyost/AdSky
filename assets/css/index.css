@@ -3,6 +3,7 @@
 }
 
 #navbar nav {
+    text-transform: uppercase;
     background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -71,6 +72,14 @@ article p {
 article table {
     table-layout: fixed;
     margin-top: 40px;
+}
+
+.triangle-rule {
+    height: 20px;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50 15, 100 100, 0 100" fill="#343a40"/></svg>');
 }
 
 footer {
