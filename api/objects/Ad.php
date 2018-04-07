@@ -303,7 +303,7 @@ class Ad {
             }
         }
 
-        if(Ad::getNumberOfAdsPerDay() + $interval > $settings['AD_PER_DAY_LIMIT']) {
+        if($settings['AD_PER_DAY_LIMIT'] > 0 && Ad::getNumberOfAdsPerDay() + $interval > $settings['AD_PER_DAY_LIMIT']) {
             return new Response($lang['API_ERROR_LIMIT_REACHED']);
         }
 

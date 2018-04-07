@@ -4,6 +4,13 @@
     <p class="mb-0"></p>
 </div>
 
+<p>
+    The max ad per day limit is <span class="ad-limitation">{{ settings.AD_PER_DAY_LIMIT }}</span>.
+    If you want to change this, head to <code>api/settings/Ad.php</code> and edit the line containing
+    <code>$settings['AD_PER_DAY_LIMIT'] = {{ settings.AD_PER_DAY_LIMIT }}</code>.
+    Put a number inferior than one to disable this limit.
+</p>
+
 <div class="table-responsive">
     <table class="table table-bordered">
         <thead class="thead-light">
