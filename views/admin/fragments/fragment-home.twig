@@ -12,22 +12,22 @@
 
 <p>
     Welcome on your administration panel ! From here you can create and manage your ads.
-    Currently, we only provide two kinds of ads :
+    Currently, our server is limited to <span class="ad-limitation">{{ settings.AD_PER_DAY_LIMIT }}</span> ad display per day and we provide two kinds of ads :
 </p>
 
 <ul>
     <li>
         <strong>Title ads :</strong>
-        Limited to <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MAX }}</span> characters for the title,
-        <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MAX }}</span> characters for the subtitle,
-        <span id="ads-title-seconds" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_SECONDS_MAX }}</span> seconds
-        and can only be displayed <span id="ads-title-day" class="ad-limitation">{{ settings.AD_TITLE_LIMIT_DAY_MAX }}</span> times a day max.
+        Limited to <span class="ad-limitation">{{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MAX }}</span> characters for the title,
+        <span class="ad-limitation">{{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MAX }}</span> characters for the subtitle,
+        <span class="ad-limitation">{{ settings.AD_TITLE_LIMIT_SECONDS_MAX }}</span> seconds
+        and can only be displayed <span class="ad-limitation">{{ settings.AD_TITLE_LIMIT_DAY_MAX }}</span> times a day max.
     </li>
     <li>
         <strong>Chat ads :</strong>
-        Limited to <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MAX }}</span> characters for the title,
-        <span id="ads-chat-char" class="ad-limitation">{{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MAX }}</span> characters for the message,
-        and <span id="ads-chat-seconds" class="ad-limitation">{{ settings.AD_CHAT_LIMIT_DAY_MAX }}</span> times a day max.
+        Limited to <span class="ad-limitation">{{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MAX }}</span> characters for the title,
+        <span class="ad-limitation">{{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MAX }}</span> characters for the message,
+        and <span class="ad-limitation">{{ settings.AD_CHAT_LIMIT_DAY_MAX }}</span> times a day max.
     </li>
 </ul>
 

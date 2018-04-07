@@ -303,6 +303,10 @@ class Ad {
             }
         }
 
+        if(Ad::getNumberOfAdsPerDay() + $interval > $settings['AD_PER_DAY_LIMIT']) {
+            return new Response($lang['API_ERROR_LIMIT_REACHED']);
+        }
+
         return new Response(null, $lang['API_SUCCESS']);
     }
 
@@ -583,6 +587,15 @@ class Ad {
         }
 
         return new Response(null, $lang['API_SUCCESS']);
+    }
+
+    public static function getNumberOfAdsPerDay($pdo = null) {
+        if($pdo == null) {
+            $pdo = getPDO();
+        }
+
+        $sum = $pdo -> query('SELECT SUM(`interval`) FROM `' . ADS_TABLE . '`');
+        return $sum -> fetchColumn();
     }
 
 }

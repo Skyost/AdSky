@@ -37,6 +37,7 @@ $lang['API_ERROR_INVALID_DURATION'] = 'Invalid duration.';
 $lang['API_ERROR_INVALID_INTERVAL'] = 'Invalid interval.';
 $lang['API_ERROR_INVALID_EXPIRATIONDATE'] = 'Invalid expiration date.';
 $lang['API_ERROR_INVALID_RENEWDAY'] = 'Invalid renew day number set.';
+$lang['API_ERROR_LIMIT_REACHED'] = 'Ad per day limit reached. Please try with a lower ad interval if possible.';
 
 $lang['API_ERROR_INVALID_PLUGIN_KEY'] = 'Incorrect plugin key.';
 

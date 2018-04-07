@@ -1,6 +1,6 @@
 <?php
 
-$settings['AD_LIMIT'] = 15; // TODO
+$settings['AD_PER_DAY_LIMIT'] = 15;
 
 $settings['AD_TITLE_COST'] = 1.0;
 $settings['AD_TITLE_LIMIT_TITLE_CHARS_MIN'] = 2;
