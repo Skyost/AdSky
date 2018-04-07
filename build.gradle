@@ -1,0 +1,32 @@
+group 'adsky'
+version '0.1'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+
+configurations {
+    extraLibs
+}
+
+dependencies {
+    compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    extraLibs 'com.udojava:EvalEx:2.0'
+
+    configurations.compile.extendsFrom(configurations.extraLibs)
+}
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/build/release")
+}
+
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
