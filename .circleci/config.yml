@@ -1,8 +1,0 @@
-version: 2
-general:
-  branches:
-    only:
-      - plugin
-test:
-  post:
-     - sudo mv /home/ubuntu/AdSky/target/adsky*.jar $CIRCLE_ARTIFACTS/adsky-plugin-SNAPSHOT.jar
