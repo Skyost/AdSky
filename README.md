@@ -23,10 +23,10 @@ AdSky is a way for you, as a Minecraft server owner, to monetize your server. Cu
 There are two parts : *Server* and *Plugin*.
 
 ### Server part
-The server part is a PHP + MySQL application that you install on your own web server, it is where advertisers will register and broadcast their ads. To see how to install it and the requirements, please check the [*Installation*](#installation) section.
+The server part is a PHP + MySQL application that you install on your own web server, it is where advertisers will register and broadcast their ads. To see how to install it and the requirements, please check the [*Installation*](#installation) section of the server branch's README.
 
 ### Plugin part
-The plugin part is a simple Bukkit plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](#) section of the plugin branch's README.
+The plugin part is a simple Bukkit plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](#installation) section.
 
 ## Features
 AdSky is built to be lightweight, but it still has a lot of features :
@@ -42,11 +42,15 @@ To install the server part, please check the [*Installation*](https://github.com
 
 To install the plugin part, you have to download [the JAR](https://dev.bukkit.org/projects/adsky/files) put it inside the `plugins` folder located in your server directory.
 
+Yes, you need either Bukkit or Spigot. Any version above _1.8_ should work.
+
 ## Configuration
 The configuration file (`config.yml`) is located in `plugins/AdSky/`. Open it and configure it as you want :
 
 | Depth 0  | Depth 1                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | -------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enable` | `updater`               | Whether [Skyupdater](https://www.skyost.eu/skyupdater.txt) should be enabled.                                                                                                                                                                                                                                                                                                                                                                        |
+|          | `metrics`               | Whether [bStats Metrics](https://bstats.org/) should be enabled.                                                                                                                                                                                                                                                                                                                                                                                     |
 | `server` | `url`                   | AdSky's root URL on your server.                                                                                                                                                                                                                                                                                                                                                                                                                     |
 |          | `plugin-key`            | The key given at the end of the installation. If you don't remember me, it is available in `api/settings/Plugin.php`.                                                                                                                                                                                                                                                                                                                                |
 |          | `event-scheduler`       | Whether you have scheduled the MySQL event (downloadable [here](https://github.com/Skyost/AdSky/blob/server/install/sql/clearExpiredAds.sql)). If you did not, then the plugin is going to clear expired ads each day at midnight.                                                                                                                                                                                                                   |
