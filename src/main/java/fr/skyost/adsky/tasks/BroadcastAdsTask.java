@@ -2,10 +2,10 @@ package fr.skyost.adsky.tasks;
 
 import fr.skyost.adsky.Ad;
 import fr.skyost.adsky.AdSky;
+import fr.skyost.adsky.Scheduler;
 import fr.skyost.adsky.config.PluginConfig;
 import fr.skyost.adsky.logger.PluginLogger;
 import fr.skyost.adsky.utils.Utils;
-import org.bukkit.ChatColor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,13 +25,41 @@ import java.util.HashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A task that broadcasts ad on the server.
+ */
+
 public class BroadcastAdsTask implements Runnable {
 
+	/**
+	 * The non formatted delete expired ads url.
+	 */
+
 	private static final String AD_DELETE_EXPIRED_URL = "%sapi/plugin/deleted_expired.php";
+
+	/**
+	 * The non formatted delete request ads url.
+	 */
+
 	private static final String AD_REQUEST_URL = "%sapi/plugin/today.php";
 
+	/**
+	 * The scheduler.
+	 */
+
 	private Scheduler scheduler;
+
+	/**
+	 * The plugin instance.
+	 */
+
 	private final AdSky plugin;
+
+	/**
+	 * Creates a new task instance.
+	 *
+	 * @param plugin The AdSky plugin.
+	 */
 
 	public BroadcastAdsTask(final AdSky plugin) {
 		this.plugin = plugin;
@@ -39,12 +67,16 @@ public class BroadcastAdsTask implements Runnable {
 
 	@Override
 	public void run() {
+		// Let's get required objects.
 		final PluginLogger logger = plugin.getAdSkyLogger();
 		final PluginConfig config = plugin.getAdSkyConfig();
 
+		// If scheduler is null, it means this is the first time of the day that this task is running.
 		if(scheduler == null) {
+
+			// So let's delete expired ads if needed.
 			if(!config.serverEventScheduled) {
-				logger.log("Deleting expired ads...", ChatColor.GOLD);
+				logger.message("Deleting expired ads...");
 				if(deleteExpiredAds()) {
 					logger.success("Success !");
 				}
@@ -53,7 +85,8 @@ public class BroadcastAdsTask implements Runnable {
 				}
 			}
 
-			logger.log("Getting ads...", ChatColor.GOLD);
+			// And let's get ads of the day and schedule them.
+			logger.message("Getting ads...");
 			final HashSet<Ad> ads = requestAds();
 
 			if(ads != null) {
@@ -63,23 +96,29 @@ public class BroadcastAdsTask implements Runnable {
 			}
 		}
 		else {
+			// Here we are going to broadcast a random ad from the list.
 			logger.success("Broadcasting a random ad from list...");
 			scheduler.broadcastRandomAd();
 
 			if(!scheduler.hasRemaining()) {
 				scheduler = null;
-				System.out.println("Buy scheduler");
 			}
 			logger.success("Success !");
 		}
 
-		System.out.println(scheduler == null ? "Buy scheduler 2" : "");
+		// And then let's reschedule the task.
 		final Calendar nextSchedule = scheduler == null ? Utils.tomorrowMidnight() : scheduler.getNextSchedule();
 		logger.success("Scheduled next ad broadcast (if available) on " + nextSchedule.getTime() + ".");
 
 		final long delay = nextSchedule.getTimeInMillis() - System.currentTimeMillis();
 		Executors.newScheduledThreadPool(1).schedule(this, delay < 0 ? 0 : delay, TimeUnit.MILLISECONDS);
 	}
+
+	/**
+	 * Sends a delete expired ads request.
+	 *
+	 * @return A boolean indicating the success.
+	 */
 
 	private boolean deleteExpiredAds() {
 		try {
@@ -91,6 +130,12 @@ public class BroadcastAdsTask implements Runnable {
 
 		return false;
 	}
+
+	/**
+	 * Request ads on the server.
+	 *
+	 * @return A Set containing today's ads.
+	 */
 
 	private HashSet<Ad> requestAds() {
 		try {
@@ -117,24 +162,40 @@ public class BroadcastAdsTask implements Runnable {
 		return null;
 	}
 
+	/**
+	 * Sends a HTTP POST request.
+	 *
+	 * @param requestUrl The request URL.
+	 *
+	 * @return The JSON Object if possible.
+	 *
+	 * @throws IOException If an I/O exception occurs.
+	 * @throws ParseException If a parse exception occurs.
+	 */
+
 	private JSONObject httpPost(final String requestUrl) throws IOException, ParseException {
+		// We build the parameters.
 		final PluginConfig config = plugin.getAdSkyConfig();
 		final String parameters = "key=" + URLEncoder.encode(config.serverPluginKey, "UTF-8");
 
+		// We get the URL.
 		final URL url = new URL(String.format(requestUrl, config.serverUrl));
 		final HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod("POST");
 		connection.setDoOutput(true);
 
+		// Then we send everything.
 		final DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
 		writer.writeBytes(parameters);
 		writer.flush();
 		writer.close();
 
+		// If the response code is not 200, we throw an error.
 		if(connection.getResponseCode() != 200) {
 			throw new IOException("Invalid response code.");
 		}
 
+		// We can now build the response.
 		final BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
 		String line;
@@ -145,6 +206,7 @@ public class BroadcastAdsTask implements Runnable {
 
 		input.close();
 
+		// And we return the parsed response.
 		final JSONParser parser = new JSONParser();
 		return (JSONObject)parser.parse(response.toString());
 	}
