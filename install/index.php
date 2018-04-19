@@ -19,6 +19,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+include '../api/Settings.php';
+
 if(empty($_POST['step'])) {
     $_POST['step'] = 1;
 }
@@ -37,7 +39,7 @@ if($_POST['step'] == 1) {
     }
 }
 
-if($_POST['step'] == 2) {
+else if($_POST['step'] == 2) {
     if(empty($_POST['form-mysql-host']) || empty($_POST['form-mysql-port']) || empty($_POST['form-mysql-db-name']) || empty($_POST['form-mysql-db-username'])) {
         $_POST['step'] = 1;
         $parameters['error'] = 'form';
@@ -67,9 +69,7 @@ if($_POST['step'] == 2) {
     }
 }
 
-if($_POST['step'] == 3) {
-    include '../api/Settings.php';
-
+else if($_POST['step'] == 3) {
     try {
         $pdo = getPDO();
         $pdo -> query(file_get_contents('sql/phpAuth.sql')) -> execute();
@@ -83,15 +83,12 @@ if($_POST['step'] == 3) {
 
 }
 
-if($_POST['step'] == 4) {
+else if($_POST['step'] == 4) {
     if(empty($_POST['form-website-title']) || empty($_POST['form-website-subtitle']) || empty($_POST['form-website-link']) || empty($_POST['form-user-username']) || empty($_POST['form-user-email']) || empty($_POST['form-user-password']) || empty($_POST['form-user-password-confirm']) || $_POST['form-user-password'] != $_POST['form-user-password-confirm']) {
         $_POST['step'] = 3;
-        print_r($_POST);
         $parameters['error'] = 'form';
     }
     else {
-        include '../api/Settings.php';
-
         $newWebsiteSettings = '$settings[\'WEBSITE_TITLE\'] = \'' . htmlspecialchars($_POST['form-website-title']) . "';\n";
         $newWebsiteSettings .= '$settings[\'WEBSITE_SUBTITLE\'] = \'' . htmlspecialchars($_POST['form-website-subtitle']) . "';\n";
         $newWebsiteSettings .= '$settings[\'WEBSITE_LINK\'] = \'' . $_POST['form-website-link'] . "';\n";
@@ -107,10 +104,6 @@ if($_POST['step'] == 4) {
                 $userId = $auth -> registerWithUniqueUsername($_POST['form-user-email'], $_POST['form-user-password'], $_POST['form-user-username']);
                 $auth -> login($_POST['form-user-email'], $_POST['form-user-password'], (int)(60 * 60 * 24 * 365.25));
                 $auth -> admin() -> addRoleForUserById($userId, \Delight\Auth\Role::ADMIN);
-
-                $salt = str_shuffle(md5(microtime()));
-                $parameters['data'] = crypt(microtime().rand(), substr($salt, 0, rand(5, strlen($salt))));
-                file_put_contents('../api/settings/Plugin.php', "<?php\n" . '$settings[\'PLUGIN_KEY\'] = \'' . $parameters['data'] . '\';');
             }
             catch(Exception $error) {
                 $_POST['step'] = 3;
@@ -121,10 +114,28 @@ if($_POST['step'] == 4) {
     }
 }
 
+else if($_POST['step'] == 5) {
+    if(empty($_POST['form-paypal-client-id']) || empty($_POST['form-paypal-client-secret'])) {
+        $_POST['step'] = 4;
+        $parameters['error'] = 'form';
+    }
+    else {
+        $newPayPalSettings = '$settings[\'PAYPAL_CLIENT_ID\'] = \'' . $_POST['form-paypal-client-id'] . "';\n";
+        $newPayPalSettings .= '$settings[\'PAYPAL_CLIENT_SECRET\'] = \'' . $_POST['form-paypal-client-secret'] . "';\n";
+
+        file_put_contents('../api/settings/PayPal.php', "<?php\n" . $newPayPalSettings);
+
+        $salt = str_shuffle(md5(microtime()));
+        $parameters['data'] = crypt(microtime().rand(), substr($salt, 0, rand(5, strlen($salt))));
+
+        file_put_contents('../api/settings/Plugin.php', "<?php\n" . '$settings[\'PLUGIN_KEY\'] = \'' . $parameters['data'] . '\';');
+    }
+}
+
 showStep($_POST['step'], $parameters);
 
 function showStep($step = 1, $parameters) {
-    echo '<small>Step ' . $step . ' / 4</small></header><div id="content">';
+    echo '<small>Step ' . $step . ' / 5</small></header><div id="content">';
 
     $loader = new Twig_Loader_Filesystem('views/');
     $twig = new Twig_Environment($loader);

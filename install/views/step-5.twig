@@ -1,0 +1,43 @@
+<h2>Done !</h2>
+
+<p>Everything has been configured. But there's a few steps remaining...</p>
+
+<h3>Delete the install folder</h3>
+
+<p>This is very important. Please delete manually the whole <strong>install</strong> folder and all of its content.</p>
+
+<h3>Configure the website</h3>
+
+<p>If you want to adjust the website to your needs, head to <code>api/settings/</code> and open the files you want to configure.</p>
+
+<h3>Schedule the clear task</h3>
+
+<p>You may want MySQL to automatically clear expired ads. Well, this is possible but it requires you to do manually the things :</p>
+
+<ol>
+    <li>
+        Make sure event scheduler is enabled. To do so, run <code>SHOW VARIABLES WHERE VARIABLE_NAME = 'event_scheduler'</code>.
+        You must see <strong>ON</strong> somewhere.
+    </li>
+    <li>
+        If for any reason, the event scheduler is disabled,
+        open your <strong>my.ini</strong> file and add <code>event_scheduler = on</code> under the <strong>[mysqld]</strong> section.
+    </li>
+    <li>Once everything is setup, download the <a href="sql/clearExpiredAds.sql">following file</a> and execute it on your MySQL server.</li>
+</ol>
+
+<p>
+    <em>
+        If for any reason you can't schedule the task, well, there is not problem ! Just leave the <code>event-scheduled</code> config option
+        (in the plugin configuration) set to <code>true</code>.
+        With this option, the plugin is going to clear expired ads each day at midnight.
+    </em>
+</p>
+
+<h3>Configure the plugin</h3>
+
+<p>Now that your website is setup, copy the following code :</p>
+
+<pre><code>{{ data }}</code></pre>
+
+<p>And put it in the <code>plugin-key</code> config section.</p>

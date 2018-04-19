@@ -1,6 +1,7 @@
 <?php
 
 $settings['APP_NAME'] = 'AdSky';
+$settings['APP_VERSION'] = '0.1';
 $settings['APP_WEBSITE'] = 'https://dev.bukkit.org/projects/adsky';
 $settings['APP_CURRENCY'] = 'USD';
 $settings['APP_DEBUG'] = true; // TODO Remove this on release

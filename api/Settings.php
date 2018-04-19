@@ -8,6 +8,7 @@ $installed =
     file_exists(__DIR__ . '/settings/Ad.php') &&
     file_exists(__DIR__ . '/settings/MySQL.php') &&
     file_exists(__DIR__ . '/settings/Others.php') &&
+    file_exists(__DIR__ . '/settings/PayPal.php') &&
     file_exists(__DIR__ . '/settings/Plugin.php') &&
     file_exists(__DIR__ . '/settings/Website.php');
 
@@ -15,6 +16,7 @@ if($installed) {
     include __DIR__ . '/settings/Ad.php';
     include __DIR__ . '/settings/MySQL.php';
     include __DIR__ . '/settings/Others.php';
+    include __DIR__ . '/settings/PayPal.php';
     include __DIR__ . '/settings/Plugin.php';
     include __DIR__ . '/settings/Website.php';
 }
@@ -24,10 +26,11 @@ if(!empty($settings['APP_DEBUG']) && $settings['APP_DEBUG']) {
 }
 
 function getPayPalAPI() {
+    global $settings;
     return new \PayPal\Rest\ApiContext(
         new \PayPal\Auth\OAuthTokenCredential(
-            'AfMdiKH9EmUQhY7X-p6TSEIVJd7IWToWcwIqaYZthaVXB2jFffgJyxCFuEvK_RP8i9AyQ60GkPn9_Mde',
-            'EGgc4NHrgVSWZAj6fzuGJjsFrdjFmyQ9HbO1grnJooldTY3aFsQyCmc619QIhXbWa089E2KgRMQX1Hjk'
+            $settings['PAYPAL_CLIENT_ID'],
+            $settings['PAYPAL_CLIENT_SECRET']
         )
     );
 }
