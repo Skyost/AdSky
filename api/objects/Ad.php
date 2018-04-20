@@ -16,6 +16,10 @@ use PayPal\Api\Transaction;
 global $settings;
 define('ADS_TABLE', $settings['DB_PREFIX'] . 'ads');
 
+/**
+ * Represents a SkyAd ad.
+ */
+
 class Ad {
 
     const TYPE_TITLE = 0;
