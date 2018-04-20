@@ -18,6 +18,9 @@ define('ADS_TABLE', $settings['DB_PREFIX'] . 'ads');
 
 class Ad {
 
+    const TYPE_TITLE = 0;
+    const TYPE_CHAT = 1;
+
     private $_username;
     private $_type;
     private $_title;
@@ -95,8 +98,8 @@ class Ad {
         $where = ' WHERE `type`=' . $this -> _type . ' AND `title`=\'' . $this -> _title . '\' AND `username`=\'' . $this -> _username . '\'';
 
         if($type != null) {
-            if(!ctype_digit($type) || ($type != 0 && $type != 1)) {
-                $type = 0;
+            if(!ctype_digit($type) || ($type != self::TYPE_TITLE && $type != self::TYPE_CHAT)) {
+                $type = self::TYPE_TITLE;
             }
 
             $this -> _type = $type;
@@ -133,8 +136,8 @@ class Ad {
             $data['until'] = $expiration;
         }
 
-        if($duration != null) {
-            if((!ctype_digit($duration) || $duration < 1) && $type == 0) {
+        if($duration != null && $type == self::TYPE_TITLE) {
+            if(!ctype_digit($duration) || $duration < 1) {
                 $duration = 1;
             }
 
@@ -225,13 +228,13 @@ class Ad {
         }
 
         $amount = new Amount();
-        $amount -> setTotal(($this -> _type == 0 ? $settings['AD_TITLE_COST'] : $settings['AD_CHAT_COST']) * intval($this -> _interval) * $totalDays);
+        $amount -> setTotal(($this -> _type == self::TYPE_TITLE ? $settings['AD_TITLE_COST'] : $settings['AD_CHAT_COST']) * intval($this -> _interval) * $totalDays);
         $amount -> setCurrency($settings['APP_CURRENCY']);
 
         $transaction = new Transaction();
         $transaction
             -> setAmount($amount)
-            -> setDescription(sprintf($lang['API_PAYPAL_ITEM'], $this -> _interval, ($this -> _type == 0 ? $lang['AD_TYPE_TITLE'] : $lang['AD_TYPE_CHAT']), $totalDays));
+            -> setDescription(sprintf($lang['API_PAYPAL_ITEM'], $this -> _interval, ($this -> _type == self::TYPE_TITLE ? $lang['AD_TYPE_TITLE'] : $lang['AD_TYPE_CHAT']), $totalDays));
 
         return $transaction;
     }
@@ -253,7 +256,7 @@ class Ad {
         global $settings;
         global $lang;
 
-        if($type != 0 && $type != 1) {
+        if($type != self::TYPE_TITLE && $type != self::TYPE_CHAT) {
             return new Response($lang['API_ERROR_INVALID_TYPE']);
         }
 
@@ -261,7 +264,7 @@ class Ad {
             return new Response($lang['API_ERROR_SAME_NAME']);
         }
 
-        if($type == 0) {
+        if($type == self::TYPE_TITLE) {
             if(!($settings['AD_TITLE_LIMIT_TITLE_CHARS_MIN'] <= $titleLength && $titleLength <= $settings['AD_TITLE_LIMIT_TITLE_CHARS_MAX'])) {
                 return new Response($lang['API_ERROR_INVALID_TITLE_LENGTH']);
             }
@@ -270,7 +273,7 @@ class Ad {
                 return new Response($lang['API_ERROR_INVALID_MESSAGE_LENGTH']);
             }
 
-            if($duration == null || !($settings['AD_TITLE_LIMIT_SECONDS_MIN'] <= $duration && $duration <= $settings['AD_TITLE_LIMIT_SECONDS_MAX'])) {
+            if(!($settings['AD_TITLE_LIMIT_SECONDS_MIN'] <= $duration && $duration <= $settings['AD_TITLE_LIMIT_SECONDS_MAX'])) {
                 return new Response($lang['API_ERROR_INVALID_DURATION']);
             }
 
@@ -441,7 +444,7 @@ class Ad {
 
         $ad = null;
         if($renew) {
-            if(!isset($_POST['type']) || strlen($_POST['type']) === 0 || empty($_POST['title']) || empty($_POST['days'])) {
+            if(!isset($_POST['type']) || strlen($_POST['type']) === self::TYPE_TITLE || empty($_POST['title']) || empty($_POST['days'])) {
                 (new Response(formatNotSet([$lang['API_ERROR_NOT_SET_TYPE'], $lang['API_ERROR_NOT_SET_TITLE'], $lang['API_ERROR_NOT_SET_DAYS']]))) -> returnResponse();
             }
 
@@ -461,8 +464,8 @@ class Ad {
                 (new Response($lang['API_ERROR_NOT_FOUND'])) -> returnResponse();
             }
 
-            $max = ($_POST['type'] == 0 ? $settings['AD_TITLE_LIMIT_EXPIRATION_MAX'] : $settings['AD_CHAT_LIMIT_EXPIRATION_MAX']) - (($row['expiration'] - mktime(0, 0, 0)) / (60 * 60 * 24));
-            if($max <= ($_POST['type'] == 0 ? $settings['AD_TITLE_LIMIT_EXPIRATION_MIN'] : $settings['AD_CHAT_LIMIT_EXPIRATION_MIN']) || $_POST['days'] > $max) {
+            $max = ($_POST['type'] == self::TYPE_TITLE ? $settings['AD_TITLE_LIMIT_EXPIRATION_MAX'] : $settings['AD_CHAT_LIMIT_EXPIRATION_MAX']) - (($row['expiration'] - mktime(0, 0, 0)) / (60 * 60 * 24));
+            if($max <= ($_POST['type'] == self::TYPE_TITLE ? $settings['AD_TITLE_LIMIT_EXPIRATION_MIN'] : $settings['AD_CHAT_LIMIT_EXPIRATION_MIN']) || $_POST['days'] > $max) {
                 (new Response($lang['API_ERROR_INVALID_RENEWDAY'])) -> returnResponse();
             }
 

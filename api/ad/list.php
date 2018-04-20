@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * ADSKY API FILE
+ *
+ * Name : ad/list.php
+ * Target : Ads
+ * User role : Admin
+ * Description : List all ads.
+ * Throttle : 10 requests per 60 seconds.
+ *
+ * Parameters :
+ * [P][O] page : Current page (to see how many ads there are by page, go to settings/Others.php and check the PAGINATOR_MAX parameter).
+ */
+
 require '../Lang.php';
 
 require '../objects/User.php';

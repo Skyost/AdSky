@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * ADSKY API FILE
+ *
+ * Name : ad/renew.php
+ * Target : Ads
+ * User role : User
+ * Description : Renew an ad.
+ * Throttle : 5 requests per 60 seconds.
+ *
+ * Parameters :
+ * [P] type : Type of the ad (Title / Chat).
+ * [P] title : Title of the ad.
+ * [P] days : Number of days to add to the current expiration date.
+ */
+
 require '../Lang.php';
 
 require '../objects/Ad.php';
