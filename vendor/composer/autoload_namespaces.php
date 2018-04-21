@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Twig_' => array($vendorDir . '/twig/twig/lib'),
     'PayPal' => array($vendorDir . '/paypal/rest-api-sdk-php/lib'),
+    'Bramus' => array($vendorDir . '/bramus/router/src'),
 );

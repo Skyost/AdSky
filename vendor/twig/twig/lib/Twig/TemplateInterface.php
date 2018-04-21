@@ -3,7 +3,7 @@
 /*
  * This file is part of Twig.
  *
- * (c) 2009 Fabien Potencier
+ * (c) Fabien Potencier
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,13 +12,14 @@
 /**
  * Interface implemented by all compiled templates.
  *
- * @package twig
- * @author  Fabien Potencier <fabien@symfony.com>
+ * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since 1.12 (to be removed in 3.0)
  */
 interface Twig_TemplateInterface
 {
-    const ANY_CALL    = 'any';
-    const ARRAY_CALL  = 'array';
+    const ANY_CALL = 'any';
+    const ARRAY_CALL = 'array';
     const METHOD_CALL = 'method';
 
     /**
@@ -28,7 +29,7 @@ interface Twig_TemplateInterface
      *
      * @return string The rendered template
      */
-    function render(array $context);
+    public function render(array $context);
 
     /**
      * Displays the template with the given context.
@@ -36,12 +37,12 @@ interface Twig_TemplateInterface
      * @param array $context An array of parameters to pass to the template
      * @param array $blocks  An array of blocks to pass to the template
      */
-    function display(array $context, array $blocks = array());
+    public function display(array $context, array $blocks = array());
 
     /**
      * Returns the bound environment for this template.
      *
-     * @return Twig_Environment The current environment
+     * @return Twig_Environment
      */
-    function getEnvironment();
+    public function getEnvironment();
 }

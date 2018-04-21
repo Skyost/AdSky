@@ -6,4 +6,4 @@ if($response -> _error != null) {
     die($response -> _error);
 }
 
-header('Location: ../admin.php?message=validation_success#home');
+header('Location: ../admin/?message=validation_success#home');

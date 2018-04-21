@@ -1,0 +1,60 @@
+
+
+class MySQLSettings extends Settings {
+
+    public function __construct() {
+        $this -> putSettings('MYSQL_HOST', '{{ attribute(post, 'form-mysql-host') }}');
+        $this -> putSettings('MYSQL_PORT', {{ attribute(post, 'form-mysql-port') }});
+        $this -> putSettings('MYSQL_DATABASE', '{{ attribute(post, 'form-mysql-db-name') }}');
+        $this -> putSettings('MYSQL_USERNAME', '{{ attribute(post, 'form-mysql-db-username') }}');
+        $this -> putSettings('MYSQL_PASSWORD', '{% if attribute(post, 'form-mysql-db-password') is defined %}{{ attribute(post, 'form-mysql-db-password') }}{% endif %}');
+        $this -> putSettings('MYSQL_TABLES_PREFIXES', 'adsky_');
+        $this -> putSettings('MYSQL_THROTTLING', !AdSky::APP_DEBUG);
+    }
+
+    public function getMySQLHost() {
+        return $this -> getSettings('MYSQL_HOST');
+    }
+
+    public function getMySQLPort() {
+        return $this -> getSettings('MYSQL_PORT');
+    }
+
+    public function getMySQLDataBase() {
+        return $this -> getSettings('MYSQL_DATABASE');
+    }
+
+    public function getMySQLUsername() {
+        return $this -> getSettings('MYSQL_USERNAME');
+    }
+
+    public function getMySQLPassword() {
+        return $this -> getSettings('MYSQL_PASSWORD');
+    }
+
+    public function getMySQLTablesPrefixes() {
+        return $this -> getSettings('MYSQL_TABLES_PREFIXES');
+    }
+
+    public function isThrottlingEnabled() {
+        return $this -> getSettings('MYSQL_THROTTLING');
+    }
+
+    public function constructPDO() {
+        try {
+            return new \PDO('mysql:host=' . ($this -> getMySQLHost()) . ';port=' . ($this -> getMySQLPort()) . ';dbname=' . ($this -> getMySQLDataBase()) . ';charset=utf8mb4', ($this -> getMySQLUsername()), ($this -> getMySQLPassword()));
+        }
+        catch(PDOException $error) {
+            die('Unable to connect to MySQL database. Please check your settings in core/settings/MySQLSettings.php.');
+        }
+    }
+
+    public function getUsersTable() {
+        return $this -> getSettings('MYSQL_TABLES_PREFIXES') . 'users';
+    }
+
+    public function getAdsTable() {
+        return $this -> getSettings('MYSQL_TABLES_PREFIXES') . 'ads';
+    }
+
+}

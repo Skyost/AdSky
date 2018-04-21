@@ -1,14 +1,16 @@
 <?php
 
-require '../Lang.php';
-require '../objects/User.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/User.php';
 
-$pdo = getPDO();
-$auth = createAuth($pdo);
+$adsky = AdSky::getInstance();
+$auth = $adsky -> getAuth();
 
 $username = empty($_POST['username']) ? $auth -> getEmail() : $_POST['username'];
 if($username != $auth -> getUsername() && !$auth -> hasRole(\Delight\Auth\Role::ADMIN)) {
-    (new Response($lang['API_ERROR_NOT_ADMIN'])) -> returnResponse();
+    $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'));
+    $response -> returnResponse();
 }
 
-((new User(null, null, $username)) -> delete($pdo, $auth)) -> returnResponse();
+$response = (new User(null, null, $username)) -> delete();
+$response -> returnResponse();

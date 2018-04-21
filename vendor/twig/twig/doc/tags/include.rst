@@ -1,7 +1,7 @@
 ``include``
 ===========
 
-The ``include`` statement includes a template and return the rendered content
+The ``include`` statement includes a template and returns the rendered content
 of that file into the current namespace:
 
 .. code-block:: jinja
@@ -19,29 +19,29 @@ You can add additional variables by passing them after the ``with`` keyword:
 
 .. code-block:: jinja
 
-    {# the foo template will have access to the variables from the current context and the foo one #}
-    {% include 'foo' with {'foo': 'bar'} %}
+    {# template.html will have access to the variables from the current context and the additional ones provided #}
+    {% include 'template.html' with {'foo': 'bar'} %}
 
     {% set vars = {'foo': 'bar'} %}
-    {% include 'foo' with vars %}
+    {% include 'template.html' with vars %}
 
 You can disable access to the context by appending the ``only`` keyword:
 
 .. code-block:: jinja
 
     {# only the foo variable will be accessible #}
-    {% include 'foo' with {'foo': 'bar'} only %}
+    {% include 'template.html' with {'foo': 'bar'} only %}
 
 .. code-block:: jinja
 
-    {# no variable will be accessible #}
-    {% include 'foo' only %}
+    {# no variables will be accessible #}
+    {% include 'template.html' only %}
 
 .. tip::
 
     When including a template created by an end user, you should consider
     sandboxing it. More information in the :doc:`Twig for Developers<../api>`
-    chapter.
+    chapter and in the :doc:`sandbox<../tags/sandbox>` tag documentation.
 
 The template name can be any valid Twig expression:
 
@@ -50,27 +50,31 @@ The template name can be any valid Twig expression:
     {% include some_var %}
     {% include ajax ? 'ajax.html' : 'not_ajax.html' %}
 
-And if the expression evaluates to a ``Twig_Template`` object, Twig will use it
-directly::
+And if the expression evaluates to a ``Twig_Template`` or a
+``Twig_TemplateWrapper`` instance, Twig will use it directly::
 
     // {% include template %}
 
+    // deprecated as of Twig 1.28
     $template = $twig->loadTemplate('some_template.twig');
 
-    $twig->loadTemplate('template.twig')->display(array('template' => $template));
+    // as of Twig 1.28
+    $template = $twig->load('some_template.twig');
+
+    $twig->display('template.twig', array('template' => $template));
 
 .. versionadded:: 1.2
     The ``ignore missing`` feature has been added in Twig 1.2.
 
 You can mark an include with ``ignore missing`` in which case Twig will ignore
-the statement if the template to be ignored does not exist. It has to be
+the statement if the template to be included does not exist. It has to be
 placed just after the template name. Here some valid examples:
 
 .. code-block:: jinja
 
-    {% include "sidebar.html" ignore missing %}
-    {% include "sidebar.html" ignore missing with {'foo': 'bar} %}
-    {% include "sidebar.html" ignore missing only %}
+    {% include 'sidebar.html' ignore missing %}
+    {% include 'sidebar.html' ignore missing with {'foo': 'bar'} %}
+    {% include 'sidebar.html' ignore missing only %}
 
 .. versionadded:: 1.2
     The possibility to pass an array of templates has been added in Twig 1.2.

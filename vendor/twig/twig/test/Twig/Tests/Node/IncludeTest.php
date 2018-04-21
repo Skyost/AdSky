@@ -9,70 +9,69 @@
  * file that was distributed with this source code.
  */
 
-require_once dirname(__FILE__).'/TestCase.php';
-
-class Twig_Tests_Node_IncludeTest extends Twig_Tests_Node_TestCase
+class Twig_Tests_Node_IncludeTest extends Twig_Test_NodeTestCase
 {
-    /**
-     * @covers Twig_Node_Include::__construct
-     */
     public function testConstructor()
     {
-        $expr = new Twig_Node_Expression_Constant('foo.twig', 0);
-        $node = new Twig_Node_Include($expr, null, false, false, 0);
+        $expr = new Twig_Node_Expression_Constant('foo.twig', 1);
+        $node = new Twig_Node_Include($expr, null, false, false, 1);
 
-        $this->assertEquals(null, $node->getNode('variables'));
+        $this->assertFalse($node->hasNode('variables'));
         $this->assertEquals($expr, $node->getNode('expr'));
         $this->assertFalse($node->getAttribute('only'));
 
-        $vars = new Twig_Node_Expression_Array(array(new Twig_Node_Expression_Constant('foo', 0), new Twig_Node_Expression_Constant(true, 0)), 0);
-        $node = new Twig_Node_Include($expr, $vars, true, false, 0);
+        $vars = new Twig_Node_Expression_Array(array(new Twig_Node_Expression_Constant('foo', 1), new Twig_Node_Expression_Constant(true, 1)), 1);
+        $node = new Twig_Node_Include($expr, $vars, true, false, 1);
         $this->assertEquals($vars, $node->getNode('variables'));
         $this->assertTrue($node->getAttribute('only'));
-    }
-
-    /**
-     * @covers Twig_Node_Include::compile
-     * @dataProvider getTests
-     */
-    public function testCompile($node, $source, $environment = null)
-    {
-        parent::testCompile($node, $source, $environment);
     }
 
     public function getTests()
     {
         $tests = array();
 
-        $expr = new Twig_Node_Expression_Constant('foo.twig', 0);
-        $node = new Twig_Node_Include($expr, null, false, false, 0);
-        $tests[] = array($node, '$this->env->loadTemplate("foo.twig")->display($context);');
-
-        $expr = new Twig_Node_Expression_Conditional(
-                        new Twig_Node_Expression_Constant(true, 0),
-                        new Twig_Node_Expression_Constant('foo', 0),
-                        new Twig_Node_Expression_Constant('foo', 0),
-                        0
-                    );
-        $node = new Twig_Node_Include($expr, null, false, false, 0);
+        $expr = new Twig_Node_Expression_Constant('foo.twig', 1);
+        $node = new Twig_Node_Include($expr, null, false, false, 1);
         $tests[] = array($node, <<<EOF
-\$template = \$this->env->resolveTemplate(((true) ? ("foo") : ("foo")));
-\$template->display(\$context);
+// line 1
+\$this->loadTemplate("foo.twig", null, 1)->display(\$context);
 EOF
         );
 
-        $expr = new Twig_Node_Expression_Constant('foo.twig', 0);
-        $vars = new Twig_Node_Expression_Array(array(new Twig_Node_Expression_Constant('foo', 0), new Twig_Node_Expression_Constant(true, 0)), 0);
-        $node = new Twig_Node_Include($expr, $vars, false, false, 0);
-        $tests[] = array($node, '$this->env->loadTemplate("foo.twig")->display(array_merge($context, array("foo" => true)));');
-
-        $node = new Twig_Node_Include($expr, $vars, true, false, 0);
-        $tests[] = array($node, '$this->env->loadTemplate("foo.twig")->display(array("foo" => true));');
-
-        $node = new Twig_Node_Include($expr, $vars, true, true, 0);
+        $expr = new Twig_Node_Expression_Conditional(
+                        new Twig_Node_Expression_Constant(true, 1),
+                        new Twig_Node_Expression_Constant('foo', 1),
+                        new Twig_Node_Expression_Constant('foo', 1),
+                        0
+                    );
+        $node = new Twig_Node_Include($expr, null, false, false, 1);
         $tests[] = array($node, <<<EOF
+// line 1
+\$this->loadTemplate(((true) ? ("foo") : ("foo")), null, 1)->display(\$context);
+EOF
+        );
+
+        $expr = new Twig_Node_Expression_Constant('foo.twig', 1);
+        $vars = new Twig_Node_Expression_Array(array(new Twig_Node_Expression_Constant('foo', 1), new Twig_Node_Expression_Constant(true, 1)), 1);
+        $node = new Twig_Node_Include($expr, $vars, false, false, 1);
+        $tests[] = array($node, <<<EOF
+// line 1
+\$this->loadTemplate("foo.twig", null, 1)->display(array_merge(\$context, array("foo" => true)));
+EOF
+        );
+
+        $node = new Twig_Node_Include($expr, $vars, true, false, 1);
+        $tests[] = array($node, <<<EOF
+// line 1
+\$this->loadTemplate("foo.twig", null, 1)->display(array("foo" => true));
+EOF
+        );
+
+        $node = new Twig_Node_Include($expr, $vars, true, true, 1);
+        $tests[] = array($node, <<<EOF
+// line 1
 try {
-    \$this->env->loadTemplate("foo.twig")->display(array("foo" => true));
+    \$this->loadTemplate("foo.twig", null, 1)->display(array("foo" => true));
 } catch (Twig_Error_Loader \$e) {
     // ignore missing template
 }

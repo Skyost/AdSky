@@ -68,11 +68,18 @@ Variable              Description
 ``loop.parent``       The parent context
 ===================== =============================================================
 
+.. code-block:: jinja
+
+    {% for user in users %}
+        {{ loop.index }} - {{ user.username }}
+    {% endfor %}
+
 .. note::
 
     The ``loop.length``, ``loop.revindex``, ``loop.revindex0``, and
     ``loop.last`` variables are only available for PHP arrays, or objects that
-    implement the ``Countable`` interface.
+    implement the ``Countable`` interface. They are also not available when
+    looping with a condition.
 
 .. versionadded:: 1.2
     The ``if`` modifier support has been added in Twig 1.2.
@@ -93,7 +100,8 @@ items. The following example skips all the users which are not active:
     </ul>
 
 The advantage is that the special loop variable will count correctly thus not
-counting the users not iterated over.
+counting the users not iterated over. Keep in mind that properties like
+``loop.last`` will not be defined when using loop conditions.
 
 .. note::
 
@@ -145,5 +153,20 @@ You can also access both keys and values:
     <ul>
         {% for key, user in users %}
             <li>{{ key }}: {{ user.username|e }}</li>
+        {% endfor %}
+    </ul>
+
+Iterating over a Subset
+-----------------------
+
+You might want to iterate over a subset of values. This can be achieved using
+the :doc:`slice <../filters/slice>` filter:
+
+.. code-block:: jinja
+
+    <h1>Top Ten Members</h1>
+    <ul>
+        {% for user in users|slice(0, 10) %}
+            <li>{{ user.username|e }}</li>
         {% endfor %}
     </ul>

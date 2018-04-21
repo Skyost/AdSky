@@ -1,0 +1,33 @@
+
+
+class WebsiteSettings extends Settings {
+
+    public function __construct() {
+        $this -> putSettings('WEBSITE_TITLE', '{{ attribute(post, 'form-website-title') | escape }}');
+        $this -> putSettings('WEBSITE_SUBTITLE', '{{ attribute(post, 'form-website-subtitle') | escape }}');
+        $this -> putSettings('WEBSITE_LINK', '{{ attribute(post, 'form-website-link') }}');
+        $this -> putSettings('WEBSITE_EMAIL', 'adsky@skyost.eu');
+        $this -> putSettings('WEBSITE_PAGINATOR_ITEMS_PER_PAGE', 15);
+    }
+
+    public function getWebsiteTitle() {
+        return $this -> getSettings('WEBSITE_TITLE');
+    }
+
+    public function getWebsiteSubTitle() {
+        return $this -> getSettings('WEBSITE_SUBTITLE');
+    }
+
+    public function getWebsiteLink() {
+        return $this -> getSettings('WEBSITE_LINK');
+    }
+
+    public function getWebsiteEmail() {
+        return $this -> getSettings('WEBSITE_EMAIL');
+    }
+
+    public function getWebsitePaginatorItemsPerPage() {
+        return $this -> getSettings('WEBSITE_PAGINATOR_ITEMS_PER_PAGE');
+    }
+
+}

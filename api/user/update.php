@@ -1,22 +1,23 @@
 <?php
 
-require '../Lang.php';
-
-require '../objects/User.php';
-require_once '../Settings.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/User.php';
 
 use Delight\Auth;
 
-$auth = createAuth();
-$object = User::isLoggedIn($auth) -> _object;
+$adsky = AdSky::getInstance();
+$auth = $adsky -> getAuth();
+$language = $adsky -> getLanguage();
+
+$object = User::isLoggedIn() -> _object;
 
 if($object == null) {
-    (new Response($lang['API_ERROR_NOT_LOGGEDIN'])) -> returnResponse();
+    (new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
 }
 
 if($object['type'] === 0) {
     if(empty($_POST['oldpassword']) && !isset($_POST['adminmode'])) {
-        (new Response(formatNotSet([$lang['API_ERROR_NOT_SET_OLDPASSWORD']]))) -> returnResponse();
+        (new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]))) -> returnResponse();
     }
 
     if(empty($_POST['oldemail'])) {
@@ -24,7 +25,7 @@ if($object['type'] === 0) {
     }
 
     if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != 0 && $_POST['type'] != 1)) {
-        (new Response($lang['API_ERROR_INVALID_TYPE'])) -> returnResponse();
+        (new Response($language -> getSettings('API_ERROR_INVALID_TYPE'))) -> returnResponse();
     }
 
     $email = empty($_POST['email']) ? $auth -> getEmail() : $_POST['email'];
@@ -34,8 +35,8 @@ if($object['type'] === 0) {
         $type = Auth\Role::ADMIN;
     }
 
-    $target = new User($_POST['oldemail'], utilNotEmptyOrNull($_POST, 'oldpassword'), null, null);
-    $response = $target -> update($email, utilNotEmptyOrNull($_POST, 'password'), $type, $auth);
+    $target = new User($_POST['oldemail'], Utils::notEmptyOrNull($_POST, 'oldpassword'), null, null);
+    $response = $target -> update($email, Utils::notEmptyOrNull($_POST, 'password'), $type);
 
     if($response -> _error == null && $_POST['oldemail'] != $email) {
         try {
@@ -43,7 +44,7 @@ if($object['type'] === 0) {
             $auth -> destroySession();
         }
         catch(Auth\AuthError $error) {
-            (new Response($lang['API_ERROR_GENERIC_AUTH_ERROR'])) -> returnResponse();
+            (new Response($language -> getSettings('API_ERROR_GENERIC_AUTH_ERROR'))) -> returnResponse();
         }
     }
 
@@ -51,9 +52,9 @@ if($object['type'] === 0) {
 }
 
 if(empty($_POST['oldpassword'])) {
-    (new Response(formatNotSet([$lang['API_ERROR_NOT_SET_OLDPASSWORD']]))) -> returnResponse();
+    (new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]))) -> returnResponse();
 }
 
 $target = new User($auth -> getEmail(), $_POST['oldpassword'], $auth -> getUsername(), $auth -> hasRole(Auth\Role::ADMIN) ? Auth\Role::ADMIN : Auth\Role::PUBLISHER);
-$response = $target -> update(utilNotEmptyOrNull($_POST, 'email'), utilNotEmptyOrNull($_POST, 'password'), null, $auth);
+$response = $target -> update(Utils::notEmptyOrNull($_POST, 'email'), Utils::notEmptyOrNull($_POST, 'password'));
 $response -> returnResponse();

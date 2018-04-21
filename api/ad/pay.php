@@ -18,21 +18,19 @@
  * [P][O] duration : Duration of a Title ad.
  */
 
-require '../Lang.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/Ad.php';
 
-require '../objects/Ad.php';
-
-Ad::pay(false, function($ad, $pdo, $header = null) {
-    $response = $ad -> register($pdo);
+Ad::pay(false, function(Ad $ad, $header = null) {
+    $response = $ad -> register();
     if($response -> _error != null) {
         $response -> returnResponse();
     }
 
     if($header != null) {
-        header($header . '../../admin.php?message=create_success#create');
+        header($header . '../../admin/?message=create_success#create');
         die();
     }
 
-    global $lang;
-    (new Response(null, $lang['API_SUCCESS'], 'admin.php?message=create_success#create')) -> returnResponse();
+    (new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'), 'admin/?message=create_success#create')) -> returnResponse();
 });

@@ -26,6 +26,13 @@
 {{ object.self.foo                is     defined ? 'ok' : 'ko' }}
 {{ object.self.undefinedMethod    is     defined ? 'ko' : 'ok' }}
 {{ object.undefinedMethod.self    is     defined ? 'ko' : 'ok' }}
+{{ 0                              is     defined ? 'ok' : 'ko' }}
+{{ "foo"                          is     defined ? 'ok' : 'ko' }}
+{{ true                           is     defined ? 'ok' : 'ko' }}
+{{ false                          is     defined ? 'ok' : 'ko' }}
+{{ null                           is     defined ? 'ok' : 'ko' }}
+{{ [1, 2]                         is     defined ? 'ok' : 'ko' }}
+{{ { foo: "bar" }                 is     defined ? 'ok' : 'ko' }}
 --DATA--
 return array(
     'definedVar' => 'defined',
@@ -37,7 +44,7 @@ return array(
         'nullVar'      => null,
         'definedArray' => array(0),
     ),
-    'object' => new Foo(),
+    'object' => new TwigTestFoo(),
 );
 --EXPECT--
 ok
@@ -65,6 +72,13 @@ ok
 ok
 ok
 ok
+ok
+ok
+ok
+ok
+ok
+ok
+ok
 --DATA--
 return array(
     'definedVar' => 'defined',
@@ -76,11 +90,18 @@ return array(
         'nullVar'      => null,
         'definedArray' => array(0),
     ),
-    'object' => new Foo(),
+    'object' => new TwigTestFoo(),
 );
 --CONFIG--
 return array('strict_variables' => false)
 --EXPECT--
+ok
+ok
+ok
+ok
+ok
+ok
+ok
 ok
 ok
 ok

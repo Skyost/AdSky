@@ -9,59 +9,74 @@
  * file that was distributed with this source code.
  */
 
-require_once dirname(__FILE__).'/../TestCase.php';
-
-class Twig_Tests_Node_Expression_TestTest extends Twig_Tests_Node_TestCase
+class Twig_Tests_Node_Expression_TestTest extends Twig_Test_NodeTestCase
 {
-    /**
-     * @covers Twig_Node_Expression_Test::__construct
-     */
     public function testConstructor()
     {
-        $expr = new Twig_Node_Expression_Constant('foo', 0);
-        $name = new Twig_Node_Expression_Constant('null', 0);
+        $expr = new Twig_Node_Expression_Constant('foo', 1);
+        $name = new Twig_Node_Expression_Constant('null', 1);
         $args = new Twig_Node();
-        $node = new Twig_Node_Expression_Test($expr, $name, $args, 0);
+        $node = new Twig_Node_Expression_Test($expr, $name, $args, 1);
 
         $this->assertEquals($expr, $node->getNode('node'));
         $this->assertEquals($args, $node->getNode('arguments'));
         $this->assertEquals($name, $node->getAttribute('name'));
     }
 
-    /**
-     * @covers Twig_Node_Expression_Test::compile
-     * @dataProvider getTests
-     */
-    public function testCompile($node, $source, $environment = null)
-    {
-        parent::testCompile($node, $source, $environment);
-    }
-
     public function getTests()
     {
+        $environment = new Twig_Environment($this->getMockBuilder('Twig_LoaderInterface')->getMock());
+        $environment->addTest(new Twig_SimpleTest('barbar', 'twig_tests_test_barbar', array('is_variadic' => true, 'need_context' => true)));
+
         $tests = array();
 
-        $expr = new Twig_Node_Expression_Constant('foo', 0);
-        $node = new Twig_Node_Expression_Test_Null($expr, 'null', new Twig_Node(array()), 0);
-
+        $expr = new Twig_Node_Expression_Constant('foo', 1);
+        $node = new Twig_Node_Expression_Test_Null($expr, 'null', new Twig_Node(array()), 1);
         $tests[] = array($node, '(null === "foo")');
+
+        // test as an anonymous function
+        if (PHP_VERSION_ID >= 50300) {
+            $node = $this->createTest(new Twig_Node_Expression_Constant('foo', 1), 'anonymous', array(new Twig_Node_Expression_Constant('foo', 1)));
+            $tests[] = array($node, 'call_user_func_array($this->env->getTest(\'anonymous\')->getCallable(), array("foo", "foo"))');
+        }
+
+        // arbitrary named arguments
+        $string = new Twig_Node_Expression_Constant('abc', 1);
+        $node = $this->createTest($string, 'barbar');
+        $tests[] = array($node, 'twig_tests_test_barbar("abc")', $environment);
+
+        $node = $this->createTest($string, 'barbar', array('foo' => new Twig_Node_Expression_Constant('bar', 1)));
+        $tests[] = array($node, 'twig_tests_test_barbar("abc", null, null, array("foo" => "bar"))', $environment);
+
+        $node = $this->createTest($string, 'barbar', array('arg2' => new Twig_Node_Expression_Constant('bar', 1)));
+        $tests[] = array($node, 'twig_tests_test_barbar("abc", null, "bar")', $environment);
+
+        $node = $this->createTest($string, 'barbar', array(
+            new Twig_Node_Expression_Constant('1', 1),
+            new Twig_Node_Expression_Constant('2', 1),
+            new Twig_Node_Expression_Constant('3', 1),
+            'foo' => new Twig_Node_Expression_Constant('bar', 1),
+        ));
+        $tests[] = array($node, 'twig_tests_test_barbar("abc", "1", "2", array(0 => "3", "foo" => "bar"))', $environment);
 
         return $tests;
     }
 
-    /**
-     * @covers Twig_Node_Expression_Filter::compile
-     * @expectedException        Twig_Error_Syntax
-     * @expectedExceptionMessage The test "nul" does not exist. Did you mean "null" at line 0
-     */
-    public function testUnknownTest()
-    {
-        $node = $this->createTest(new Twig_Node_Expression_Constant('foo', 0), 'nul');
-        $node->compile($this->getCompiler());
-    }
-
     protected function createTest($node, $name, array $arguments = array())
     {
-        return new Twig_Node_Expression_Test($node, $name, new Twig_Node($arguments), 0);
+        return new Twig_Node_Expression_Test($node, $name, new Twig_Node($arguments), 1);
     }
+
+    protected function getEnvironment()
+    {
+        if (PHP_VERSION_ID >= 50300) {
+            return include 'PHP53/TestInclude.php';
+        }
+
+        return parent::getEnvironment();
+    }
+}
+
+function twig_tests_test_barbar($string, $arg1 = null, $arg2 = null, array $args = array())
+{
 }

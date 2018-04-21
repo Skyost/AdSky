@@ -16,33 +16,32 @@
  */
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require '../Lang.php';
 
-require '../objects/User.php';
-require_once '../objects/Response.php';
-require_once '../Settings.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/Ad.php';
+require_once __DIR__ . '/../../core/objects/User.php';
+
+$adsky = AdSky::getInstance();
+$language = $adsky -> getLanguage();
 
 if(!isset($_POST['type']) || strlen($_POST['type']) === 0 || empty($_POST['title'])) {
-    (new Response(formatNotSet([$lang['API_ERROR_NOT_SET_TITLE'], $lang['API_ERROR_NOT_SET_TYPE']]))) -> returnResponse();
+    $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_TITLE'), $language -> getSettings('API_ERROR_NOT_SET_TYPE')]));
+    $response -> returnResponse();
 }
 
-$pdo = getPDO();
-$auth = createAuth($pdo);
-
-$object = User::isLoggedIn($auth) -> _object;
+$object = User::isLoggedIn() -> _object;
 if($object == null) {
-    (new Response($lang['API_ERROR_NOT_LOGGEDIN'])) -> returnResponse();
+    $response = new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'));
+    $response -> returnResponse();
 }
-
-require_once '../objects/Ad.php';
 
 if(empty($_POST['username'])) {
     $_POST['username'] = $object['username'];
 }
-else {
-    if($object['username'] != $_POST['username'] && $object['type'] !== Ad::TYPE_TITLE) {
-        (new Response($lang['API_ERROR_NOT_ADMIN'])) -> returnResponse();
-    }
+else if($object['username'] != $_POST['username'] && $object['type'] !== Ad::TYPE_TITLE) {
+    $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+    $response -> returnResponse();
 }
 
-((new Ad($_POST['username'], intval($_POST['type']), $_POST['title'])) -> delete($pdo)) -> returnResponse();
+$response = (new Ad($_POST['username'], intval($_POST['type']), $_POST['title'])) -> delete();
+$response -> returnResponse();

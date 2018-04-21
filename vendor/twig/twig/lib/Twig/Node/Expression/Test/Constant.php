@@ -3,7 +3,7 @@
 /*
  * This file is part of Twig.
  *
- * (c) 2011 Fabien Potencier
+ * (c) Fabien Potencier
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,8 +18,7 @@
  *  {% endif %}
  * </pre>
  *
- * @package twig
- * @author  Fabien Potencier <fabien@symfony.com>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 class Twig_Node_Expression_Test_Constant extends Twig_Node_Expression_Test
 {
@@ -29,8 +28,21 @@ class Twig_Node_Expression_Test_Constant extends Twig_Node_Expression_Test
             ->raw('(')
             ->subcompile($this->getNode('node'))
             ->raw(' === constant(')
+        ;
+
+        if ($this->getNode('arguments')->hasNode(1)) {
+            $compiler
+                ->raw('get_class(')
+                ->subcompile($this->getNode('arguments')->getNode(1))
+                ->raw(')."::".')
+            ;
+        }
+
+        $compiler
             ->subcompile($this->getNode('arguments')->getNode(0))
             ->raw('))')
         ;
     }
 }
+
+class_alias('Twig_Node_Expression_Test_Constant', 'Twig\Node\Expression\Test\ConstantTest', false);

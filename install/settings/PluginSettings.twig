@@ -1,0 +1,13 @@
+
+
+class PluginSettings extends Settings {
+
+    public function __construct() {
+        $this -> putSettings('PLUGIN_KEY', '{{ plugin_key }}');
+    }
+
+    public function getPluginKey() {
+        return $this -> getSettings('PLUGIN_KEY');
+    }
+
+}

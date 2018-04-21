@@ -1,0 +1,28 @@
+
+
+class PayPalSettings extends Settings {
+
+    public function __construct() {
+        $this -> putSettings('PAYPAL_CLIENT_ID', '{{ attribute(post, 'form-paypal-client-id') }}');
+        $this -> putSettings('PAYPAL_CLIENT_SECRET', '{{ attribute(post, 'form-paypal-client-secret') }}');
+        $this -> putSettings('PAYPAL_CURRENCY', 'USD');
+    }
+
+    public function getPayPalClientID() {
+        return $this -> getSettings('PAYPAL_CLIENT_ID');
+    }
+
+    public function getPayPalClientSecret() {
+        return $this -> getSettings('PAYPAL_CLIENT_SECRET');
+    }
+
+    public function getPayPalCurrency() {
+        return $this -> getSettings('PAYPAL_CURRENCY');
+    }
+
+    public function getPayPalAPIContext() {
+        require_once __DIR__ . '/../../vendor/autoload.php';
+        return new \PayPal\Rest\ApiContext(new \PayPal\Auth\OAuthTokenCredential($this -> getPayPalClientID(), $this -> getPayPalClientSecret()));
+    }
+
+}

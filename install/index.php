@@ -18,12 +18,17 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../core/AdSky.php';
 
-include '../api/Settings.php';
+require_once __DIR__ . '/../core/Utils.php';
 
 if(empty($_POST['step'])) {
     $_POST['step'] = 1;
 }
+
+$adsky = AdSky::getInstance();
+$loader = new Twig_Loader_Filesystem('settings/');
+$twig = new Twig_Environment($loader);
 
 $parameters = [];
 
@@ -46,20 +51,14 @@ else if($_POST['step'] == 2) {
     }
     else {
         try {
-            $pdo = new \PDO('mysql:host=' . $_POST['form-mysql-host'] . ';port=' . $_POST['form-mysql-port'] . ';dbname=' . $_POST['form-mysql-db-name'] . ';charset=utf8mb4', $_POST['form-mysql-db-username'], empty($_POST['form-mysql-db-password']) ? '' : $_POST['form-mysql-db-password']);
+            $pdo = new \PDO('mysql:host=' . $_POST['form-mysql-host'] . ';port=' . $_POST['form-mysql-port'] . ';dbname=' . $_POST['form-mysql-db-name'] . ';charset=utf8mb4', $_POST['form-mysql-db-username'], Utils::notEmptyOrNull($_POST, 'form-mysql-db-password'));
             $mySQLVersion = explode('-', $pdo -> query('SELECT VERSION()') -> fetchColumn())[0];
 
             if(version_compare($mySQLVersion, '5.5.3') < 0) {
                 $parameters['error'] = 'mysql';
             }
             else {
-                $newMySQLSettings = '$settings[\'DB_HOST\'] = \'' . $_POST['form-mysql-host'] . "';\n";
-                $newMySQLSettings .= '$settings[\'DB_PORT\'] = ' . $_POST['form-mysql-port'] . ";\n";
-                $newMySQLSettings .= '$settings[\'DB_NAME\'] = \'' . $_POST['form-mysql-db-name'] . "';\n";
-                $newMySQLSettings .= '$settings[\'DB_USER\'] = \'' . $_POST['form-mysql-db-username'] . "';\n";
-                $newMySQLSettings .= '$settings[\'DB_PASSWORD\'] = \'' . (empty($_POST['form-mysql-db-password']) ? '' : $_POST['form-mysql-db-password']) . "';\n";
-
-                file_put_contents('../api/settings/MySQL.php', "<?php\n" . $newMySQLSettings);
+                file_put_contents('../core/settings/MySQLSettings.php', '<?php' . $twig -> render('MySQLSettings.twig', ['post' => $_POST]));
             }
         }
         catch(Exception $error) {
@@ -71,7 +70,7 @@ else if($_POST['step'] == 2) {
 
 else if($_POST['step'] == 3) {
     try {
-        $pdo = getPDO();
+        $pdo = $adsky -> getPDO();
         $pdo -> query(file_get_contents('sql/phpAuth.sql')) -> execute();
         $pdo -> query(file_get_contents('sql/ads.sql')) -> execute();
     }
@@ -80,7 +79,6 @@ else if($_POST['step'] == 3) {
         $parameters['error'] = 'tables';
         $parameters['data'] = $error;
     }
-
 }
 
 else if($_POST['step'] == 4) {
@@ -89,17 +87,10 @@ else if($_POST['step'] == 4) {
         $parameters['error'] = 'form';
     }
     else {
-        $newWebsiteSettings = '$settings[\'WEBSITE_TITLE\'] = \'' . htmlspecialchars($_POST['form-website-title']) . "';\n";
-        $newWebsiteSettings .= '$settings[\'WEBSITE_SUBTITLE\'] = \'' . htmlspecialchars($_POST['form-website-subtitle']) . "';\n";
-        $newWebsiteSettings .= '$settings[\'WEBSITE_LINK\'] = \'' . $_POST['form-website-link'] . "';\n";
+        file_put_contents('../core/settings/WebsiteSettings.php', '<?php' . $twig -> render('WebsiteSettings.twig', ['post' => $_POST]));
 
-        file_put_contents('../api/settings/Website.php', "<?php\n" . $newWebsiteSettings);
-        $auth = createAuth();
-
-        if($auth -> isLoggedIn()) {
-            $parameters['data'] = $settings['PLUGIN_KEY'];
-        }
-        else {
+        $auth = $adsky -> getAuth();
+        if(!$auth -> isLoggedIn()) {
             try {
                 $userId = $auth -> registerWithUniqueUsername($_POST['form-user-email'], $_POST['form-user-password'], $_POST['form-user-username']);
                 $auth -> login($_POST['form-user-email'], $_POST['form-user-password'], (int)(60 * 60 * 24 * 365.25));
@@ -120,15 +111,20 @@ else if($_POST['step'] == 5) {
         $parameters['error'] = 'form';
     }
     else {
-        $newPayPalSettings = '$settings[\'PAYPAL_CLIENT_ID\'] = \'' . $_POST['form-paypal-client-id'] . "';\n";
-        $newPayPalSettings .= '$settings[\'PAYPAL_CLIENT_SECRET\'] = \'' . $_POST['form-paypal-client-secret'] . "';\n";
+        file_put_contents('../core/settings/PayPalSettings.php', '<?php' . $twig -> render('PayPalSettings.twig', ['post' => $_POST]));
 
-        file_put_contents('../api/settings/PayPal.php', "<?php\n" . $newPayPalSettings);
+        $pluginSettings = $adsky -> getPluginSettings();
 
-        $salt = str_shuffle(md5(microtime()));
-        $parameters['data'] = crypt(microtime().rand(), substr($salt, 0, rand(5, strlen($salt))));
+        if($pluginSettings == null) {
+            $salt = str_shuffle(md5(microtime()));
+            $parameters['data'] = crypt(microtime().rand(), substr($salt, 0, rand(5, strlen($salt))));
 
-        file_put_contents('../api/settings/Plugin.php', "<?php\n" . '$settings[\'PLUGIN_KEY\'] = \'' . $parameters['data'] . '\';');
+            file_put_contents('../core/settings/PluginSettings.php', '<?php' . $twig -> render('PluginSettings.twig', ['plugin_key' => $parameters['data']]));
+        }
+        else {
+            $parameters['data'] = $pluginSettings -> getPluginKey();
+        }
+
     }
 }
 
@@ -139,7 +135,13 @@ function showStep($step = 1, $parameters) {
 
     $loader = new Twig_Loader_Filesystem('views/');
     $twig = new Twig_Environment($loader);
-    echo $twig -> render('step-' . $step . '.twig', $parameters);
+
+    try {
+        echo $twig -> render('step-' . $step . '.twig', $parameters);
+    }
+    catch(Exception $error) {
+        echo $error;
+    }
 
     echo '</div>';
 }

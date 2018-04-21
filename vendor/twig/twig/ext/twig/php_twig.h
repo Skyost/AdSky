@@ -6,7 +6,7 @@
    +----------------------------------------------------------------------+
    | Redistribution and use in source and binary forms, with or without   |
    | modification, are permitted provided that the conditions mentioned   |
-   | in the accompanying LICENSE file are met (BSD, revised).             |
+   | in the accompanying LICENSE file are met (BSD-3-Clause).             |
    +----------------------------------------------------------------------+
    | Author: Derick Rethans <derick@derickrethans.nl>                     |
    +----------------------------------------------------------------------+
@@ -15,17 +15,14 @@
 #ifndef PHP_TWIG_H
 #define PHP_TWIG_H
 
-#define PHP_TWIG_VERSION "1.6.5"
+#define PHP_TWIG_VERSION "1.35.3"
 
 #include "php.h"
 
 extern zend_module_entry twig_module_entry;
 #define phpext_twig_ptr &twig_module_entry
-
-#ifdef PHP_WIN32
-#define PHP_TWIG_API __declspec(dllexport)
-#else
-#define PHP_TWIG_API
+#ifndef PHP_WIN32
+zend_module_entry *get_module(void);
 #endif
 
 #ifdef ZTS
@@ -33,17 +30,6 @@ extern zend_module_entry twig_module_entry;
 #endif
 
 PHP_FUNCTION(twig_template_get_attributes);
-
-PHP_MINIT_FUNCTION(twig);
-PHP_MSHUTDOWN_FUNCTION(twig);
-PHP_RINIT_FUNCTION(twig);
 PHP_RSHUTDOWN_FUNCTION(twig);
-PHP_MINFO_FUNCTION(twig);
-
-#ifdef ZTS
-#define TWIG_G(v) TSRMG(twig_globals_id, zend_twig_globals *, v)
-#else
-#define TWIG_G(v) (twig_globals.v)
-#endif
 
 #endif

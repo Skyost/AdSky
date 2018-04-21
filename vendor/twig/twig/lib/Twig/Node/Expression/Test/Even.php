@@ -3,7 +3,7 @@
 /*
  * This file is part of Twig.
  *
- * (c) 2011 Fabien Potencier
+ * (c) Fabien Potencier
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,8 +16,7 @@
  *  {{ var is even }}
  * </pre>
  *
- * @package twig
- * @author  Fabien Potencier <fabien@symfony.com>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 class Twig_Node_Expression_Test_Even extends Twig_Node_Expression_Test
 {
@@ -31,3 +30,5 @@ class Twig_Node_Expression_Test_Even extends Twig_Node_Expression_Test
         ;
     }
 }
+
+class_alias('Twig_Node_Expression_Test_Even', 'Twig\Node\Expression\Test\EvenTest', false);

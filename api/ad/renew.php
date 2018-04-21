@@ -15,21 +15,20 @@
  * [P] days : Number of days to add to the current expiration date.
  */
 
-require '../Lang.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/Ad.php';
 
-require '../objects/Ad.php';
-
-Ad::pay(true, function($ad, $pdo, $header = null) {
-    $response = $ad -> renew(intval($_POST['days']), $pdo);
+Ad::pay(true, function(Ad $ad, $header = null) {
+    $response = $ad -> renew(intval($_POST['days']));
     if($response -> _error != null) {
         $response -> returnResponse();
     }
 
     if($header != null) {
-        header($header . '../../admin.php?message=renew_success#list');
+        header($header . '../../admin/?message=renew_success#list');
         die();
     }
 
     global $lang;
-    (new Response(null, $lang['API_SUCCESS'], 'admin.php?message=renew_success#list')) -> returnResponse();
+    (new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'), 'admin/?message=renew_success#list')) -> returnResponse();
 });

@@ -13,18 +13,17 @@
  * [P][O] page : Current page (to see how many ads there are by page, go to settings/Others.php and check the PAGINATOR_MAX parameter).
  */
 
-require '../Lang.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/Ad.php';
+require_once __DIR__ . '/../../core/objects/User.php';
 
-require '../objects/User.php';
+require_once __DIR__ . '/../../core/Utils.php';
 
-$pdo = getPDO();
-$auth = createAuth($pdo);
-
-$object = User::isLoggedIn($auth) -> _object;
+$object = User::isLoggedIn() -> _object;
 if($object == null || $object['type'] !== 0) {
-    (new Response($lang['API_ERROR_NOT_ADMIN'])) -> returnResponse();
+    $response = new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_NOT_ADMIN'));
+    $response -> returnResponse();
 }
 
-require '../objects/Ad.php';
-
-(Ad :: getAds(utilNotEmptyOrNull($_POST, 'page'), null, $pdo)) -> returnResponse();
+$response = Ad :: getAds(Utils::notEmptyOrNull($_POST, 'page'), null);
+$response -> returnResponse();

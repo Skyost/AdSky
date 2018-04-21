@@ -1,12 +1,14 @@
 --TEST--
-"☃" as a macro name
+"§" as a macro name
 --TEMPLATE--
-{{ _self.☃('foo') }}
+{% import _self as macros %}
 
-{% macro ☃(foo) %}
-  ☃{{ foo }}☃
+{{ macros.§('foo') }}
+
+{% macro §(foo) %}
+  §{{ foo }}§
 {% endmacro %}
 --DATA--
 return array()
 --EXPECT--
-☃foo☃
+§foo§

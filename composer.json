@@ -8,8 +8,9 @@
     }
   ],
   "require": {
-    "delight-im/auth": "v8.0.0",
-    "paypal/rest-api-sdk-php": "1.13.0",
-    "twig/twig": "1.6.5"
+    "delight-im/auth": "~8.0",
+    "paypal/rest-api-sdk-php": "~1.13",
+    "twig/twig": "~1.6",
+    "bramus/router": "~1.3"
   }
 }

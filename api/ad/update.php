@@ -23,26 +23,30 @@
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-require_once '../objects/User.php';
-require_once '../objects/Response.php';
-require_once '../Settings.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/Ad.php';
 
-$pdo = getPDO();
-$auth = createAuth($pdo);
-$object = User::isLoggedIn($auth) -> _object;
+require_once __DIR__ . '/../../core/Utils.php';
+
+$adsky = AdSky::getInstance();
+$language = $adsky -> getLanguage();
+
+$object = User::isLoggedIn() -> _object;
 
 if($object == null || $object['type'] != 0) {
-    (new Response($lang['API_ERROR_NOT_ADMIN'])) -> returnResponse();
+    $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+    $response -> returnResponse();
 }
 
 if((!isset($_POST['oldtype']) || strlen($_POST['oldtype']) === 0) || empty($_POST['oldtitle']) || empty($_POST['username'])) {
-    (new Response(formatNotSet([$lang['API_ERROR_NOT_SET_OLDTITLE'], $lang['API_ERROR_NOT_SET_OLDTYPE'], $lang['API_ERROR_NOT_SET_USERNAME']]))) -> returnResponse();
+    $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDTITLE'), $language -> getSettings('API_ERROR_NOT_SET_OLDTYPE'), $language -> getSettings('API_ERROR_NOT_SET_USERNAME')]));
+    $response -> returnResponse();
 }
 
 if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
-    (new Response($lang['API_ERROR_INVALID_TYPE'])) -> returnResponse();
+    $response =  new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
+    $response -> returnResponse();
 }
 
-require_once '../objects/Ad.php';
-
-((new Ad($_POST['username'], $_POST['oldtype'], $_POST['oldtitle'])) -> update(utilNotEmptyOrNull($_POST, 'type'), utilNotEmptyOrNull($_POST, 'title'), utilNotEmptyOrNull($_POST, 'message'), utilNotEmptyOrNull($_POST, 'interval'), utilNotEmptyOrNull($_POST, 'expiration'), utilNotEmptyOrNull($_POST, 'duration'), $pdo)) -> returnResponse();
+$response = (new Ad($_POST['username'], $_POST['oldtype'], $_POST['oldtitle'])) -> update(Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration'));
+$response -> returnResponse();

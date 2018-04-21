@@ -1,12 +1,13 @@
 <?php
 
-require_once '../Lang.php';
-require_once '../Settings.php';
-require_once '../objects/Ad.php';
-require_once '../objects/Response.php';
+require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../core/objects/Ad.php';
 
-if(empty($_POST['key']) || $_POST['key'] != $settings['PLUGIN_KEY']) {
-    (new Response($lang['API_ERROR_INVALID_PLUGIN_KEY'])) -> returnResponse();
+$adsky = AdSky::getInstance();
+
+if(empty($_POST['key']) || $_POST['key'] != $adsky -> getPluginSettings() -> getPluginKey()) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_PLUGIN_KEY'));
+    $response -> returnResponse();
 }
 
 (Ad :: todayAds()) -> returnResponse();

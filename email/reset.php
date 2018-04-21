@@ -9,4 +9,4 @@ if($response -> _error != null) {
 
 echo $response -> _message;
 
-header('Location: ../login.php?message=password_reset');
+header('Location: ../login/?message=password_reset');

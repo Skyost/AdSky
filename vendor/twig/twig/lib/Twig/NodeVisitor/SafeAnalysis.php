@@ -1,28 +1,52 @@
 <?php
 
-class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
+/*
+ * This file is part of Twig.
+ *
+ * (c) Fabien Potencier
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * @final
+ */
+class Twig_NodeVisitor_SafeAnalysis extends Twig_BaseNodeVisitor
 {
     protected $data = array();
+    protected $safeVars = array();
+
+    public function setSafeVars($safeVars)
+    {
+        $this->safeVars = $safeVars;
+    }
 
     public function getSafe(Twig_NodeInterface $node)
     {
         $hash = spl_object_hash($node);
-        if (isset($this->data[$hash])) {
-            foreach($this->data[$hash] as $bucket) {
-                if ($bucket['key'] === $node) {
-                    return $bucket['value'];
-                }
-            }
+        if (!isset($this->data[$hash])) {
+            return;
         }
 
-        return null;
+        foreach ($this->data[$hash] as $bucket) {
+            if ($bucket['key'] !== $node) {
+                continue;
+            }
+
+            if (in_array('html_attr', $bucket['value'])) {
+                $bucket['value'][] = 'html';
+            }
+
+            return $bucket['value'];
+        }
     }
 
     protected function setSafe(Twig_NodeInterface $node, array $safe)
     {
         $hash = spl_object_hash($node);
         if (isset($this->data[$hash])) {
-            foreach($this->data[$hash] as &$bucket) {
+            foreach ($this->data[$hash] as &$bucket) {
                 if ($bucket['key'] === $node) {
                     $bucket['value'] = $safe;
 
@@ -36,12 +60,12 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
         );
     }
 
-    public function enterNode(Twig_NodeInterface $node, Twig_Environment $env)
+    protected function doEnterNode(Twig_Node $node, Twig_Environment $env)
     {
         return $node;
     }
 
-    public function leaveNode(Twig_NodeInterface $node, Twig_Environment $env)
+    protected function doLeaveNode(Twig_Node $node, Twig_Environment $env)
     {
         if ($node instanceof Twig_Node_Expression_Constant) {
             // constants are marked safe for all
@@ -61,7 +85,11 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
             $name = $node->getNode('filter')->getAttribute('value');
             $args = $node->getNode('arguments');
             if (false !== $filter = $env->getFilter($name)) {
-                $this->setSafe($node, $filter->getSafe($args));
+                $safe = $filter->getSafe($args);
+                if (null === $safe) {
+                    $safe = $this->intersectSafe($this->getSafe($node->getNode('node')), $filter->getPreservesSafety());
+                }
+                $this->setSafe($node, $safe);
             } else {
                 $this->setSafe($node, array());
             }
@@ -77,6 +105,14 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
             }
         } elseif ($node instanceof Twig_Node_Expression_MethodCall) {
             if ($node->getAttribute('safe')) {
+                $this->setSafe($node, array('all'));
+            } else {
+                $this->setSafe($node, array());
+            }
+        } elseif ($node instanceof Twig_Node_Expression_GetAttr && $node->getNode('node') instanceof Twig_Node_Expression_Name) {
+            $name = $node->getNode('node')->getAttribute('name');
+            // attributes on template instances are safe
+            if ('_self' == $name || in_array($name, $this->safeVars)) {
                 $this->setSafe($node, array('all'));
             } else {
                 $this->setSafe($node, array());
@@ -105,11 +141,10 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
         return array_intersect($a, $b);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPriority()
     {
         return 0;
     }
 }
+
+class_alias('Twig_NodeVisitor_SafeAnalysis', 'Twig\NodeVisitor\SafeAnalysisNodeVisitor', false);

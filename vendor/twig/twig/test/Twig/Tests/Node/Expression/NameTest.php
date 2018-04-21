@@ -9,43 +9,35 @@
  * file that was distributed with this source code.
  */
 
-require_once dirname(__FILE__).'/../TestCase.php';
-
-class Twig_Tests_Node_Expression_NameTest extends Twig_Tests_Node_TestCase
+class Twig_Tests_Node_Expression_NameTest extends Twig_Test_NodeTestCase
 {
-    /**
-     * @covers Twig_Node_Expression_Name::__construct
-     */
     public function testConstructor()
     {
-        $node = new Twig_Node_Expression_Name('foo', 0);
+        $node = new Twig_Node_Expression_Name('foo', 1);
 
         $this->assertEquals('foo', $node->getAttribute('name'));
     }
 
-    /**
-     * @covers Twig_Node_Expression_Name::compile
-     * @dataProvider getTests
-     */
-    public function testCompile($node, $source, $environment = null)
-    {
-        parent::testCompile($node, $source, $environment);
-    }
-
     public function getTests()
     {
-        $node = new Twig_Node_Expression_Name('foo', 0);
-        $self = new Twig_Node_Expression_Name('_self', 0);
-        $context = new Twig_Node_Expression_Name('_context', 0);
+        $node = new Twig_Node_Expression_Name('foo', 1);
+        $context = new Twig_Node_Expression_Name('_context', 1);
 
-        $env = new Twig_Environment(null, array('strict_variables' => true));
-        $env1 = new Twig_Environment(null, array('strict_variables' => false));
+        $env = new Twig_Environment($this->getMockBuilder('Twig_LoaderInterface')->getMock(), array('strict_variables' => true));
+        $env1 = new Twig_Environment($this->getMockBuilder('Twig_LoaderInterface')->getMock(), array('strict_variables' => false));
+
+        if (PHP_VERSION_ID >= 70000) {
+            $output = '($context["foo"] ?? $this->getContext($context, "foo"))';
+        } elseif (PHP_VERSION_ID >= 50400) {
+            $output = '(isset($context["foo"]) ? $context["foo"] : $this->getContext($context, "foo"))';
+        } else {
+            $output = '$this->getContext($context, "foo")';
+        }
 
         return array(
-            array($node, '$this->getContext($context, "foo")', $env),
-            array($node, $this->getVariableGetter('foo'), $env1),
-            array($self, '$this'),
-            array($context, '$context'),
+            array($node, "// line 1\n".$output, $env),
+            array($node, $this->getVariableGetter('foo', 1), $env1),
+            array($context, "// line 1\n\$context"),
         );
     }
 }

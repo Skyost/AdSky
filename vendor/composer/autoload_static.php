@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit94e48cbb486d546cfc91a223e3d96e54
 {
     public static $prefixLengthsPsr4 = array (
+        'T' => 
+        array (
+            'Twig\\' => 5,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -22,6 +26,10 @@ class ComposerStaticInit94e48cbb486d546cfc91a223e3d96e54
     );
 
     public static $prefixDirsPsr4 = array (
+        'Twig\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/twig/twig/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -61,6 +69,13 @@ class ComposerStaticInit94e48cbb486d546cfc91a223e3d96e54
             'PayPal' => 
             array (
                 0 => __DIR__ . '/..' . '/paypal/rest-api-sdk-php/lib',
+            ),
+        ),
+        'B' => 
+        array (
+            'Bramus' => 
+            array (
+                0 => __DIR__ . '/..' . '/bramus/router/src',
             ),
         ),
     );
