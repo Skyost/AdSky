@@ -2,7 +2,12 @@
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+require_once __DIR__ . '/../AdSky.php';
 require_once __DIR__ . '/../Response.php';
+
+require_once __DIR__ . '/User.php';
+
+require_once __DIR__ . '/../Utils.php';
 
 use Delight\Auth;
 use PayPal\Api\Amount;
@@ -389,14 +394,13 @@ class Ad {
 
         if($hasSuccess) {
             if($_GET['success'] !== 'true') {
-                header('Location: ../../admin/?' . ($renew ? 'message=renew_error#list' : 'message=create_error#create'));
+                $root = AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot();
+                header('Location: ' . ($root . (Utils::endsWith($root, '/') ? '' : '/')) . 'admin/?' . ($renew ? 'message=renew_error#list' : 'message=create_error#create'));
                 die();
             }
 
             $_POST = array_merge($_GET, $_POST);
         }
-
-        require '../objects/User.php';
 
         $auth = $adsky -> getAuth();
         if(!isset($_GET['success'])) {

@@ -6,12 +6,12 @@
 
     <title>Administration Panel - {{ settings.WEBSITE_TITLE }}</title>
 
-    <link rel="icon" type="image/png" href="assets/img/logo.png"/>
+    <link rel="icon" type="image/png" href="../assets/img/logo.png"/>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark">
@@ -67,7 +67,7 @@
     const TITLE_SETTINGS = [{{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MIN }}, {{ settings.AD_TITLE_LIMIT_TITLE_CHARS_MAX }}, {{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MIN }}, {{ settings.AD_TITLE_LIMIT_MESSAGE_CHARS_MAX }}, {{ settings.AD_TITLE_LIMIT_DAY_MIN }}, {{ settings.AD_TITLE_LIMIT_DAY_MAX }}, {{ settings.AD_TITLE_LIMIT_SECONDS_MIN }}, {{ settings.AD_TITLE_LIMIT_SECONDS_MAX }}, {{ settings.AD_TITLE_LIMIT_EXPIRATION_MIN }}, {{ settings.AD_TITLE_LIMIT_EXPIRATION_MAX }}, {{ settings.AD_TITLE_COST }}];
     const CHAT_SETTINGS = [{{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MIN }}, {{ settings.AD_CHAT_LIMIT_TITLE_CHARS_MAX }}, {{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MIN }}, {{ settings.AD_CHAT_LIMIT_MESSAGE_CHARS_MAX }}, {{ settings.AD_CHAT_LIMIT_DAY_MIN }}, {{ settings.AD_CHAT_LIMIT_DAY_MAX }}, {{ settings.AD_CHAT_LIMIT_EXPIRATION_MIN }}, {{ settings.AD_CHAT_LIMIT_EXPIRATION_MAX }}, {{ settings.AD_CHAT_COST }}];
 </script>
-<script src="assets/js/panel.js"></script>
-{% if user.type == 0 %}<script src="assets/js/admin.js"></script>{% endif %}
+<script src="../assets/js/panel.js"></script>
+{% if user.type == 0 %}<script src="../assets/js/admin.js"></script>{% endif %}
 </body>
 </html>

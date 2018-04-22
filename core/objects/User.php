@@ -2,7 +2,12 @@
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+require_once __DIR__ . '/../AdSky.php';
 require_once __DIR__ . '/../Response.php';
+
+require_once __DIR__ . '/Ad.php';
+
+require_once __DIR__ . '/../Utils.php';
 
 use Delight\Auth;
 
@@ -120,6 +125,10 @@ class User {
                 return new Response($adsky -> getLanguageString('API_ERROR_INVALID_CURRENT_PASSWORD'));
             }
 
+            if($this -> _type == null) {
+                $this -> _type = $auth -> hasRole(Auth\Role::ADMIN) ? Auth\Role::ADMIN : null;
+            }
+
             if($email != null && $this -> _email != $email) {
                 $this -> _email = $email;
                 $auth -> changeEmail($email, function($selector, $token) use ($adsky, $auth, $isAdmin, $sameEmail) {
@@ -186,7 +195,6 @@ class User {
     }
 
     public function delete() {
-        require_once __DIR__ . '/Ad.php';
         $adsky = AdSky::getInstance();
 
         try {
@@ -286,8 +294,9 @@ class User {
         $twig = new Twig_Environment($loader);
 
         $websiteSettings = $adsky -> getWebsiteSettings();
+        $root = $websiteSettings -> getWebsiteRoot();
 
-        $parameters['url'] = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . str_replace(DIRECTORY_SEPARATOR, '/', str_replace(dirname($_SERVER['DOCUMENT_ROOT']), '', dirname(dirname(__DIR__))));
+        $parameters['url'] = $root . (Utils::endsWith($root, '/') ? '' : '/');
         $parameters['settings'] = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $websiteSettings]);
 
         $sender = $websiteSettings -> getWebsiteEmail();

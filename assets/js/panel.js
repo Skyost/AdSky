@@ -41,8 +41,8 @@ $(document).ready(function() {
     $('#nav-logout').click(function(event) {
         event.preventDefault();
         loaderFadeIn();
-        $.getJSON('api/user/logout', function() {
-            window.location.href = 'login/';
+        $.getJSON('../api/user/logout', function() {
+            window.location.href = '../login/';
         });
     });
 
@@ -66,19 +66,19 @@ $(document).ready(function() {
             return;
         }
 
-        defaultPostRequest('api/user/update', {
+        defaultPostRequest('../api/user/update', {
             'oldpassword': $('#form-user-current-password').val(),
             'email': newEmail && newEmail != USER_DATA.email ? newEmail : null,
             'password': newPassword ? newPassword : null
         }, 'profile', function() {
-            window.location.href = 'login/?message=updated';
+            window.location.href = '../login/?message=updated';
         })
     });
 
     $('#btn-create').click(function(event) {
         event.preventDefault();
         let type = $('#form-ad-type').val();
-        defaultPostRequest('api/ad/pay', {
+        defaultPostRequest('../api/ad/pay', {
             type: type,
             title: $('#form-ad-title').val(),
             message: $('#form-ad-message').val(),
@@ -86,7 +86,7 @@ $(document).ready(function() {
             duration: type == 0 ? $('#form-ad-duration').val() : -1,
             expiration: new Date($('#form-ad-expiration').val()).getTime() / 1000
         }, 'create', function(data) {
-            window.location.href = data.object;
+            goToOrReload(data.object);
         });
     });
 
@@ -149,12 +149,12 @@ $(document).ready(function() {
             text: 'OK',
             callback: function() {
                 closeModal();
-                defaultPostRequest('api/ad/renew', {
+                defaultPostRequest('../api/ad/renew', {
                     type: type,
                     title: row.eq(0).attr('data-title'),
                     days: $('#modal input').val()
                 }, 'list', function(data) {
-                    window.location.href = data.object;
+                    goToOrReload(data.object);
                 });
             }
         }]);
@@ -162,7 +162,7 @@ $(document).ready(function() {
 
     $('#fragment-list .table').on('click', '.fa-trash-alt', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('api/ad/delete', {
+        defaultPostRequest('../api/ad/delete', {
             type: row.eq(2).attr('data-type'),
             title: row.eq(0).attr('data-title')
         }, 'list', null);
@@ -192,7 +192,7 @@ $(document).on('fragmentChanged', function(event, fragment) {
         return;
     }
     makeRequest('list', {
-        'url': 'api/user/ads',
+        'url': '../api/user/ads',
         'data': {username: USER_DATA.username}
     }, {
         'buttons': '<i class="fas fa-sync-alt"></i> <i class="fas fa-trash-alt"></i>',
@@ -404,6 +404,15 @@ function formatDate(date) {
     let day = '' + date.getDate();
 
     return date.getFullYear() + '-' + (month.length === 1 ? '0' : '') + month + '-' + (day.length === 1 ? '0' : '') + day;
+}
+
+function goToOrReload(href) {
+    if(window.location.href.endsWith(href)) {
+        window.location.reload();
+        return;
+    }
+
+    window.location.href = href;
 }
 
 function escapeHTML(string) {

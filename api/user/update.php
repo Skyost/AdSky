@@ -16,29 +16,25 @@ if($object == null) {
 }
 
 if($object['type'] === 0) {
-    if(empty($_POST['oldpassword']) && !isset($_POST['adminmode'])) {
+    if(empty($_GET['oldpassword']) && !isset($_GET['adminmode'])) {
         (new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]))) -> returnResponse();
     }
 
-    if(empty($_POST['oldemail'])) {
-        $_POST['oldemail'] = $auth -> getEmail();
+    if(empty($_GET['oldemail'])) {
+        $_GET['oldemail'] = $auth -> getEmail();
     }
 
-    if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != 0 && $_POST['type'] != 1)) {
+    if(isset($_GET['type']) && strlen($_GET['type']) !== 0 && ($_GET['type'] != 0 && $_GET['type'] != 1)) {
         (new Response($language -> getSettings('API_ERROR_INVALID_TYPE'))) -> returnResponse();
     }
 
-    $email = empty($_POST['email']) ? $auth -> getEmail() : $_POST['email'];
-    $type = null;
+    $email = empty($_GET['email']) ? $auth -> getEmail() : $_GET['email'];
+    $type = isset($_GET['type']) && $_GET['type'] == 0 ? Auth\Role::ADMIN : null;
 
-    if(isset($_POST['type']) && $_POST['type'] == 0) {
-        $type = Auth\Role::ADMIN;
-    }
+    $target = new User($_GET['oldemail'], Utils::notEmptyOrNull($_GET, 'oldpassword'));
+    $response = $target -> update($email, Utils::notEmptyOrNull($_GET, 'password'), $type);
 
-    $target = new User($_POST['oldemail'], Utils::notEmptyOrNull($_POST, 'oldpassword'), null, null);
-    $response = $target -> update($email, Utils::notEmptyOrNull($_POST, 'password'), $type);
-
-    if($response -> _error == null && $_POST['oldemail'] != $email) {
+    if($response -> _error == null && $_GET['oldemail'] != $email) {
         try {
             $auth -> logOut();
             $auth -> destroySession();
@@ -51,10 +47,10 @@ if($object['type'] === 0) {
     $response -> returnResponse();
 }
 
-if(empty($_POST['oldpassword'])) {
+if(empty($_GET['oldpassword'])) {
     (new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]))) -> returnResponse();
 }
 
-$target = new User($auth -> getEmail(), $_POST['oldpassword'], $auth -> getUsername(), $auth -> hasRole(Auth\Role::ADMIN) ? Auth\Role::ADMIN : Auth\Role::PUBLISHER);
-$response = $target -> update(Utils::notEmptyOrNull($_POST, 'email'), Utils::notEmptyOrNull($_POST, 'password'));
+$target = new User($auth -> getEmail(), $_GET['oldpassword'], $auth -> getUsername(), $auth -> hasRole(Auth\Role::ADMIN) ? Auth\Role::ADMIN : Auth\Role::PUBLISHER);
+$response = $target -> update(Utils::notEmptyOrNull($_GET, 'email'), Utils::notEmptyOrNull($_GET, 'password'));
 $response -> returnResponse();

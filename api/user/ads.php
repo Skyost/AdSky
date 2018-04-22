@@ -13,4 +13,5 @@ if(empty($_POST['username'])) {
     $response -> returnResponse();
 }
 
-(Ad :: getAds(Utils::notEmptyOrNull($_POST, 'page'), $_POST['username'])) -> returnResponse();
+$response = Ad :: getAds(Utils::notEmptyOrNull($_POST, 'page'), $_POST['username']);
+$response -> returnResponse();

@@ -1,13 +1,13 @@
 $(document).ready(function() {
     $('#fragment-users .table').on('click', '.fa-check', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('api/user/update', {
+        defaultPostRequest('../api/user/update', {
             oldemail: row.eq(1).attr('data-email'),
             email: row.eq(1).children().first().val(),
             type: row.eq(3).children().first().val(),
             adminmode: true
         }, 'users', function() {
-            window.location.href = 'admin/?message=user_updated#users';
+            goToOrReload('?message=user_updated#users');
         });
     });
 
@@ -20,9 +20,9 @@ $(document).ready(function() {
             callback: function() {
                 closeModal();
                 loaderFadeIn();
-                $.post('api/user/delete', {username: row.eq(0).children().first().val()}, function() {
+                $.post('../api/user/delete', {username: row.eq(0).children().first().val()}, function() {
                     loaderFadeOut();
-                    window.location.href = 'admin/?message=user_updated#users';
+                    goToOrReload('?message=user_updated#users');
                 }, 'json');
             }
         }]);
@@ -30,7 +30,7 @@ $(document).ready(function() {
 
     $('#fragment-ads .table').on('click', '.fa-check', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('api/ad/update', {
+        defaultPostRequest('../api/ad/update', {
             oldtype: row.eq(2).attr('data-type'),
             oldtitle: row.eq(0).attr('data-title'),
             username: row.eq(5).attr('data-username'),
@@ -46,7 +46,7 @@ $(document).ready(function() {
 $(document).on('fragmentChanged', function (event, fragment) {
     if(fragment == 'ads') {
         makeRequest('ads', {
-            'url': 'api/ad/list',
+            'url': '../api/ad/list',
             'data': null
         }, {
             'buttons': '<i class="fas fa-edit"></i> <i class="fas fa-trash-alt"></i>',
@@ -58,7 +58,7 @@ $(document).on('fragmentChanged', function (event, fragment) {
 
     if(fragment == 'users') {
         makeRequest('users', {
-            'url': 'api/user/list',
+            'url': '../api/user/list',
             'data': null
         }, {
             'buttons': '<i class="fas fa-edit"></i> <i class="fas fa-trash-alt"></i>',

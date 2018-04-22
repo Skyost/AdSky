@@ -5,9 +5,12 @@ class WebsiteSettings extends Settings {
     public function __construct() {
         $this -> putSettings('WEBSITE_TITLE', '{{ attribute(post, 'form-website-title') | escape }}');
         $this -> putSettings('WEBSITE_SUBTITLE', '{{ attribute(post, 'form-website-subtitle') | escape }}');
-        $this -> putSettings('WEBSITE_LINK', '{{ attribute(post, 'form-website-link') }}');
-        $this -> putSettings('WEBSITE_EMAIL', 'adsky@skyost.eu');
+        $this -> putSettings('WEBSITE_ROOT', '{{ attribute(post, 'form-website-root') }}');
+        $this -> putSettings('WEBSITE_EMAIL', '{{ attribute(post, 'form-user-email') }}');
         $this -> putSettings('WEBSITE_PAGINATOR_ITEMS_PER_PAGE', 15);
+        $this -> putSettings('WEBSITE_HOMEPAGE', '#');
+        $this -> putSettings('WEBSITE_FACEBOOK', '#');
+        $this -> putSettings('WEBSITE_TWITTER', '#');
     }
 
     public function getWebsiteTitle() {
@@ -18,8 +21,8 @@ class WebsiteSettings extends Settings {
         return $this -> getSettings('WEBSITE_SUBTITLE');
     }
 
-    public function getWebsiteLink() {
-        return $this -> getSettings('WEBSITE_LINK');
+    public function getWebsiteRoot() {
+        return $this -> getSettings('WEBSITE_ROOT');
     }
 
     public function getWebsiteEmail() {
@@ -28,6 +31,18 @@ class WebsiteSettings extends Settings {
 
     public function getWebsitePaginatorItemsPerPage() {
         return $this -> getSettings('WEBSITE_PAGINATOR_ITEMS_PER_PAGE');
+    }
+
+    public function getHomepage() {
+        return $this -> getSettings('WEBSITE_HOMEPAGE');
+    }
+
+    public function getFacebook() {
+        return $this -> getSettings('WEBSITE_FACEBOOK');
+    }
+
+    public function getTwitter() {
+        return $this -> getSettings('WEBSITE_TWITTER');
     }
 
 }

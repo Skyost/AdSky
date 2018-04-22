@@ -12,16 +12,16 @@ $(document).ready(function() {
             }
         };
         if($('.visible-login').is(':visible')) {
-            data.url = 'api/user/login';
+            data.url = '../api/user/login';
             if($('#form-rememberme').is(':checked')) {
                 data.postData.rememberduration = 60 * 60 * 24 * 365.25;
             }
-            data.successUrl = 'admin/';
+            data.successUrl = '../admin/';
         }
         else {
-            data.url = 'api/user/register';
+            data.url = '../api/user/register';
             data.postData.username = $('#form-username').val();
-            data.successUrl = 'login/?message=registered';
+            data.successUrl = '?message=registered';
         }
 
         $.post(data.url, data.postData, function(response) {
@@ -51,7 +51,7 @@ $(document).ready(function() {
             text: 'OK',
             callback: function() {
                 loaderFadeIn();
-                $.post('api/user/forgot-password', {email: $('.modal-body input').val()}, function(data) {
+                $.post('../api/user/forgot-password', {email: $('.modal-body input').val()}, function(data) {
                     loaderFadeOut();
                     $('.modal-body').html('<p class="mb-0">' + (data.error == null ? data.message : data.error) + '</p>');
                     $('#forgot-password-ok').remove();

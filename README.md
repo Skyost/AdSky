@@ -34,7 +34,7 @@ AdSky is built to be lightweight, but it still has a lot of features :
  - Can be run on *almost* any server that as PHP + MySQL installed.
  - Everything is configurable.
  - Lightweight.
- - Android application. <sub>Coming soon !</sub>
+ - Android application. <sup>Coming soon !</sup>
 
 ## Installation
 To install the plugin part, please check the [*Installation*](#) section of the plugin branch's README.
@@ -45,6 +45,7 @@ Please make sure that your web server meets the following requirements :
 
  - **PHP 5.6.0+** with the [following extensions](https://scripts.mit.edu/faq/64/how-do-i-enable-additional-php-extensions) : PDO (`pdo`), MySQL Native Driver (`mysqlnd`) and OpenSSL (`openssl`).
  - **MySQL 5.5.3+**.
+ - **[mail()](http://php.net/manual/function.mail.php) and .htaccess support**.
  
  If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files.
 
