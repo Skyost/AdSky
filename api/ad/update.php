@@ -28,25 +28,40 @@ require_once __DIR__ . '/../../core/objects/Ad.php';
 
 require_once __DIR__ . '/../../core/Utils.php';
 
-$adsky = AdSky::getInstance();
-$language = $adsky -> getLanguage();
+try {
+    $adsky = AdSky::getInstance();
+    $adsky -> getAuth() -> throttle([
+        'ad-update',
+        $_SERVER['REMOTE_ADDR']
+    ], 10, 60);
 
-$object = User::isLoggedIn() -> _object;
+    $language = $adsky -> getLanguage();
 
-if($object == null || $object['type'] != 0) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+    $object = User::isLoggedIn() -> _object;
+
+    if($object == null || $object['type'] != 0) {
+        $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+        $response -> returnResponse();
+    }
+
+    if((!isset($_POST['oldtype']) || strlen($_POST['oldtype']) === 0) || empty($_POST['oldtitle']) || empty($_POST['username'])) {
+        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDTITLE'), $language -> getSettings('API_ERROR_NOT_SET_OLDTYPE'), $language -> getSettings('API_ERROR_NOT_SET_USERNAME')]));
+        $response -> returnResponse();
+    }
+
+    if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
+        $response =  new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
+        $response -> returnResponse();
+    }
+
+    $response = (new Ad($_POST['username'], $_POST['oldtype'], $_POST['oldtitle'])) -> update(Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration'));
     $response -> returnResponse();
 }
-
-if((!isset($_POST['oldtype']) || strlen($_POST['oldtype']) === 0) || empty($_POST['oldtitle']) || empty($_POST['username'])) {
-    $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDTITLE'), $language -> getSettings('API_ERROR_NOT_SET_OLDTYPE'), $language -> getSettings('API_ERROR_NOT_SET_USERNAME')]));
+catch(Delight\Auth\TooManyRequestsException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
     $response -> returnResponse();
 }
-
-if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
-    $response =  new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
+catch(Delight\Auth\AuthError $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
     $response -> returnResponse();
 }
-
-$response = (new Ad($_POST['username'], $_POST['oldtype'], $_POST['oldtitle'])) -> update(Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration'));
-$response -> returnResponse();

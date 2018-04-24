@@ -15,6 +15,10 @@ class ComposerStaticInit94e48cbb486d546cfc91a223e3d96e54
         array (
             'Psr\\Log\\' => 8,
         ),
+        'M' => 
+        array (
+            'Medoo\\' => 6,
+        ),
         'D' => 
         array (
             'Delight\\Http\\' => 13,
@@ -33,6 +37,10 @@ class ComposerStaticInit94e48cbb486d546cfc91a223e3d96e54
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Medoo\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/catfan/medoo/src',
         ),
         'Delight\\Http\\' => 
         array (

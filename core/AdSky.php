@@ -17,7 +17,7 @@ class AdSky {
 
     private static $_instance;
 
-    private $_pdo;
+    private $_medoo;
     private $_auth;
 
     private $_adSettings;
@@ -40,12 +40,16 @@ class AdSky {
         return self::$_instance;
     }
 
-    public function getPDO() {
-        if($this -> _pdo == null) {
-            $this -> _pdo = $this -> getMySQLSettings() -> constructPDO();
+    public function getMedoo() {
+        if($this -> _medoo == null) {
+            $this -> _medoo = $this -> getMySQLSettings() -> constructMedoo();
         }
 
-        return $this -> _pdo;
+        return $this -> _medoo;
+    }
+
+    public function getPDO() {
+        return $this -> getMedoo() -> pdo;
     }
 
     public function getAuth() {

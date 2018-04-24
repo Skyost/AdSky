@@ -7,7 +7,8 @@ require_once __DIR__ . '/core/objects/User.php';
 require_once __DIR__ . '/core/settings/AdSettings.php';
 require_once __DIR__ . '/core/settings/WebsiteSettings.php';
 
-require_once __DIR__ . '/core/Utils.php';
+use PayPal\Api\Payment;
+use PayPal\Api\PaymentExecution;
 
 $router = new \Bramus\Router\Router();
 
@@ -16,11 +17,11 @@ $router -> set404(function() {
     echo '404 ERROR.';
 });
 
-$router -> get('/', function() {
+$router -> all('/', function() {
     echo twigTemplate('index');
 });
 
-$router -> get('/login/', function() {
+$router -> all('/login/', function() {
     $user = new User();
     $parameters = $user -> isLoggedIn() -> _object;
 
@@ -32,7 +33,7 @@ $router -> get('/login/', function() {
     echo twigTemplate('login');
 });
 
-$router -> get('/admin/', function() {
+$router -> all('/admin/', function() {
     $user = new User();
     $parameters = $user -> isLoggedIn() -> _object;
 
@@ -80,8 +81,7 @@ $router -> all('/email/confirm/([^/]+)/(.*)', function($selector, $token) {
         die($response -> _error);
     }
 
-    $root = AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot();
-    header('Location: ' . ($root . (Utils::endsWith($root, '/') ? '' : '/')) . 'admin/?message=validation_success#home');
+    header('Location: ' . AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot() . 'admin/?message=validation_success#home');
 });
 
 $router -> all('/email/reset/([^/]+)/([^/]+)/(.*)', function($email, $selector, $token) {
@@ -92,10 +92,19 @@ $router -> all('/email/reset/([^/]+)/([^/]+)/(.*)', function($email, $selector, 
         die($response -> _error);
     }
 
-    echo $response -> _message;
+    header('Location: ' . AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot() . 'login/?message=password_reset');
+});
 
-    $root = AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot();
-    header('Location: ' . ($root . (Utils::endsWith($root, '/') ? '' : '/')) . 'login/?message=password_reset');
+$router -> all('/payment/register(.*)', function() {
+    handlePayment('admin/?message=create_error#create', 'admin/?message=create_success#create', function(Ad $ad) {
+        return $ad -> register();
+    });
+});
+
+$router -> all('/payment/renew(.*)', function() {
+    handlePayment('admin/?message=renew_error#list', 'admin/?message=renew_success#list', function(Ad $ad) {
+        return $ad -> renew($_GET['days']);
+    });
 });
 
 $router -> run();
@@ -123,4 +132,43 @@ function twigTemplate($folder, $parameters = []) {
     catch(Exception $error) {
         return $error;
     }
+}
+
+function handlePayment($errorLink, $successLink, callable $action) {
+    try {
+        $root = AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot();
+        if($_GET['success'] != true) {
+            header('Location: ' . $root . $errorLink);
+            die();
+        }
+
+        $adsky = AdSky::getInstance();
+        $user = User::isLoggedIn() -> _object;
+
+        if($user == null) {
+            (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+        }
+
+        $apiContext = $adsky -> getPayPalSettings() -> getPayPalAPIContext();
+
+        $payment = Payment::get($_GET['paymentId'], $apiContext);
+
+        $execution = new PaymentExecution();
+        $execution -> setPayerId($_GET['PayerID']);
+
+        $payment -> execute($execution, $apiContext);
+
+        $ad = new Ad($user['username'], intval($_GET['type']), $_GET['title'], $_GET['message'], intval($_GET['interval']), intval($_GET['expiration']), Utils ::notEmptyOrNull($_GET, 'duration'));
+
+        $response = call_user_func_array($action, [$ad]);
+        if($response -> _error != null) {
+            throw new Exception($response -> _error);
+        }
+
+        header('Location: ' . $root . $successLink);
+    }
+    catch(Exception $error) {
+        echo $error;
+    }
+    die();
 }

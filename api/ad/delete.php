@@ -21,27 +21,42 @@ require_once __DIR__ . '/../../core/AdSky.php';
 require_once __DIR__ . '/../../core/objects/Ad.php';
 require_once __DIR__ . '/../../core/objects/User.php';
 
-$adsky = AdSky::getInstance();
-$language = $adsky -> getLanguage();
+try {
+    $adsky = AdSky::getInstance();
+    $adsky -> getAuth() -> throttle([
+        'ad-delete',
+        $_SERVER['REMOTE_ADDR']
+    ], 10, 60);
 
-if(!isset($_POST['type']) || strlen($_POST['type']) === 0 || empty($_POST['title'])) {
-    $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_TITLE'), $language -> getSettings('API_ERROR_NOT_SET_TYPE')]));
+    $language = $adsky -> getLanguage();
+
+    if(!isset($_POST['type']) || strlen($_POST['type']) === 0 || empty($_POST['title'])) {
+        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_TITLE'), $language -> getSettings('API_ERROR_NOT_SET_TYPE')]));
+        $response -> returnResponse();
+    }
+
+    $object = User::isLoggedIn() -> _object;
+    if($object == null) {
+        $response = new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'));
+        $response -> returnResponse();
+    }
+
+    if(empty($_POST['username'])) {
+        $_POST['username'] = $object['username'];
+    }
+    else if($object['username'] != $_POST['username'] && $object['type'] !== 0) {
+        $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+        $response -> returnResponse();
+    }
+
+    $response = (new Ad($_POST['username'], intval($_POST['type']), $_POST['title'])) -> delete();
     $response -> returnResponse();
 }
-
-$object = User::isLoggedIn() -> _object;
-if($object == null) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'));
+catch(Delight\Auth\TooManyRequestsException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
     $response -> returnResponse();
 }
-
-if(empty($_POST['username'])) {
-    $_POST['username'] = $object['username'];
-}
-else if($object['username'] != $_POST['username'] && $object['type'] !== Ad::TYPE_TITLE) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+catch(Delight\Auth\AuthError $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
     $response -> returnResponse();
 }
-
-$response = (new Ad($_POST['username'], intval($_POST['type']), $_POST['title'])) -> delete();
-$response -> returnResponse();

@@ -64,13 +64,10 @@ class User {
             $auth = $adsky -> getAuth();
 
             $userId = $auth -> registerWithUniqueUsername($this -> _email, $this -> _password, $this -> _username, function($selector, $token) use ($adsky) {
-                try {
-                    $this -> sendEmail('Confirm your email', 'confirm.twig', [
-                        'selector' => $selector,
-                        'token' => $token
-                    ]);
-                }
-                catch(Exception $error) {}
+                $this -> sendEmail('Confirm your email', 'confirm.twig', [
+                    'selector' => $selector,
+                    'token' => $token
+                ]);
             });
 
             if($this -> _type != null) {
@@ -137,13 +134,10 @@ class User {
                         return;
                     }
 
-                    try {
-                        $this -> sendEmail('Confirm your email', 'confirm.twig', [
-                            'selector' => $selector,
-                            'token' => $token
-                        ]);
-                    }
-                    catch(Exception $error) {}
+                    $this -> sendEmail('Confirm your email', 'confirm.twig', [
+                        'selector' => $selector,
+                        'token' => $token
+                    ]);
                 });
             }
 
@@ -222,14 +216,11 @@ class User {
             }
 
             $auth -> forgotPassword($this -> _email, function($selector, $token) use ($adsky, $auth) {
-                try {
-                    $this -> sendEmail('Password reset', 'reset.twig', [
-                        'email' => $this -> _email,
-                        'selector' => $selector,
-                        'token' => $token
-                    ]);
-                }
-                catch(Exception $error) {}
+                $this -> sendEmail('Password reset', 'reset.twig', [
+                    'email' => $this -> _email,
+                    'selector' => $selector,
+                    'token' => $token
+                ]);
             });
 
             return new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
@@ -289,27 +280,32 @@ class User {
     }
 
     private function sendEmail($title, $template, $parameters = []) {
-        $adsky = AdSky::getInstance();
-        $loader = new Twig_Loader_Filesystem(__DIR__ . '/../../views/emails/');
-        $twig = new Twig_Environment($loader);
-
-        $websiteSettings = $adsky -> getWebsiteSettings();
-        $root = $websiteSettings -> getWebsiteRoot();
-
-        $parameters['url'] = $root . (Utils::endsWith($root, '/') ? '' : '/');
-        $parameters['settings'] = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $websiteSettings]);
-
-        $sender = $websiteSettings -> getWebsiteEmail();
-        $headers = 'From: ' . $sender . "\r\n";
-        $headers .= 'Reply-To: '. $sender . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-
         try {
+            $adsky = AdSky ::getInstance();
+            $loader = new Twig_Loader_Filesystem(__DIR__ . '/../../views/emails/');
+            $twig = new Twig_Environment($loader);
+
+            $websiteSettings = $adsky -> getWebsiteSettings();
+
+            $parameters['url'] = $websiteSettings -> getWebsiteRoot();
+            $parameters['settings'] = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $websiteSettings]);
+
+            $sender = $websiteSettings -> getWebsiteEmail();
+            $headers = 'From: ' . $sender . "\r\n";
+            $headers .= 'Reply-To: ' . $sender . "\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
             mail($this -> _email, $title, $twig -> render($template, $parameters), $headers);
         }
-        catch(Exception $error) {
-            throw $error;
+        catch(Twig_Error_Loader $error) {
+            mail($this -> _email, $title, $error);
+        }
+        catch(Twig_Error_Syntax $error) {
+            mail($this -> _email, $title, $error);
+        }
+        catch(Twig_Error_Runtime $error) {
+            mail($this -> _email, $title, $error);
         }
     }
 
@@ -342,61 +338,17 @@ class User {
     }
 
     public static function getUsers($page = null) {
-        $adsky = AdSky::getInstance();
-        $pdo = $adsky -> getPDO();
-
-        if($page == null || $page < 1) {
-            $page = 1;
-        }
-        $page = intval($page);
-
-        $result = $pdo -> query('SELECT COUNT(*) FROM `' . ($adsky -> getMySQLSettings() -> getUsersTable()) . '`');
-        if(!$result) {
-            return new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'));
-        }
-
-        $rows = $result -> fetchColumn();
-
-        $itemsPerPage = $adsky -> getWebsiteSettings() -> getWebsitePaginatorItemsPerPage();
-        $maxPage = ceil($rows / $itemsPerPage);
-        if($page > $maxPage) {
-            $page = $maxPage;
-        }
-
-        $min = ($page - 1) * $itemsPerPage;
-        $max = $min + $itemsPerPage;
-
-        if($min != 0) {
-            $max = $max - 1;
-        }
-
-        $statement = $pdo -> prepare('SELECT `username`, `email`, `verified`, `roles_mask`, `registered`, `last_login` FROM `' . ($adsky -> getMySQLSettings() -> getUsersTable()) . '` ORDER BY `last_login` LIMIT ' . $min . ', ' . $max);
-        $result = $statement -> execute();
-
-        if(!$result) {
-            return new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'));
-        }
-
-        $admin = Auth\Role::ADMIN;
-        $data = [];
-        foreach($statement -> fetchAll() as $row) {
-            array_push($data, [
+        $mySQLSettings = AdSky::getInstance() -> getMySQLSettings();
+        return $mySQLSettings -> getPage($mySQLSettings -> getUsersTable(), '*', function($row) {
+            return [
                 'username' => $row['username'],
                 'email' => $row['email'],
-                'type' => $row['roles_mask'] & $admin === $admin ? 0 : 1,
+                'type' => $row['roles_mask'] & Auth\Role::ADMIN === Auth\Role::ADMIN ? 0 : 1,
                 'verified' => $row['verified'],
                 'last_login' => intval($row['last_login']),
                 'registered' => intval($row['registered'])
-            ]);
-        }
-
-        return new Response(null, $adsky -> getLanguageString('API_SUCCESS'), [
-            'data' => $data,
-            'page' => $page,
-            'maxPage' => $maxPage,
-            'hasPrevious' => $page > 1,
-            'hasNext' => $page < $maxPage
-        ]);
+            ];
+        }, $page, ['ORDER' => 'last_login']);
     }
 
     public static function isLoggedIn() {

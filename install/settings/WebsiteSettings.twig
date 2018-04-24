@@ -22,7 +22,8 @@ class WebsiteSettings extends Settings {
     }
 
     public function getWebsiteRoot() {
-        return $this -> getSettings('WEBSITE_ROOT');
+        $root = $this -> getSettings('WEBSITE_ROOT');
+        return ($root . (Utils::endsWith($root, '/') ? '' : '/'));
     }
 
     public function getWebsiteEmail() {

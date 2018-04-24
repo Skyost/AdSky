@@ -21,8 +21,39 @@ class PayPalSettings extends Settings {
     }
 
     public function getPayPalAPIContext() {
+        return new ApiContext(new \PayPal\Auth\OAuthTokenCredential($this -> getPayPalClientID(), $this -> getPayPalClientSecret()));
+    }
+
+    public function createApprovalLink($url, $type, $interval, $totalDays) {
         require_once __DIR__ . '/../../vendor/autoload.php';
-        return new \PayPal\Rest\ApiContext(new \PayPal\Auth\OAuthTokenCredential($this -> getPayPalClientID(), $this -> getPayPalClientSecret()));
+
+        $adsky = AdSky::getInstance();
+
+        $amount = new Amount();
+        $amount -> setTotal(($type == Ad::TYPE_TITLE ? $adsky -> getAdSettings() -> getTitleAdCost() : $adsky -> getAdSettings() -> getChatAdCost()) * $interval * $totalDays);
+        $amount -> setCurrency($adsky -> getPayPalSettings() -> getPayPalCurrency());
+
+        $transaction = new Transaction();
+        $transaction
+            -> setAmount($amount)
+            -> setDescription(sprintf($adsky -> getLanguageString('API_PAYPAL_ITEM'), $interval, ($type == Ad::TYPE_TITLE ? $adsky -> getLanguageString('AD_TYPE_TITLE') : $adsky -> getLanguageString('AD_TYPE_CHAT')), $totalDays));
+
+        $redirectUrls = new RedirectUrls();
+        $redirectUrls
+            -> setReturnUrl($url . '&success=true')
+            -> setCancelUrl($url . '&success=false');
+
+        $payer = new PayPal\Api\Payer();
+        $payer -> setPaymentMethod('paypal');
+
+        $payment = new Payment();
+        $payment
+            -> setIntent('sale')
+            -> setPayer($payer)
+            -> setTransactions(array($transaction))
+            -> setRedirectUrls($redirectUrls);
+
+        return $payment -> create($this -> getPayPalAPIContext()) -> getApprovalLink();
     }
 
 }

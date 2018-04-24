@@ -16,7 +16,7 @@ class Response {
         return json_encode([
             'error' => $this -> _error,
             'message' => $this -> _message,
-            'object' => $this -> _object
+            'object' => !AdSky::APP_DEBUG && $this -> _error != null ? null : $this -> _object
         ]);
     }
 

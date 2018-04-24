@@ -1,5 +1,7 @@
 
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
 class MySQLSettings extends Settings {
 
     public function __construct() {
@@ -40,9 +42,19 @@ class MySQLSettings extends Settings {
         return $this -> getSettings('MYSQL_THROTTLING');
     }
 
-    public function constructPDO() {
+    public function constructMedoo() {
         try {
-            return new \PDO('mysql:host=' . ($this -> getMySQLHost()) . ';port=' . ($this -> getMySQLPort()) . ';dbname=' . ($this -> getMySQLDataBase()) . ';charset=utf8mb4', ($this -> getMySQLUsername()), ($this -> getMySQLPassword()));
+            return new Medoo\Medoo([
+                'database_type' => 'mysql',
+                'database_name' => $this -> getMySQLDataBase(),
+                'server' => $this -> getMySQLHost(),
+                'username' => $this -> getMySQLUsername(),
+                'password' => $this -> getMySQLPassword(),
+
+                'charset' => 'utf8mb4',
+
+                'option' => [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+            ]);
         }
         catch(PDOException $error) {
             die('Unable to connect to MySQL database. Please check your settings in core/settings/MySQLSettings.php.');
@@ -55,6 +67,51 @@ class MySQLSettings extends Settings {
 
     public function getAdsTable() {
         return $this -> getSettings('MYSQL_TABLES_PREFIXES') . 'ads';
+    }
+
+    public function getPage($table, $join, callable $handler, $page = null, $where = []) {
+        $adsky = AdSky ::getInstance();
+
+        try {
+            if($page == null || $page < 1) {
+                $page = 1;
+            }
+            $page = intval($page);
+
+            $medoo = $adsky -> getMedoo();
+            $rows = $medoo -> count($table, []);
+
+            $itemsPerPage = $adsky -> getWebsiteSettings() -> getWebsitePaginatorItemsPerPage();
+            $maxPage = ceil($rows / $itemsPerPage);
+            if($page > $maxPage) {
+                $page = $maxPage;
+            }
+
+            $min = ($page - 1) * $itemsPerPage;
+            $max = $min + $itemsPerPage;
+
+            if($min != 0) {
+                $max = $max - 1;
+            }
+
+            $where['LIMIT'] = [$min, $max];
+            $data = [];
+            foreach($medoo -> select($table, $join, $where) as $row) {
+                $row = call_user_func_array($handler, [$row]);
+                array_push($data, $row);
+            }
+
+            return new Response(null, $adsky -> getLanguageString('API_SUCCESS'), [
+                'data' => $data,
+                'page' => $page,
+                'maxPage' => $maxPage,
+                'hasPrevious' => $page > 1,
+                'hasNext' => $page < $maxPage
+            ]);
+        }
+        catch(PDOException $error) {
+            return new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
+        }
     }
 
 }

@@ -41,6 +41,15 @@ $(document).ready(function() {
             expiration: new Date(row.eq(4).children().first().val()).getTime() / 1000
         }, 'ads', null);
     });
+
+    $('#fragment-ads .table').on('click', '.fa-trash-alt', function() {
+        let row = $(this).parent().parent().children();
+        defaultPostRequest('../api/ad/delete', {
+            username: row.eq(5).attr('data-username'),
+            title: row.eq(0).children().first().val(),
+            type: row.eq(2).children().first().val()
+        }, 'ads', null);
+    });
 });
 
 $(document).on('fragmentChanged', function (event, fragment) {
