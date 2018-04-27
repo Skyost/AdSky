@@ -5,7 +5,7 @@ $(document).ready(function() {
             oldemail: row.eq(1).attr('data-email'),
             email: row.eq(1).children().first().val(),
             type: row.eq(3).children().first().val(),
-            adminmode: true
+            force: true
         }, 'users', function() {
             goToOrReload('?message=user_updated#users');
         });
@@ -31,24 +31,18 @@ $(document).ready(function() {
     $('#fragment-ads .table').on('click', '.fa-check', function() {
         let row = $(this).parent().parent().children();
         defaultPostRequest('../api/ad/update', {
-            oldtype: row.eq(2).attr('data-type'),
-            oldtitle: row.eq(0).attr('data-title'),
-            username: row.eq(5).attr('data-username'),
-            title: row.eq(0).children().first().val(),
-            message: row.eq(1).children().first().val(),
-            type: row.eq(2).children().first().val(),
-            interval: row.eq(3).children().first().val(),
-            expiration: new Date(row.eq(4).children().first().val()).getTime() / 1000
+            id: row.eq(0).attr('data-id'),
+            title: row.eq(1).children().first().val(),
+            message: row.eq(2).children().first().val(),
+            type: row.eq(3).children().first().val(),
+            interval: row.eq(4).children().first().val(),
+            expiration: new Date(row.eq(5).children().first().val()).getTime() / 1000
         }, 'ads', null);
     });
 
     $('#fragment-ads .table').on('click', '.fa-trash-alt', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('../api/ad/delete', {
-            username: row.eq(5).attr('data-username'),
-            title: row.eq(0).children().first().val(),
-            type: row.eq(2).children().first().val()
-        }, 'ads', null);
+        defaultPostRequest('../api/ad/delete', {id: row.eq(0).attr('data-id')}, 'ads', null);
     });
 });
 
@@ -59,7 +53,7 @@ $(document).on('fragmentChanged', function (event, fragment) {
             'data': null
         }, {
             'buttons': '<i class="fas fa-edit"></i> <i class="fas fa-trash-alt"></i>',
-            'handlingLength': 6,
+            'handlingLength': 7,
             'dataHandler': ADS_DATA_HANDLER
         }, true);
         return;

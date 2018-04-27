@@ -3,9 +3,14 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 require_once __DIR__ . '/core/AdSky.php';
+
+require_once __DIR__ . '/core/objects/Ad.php';
 require_once __DIR__ . '/core/objects/User.php';
+
 require_once __DIR__ . '/core/settings/AdSettings.php';
 require_once __DIR__ . '/core/settings/WebsiteSettings.php';
+
+require_once __DIR__ . '/core/Response.php';
 
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
@@ -13,8 +18,12 @@ use PayPal\Api\PaymentExecution;
 $router = new \Bramus\Router\Router();
 
 $router -> set404(function() {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    echo '404 ERROR.';
+    header('HTTP/1.1 404 Not Found');
+    echo twigTemplate('errors', '404.twig');
+});
+
+$router -> all('/404.html', function() {
+    echo twigTemplate('errors', '404.twig');
 });
 
 $router -> all('/', function() {
@@ -22,10 +31,9 @@ $router -> all('/', function() {
 });
 
 $router -> all('/login/', function() {
-    $user = new User();
-    $parameters = $user -> isLoggedIn() -> _object;
+    $user = AdSky::getInstance() -> getCurrentUserObject();
 
-    if($parameters != null) {
+    if($user != null) {
         header('Location: ../admin/');
         die();
     }
@@ -34,18 +42,17 @@ $router -> all('/login/', function() {
 });
 
 $router -> all('/admin/', function() {
-    $user = new User();
-    $parameters = $user -> isLoggedIn() -> _object;
+    $user = AdSky::getInstance() -> getCurrentUserObject();
 
-    if($parameters == null) {
+    if($user == null) {
         header('Location: ../login/');
         die();
     }
 
-    echo twigTemplate('admin', ['user' => $parameters]);
+    echo twigTemplate('admin', 'content.twig', ['user' => $user]);
 });
 
-$router -> all('/api/ad/(\w+)', function($operation) {
+$router -> all('/api/ad/(.*)', function($operation) {
     $operation = __DIR__ . '/api/ad/' . str_replace('-', '_', htmlentities($operation)) . '.php';
     if(!file_exists($operation)) {
         $response = new Response('Ad operation not found.');
@@ -55,7 +62,7 @@ $router -> all('/api/ad/(\w+)', function($operation) {
     include $operation;
 });
 
-$router -> all('/api/plugin/(\w+)', function($operation) {
+$router -> all('/api/plugin/(.*)', function($operation) {
     $operation = __DIR__ . '/api/plugin/' . str_replace('-', '_', htmlentities($operation)) . '.php';
     if(!file_exists($operation)) {
         $response = new Response('Plugin operation not found.');
@@ -65,7 +72,7 @@ $router -> all('/api/plugin/(\w+)', function($operation) {
     include $operation;
 });
 
-$router -> all('/api/user/(\w+)', function($operation) {
+$router -> all('/api/user/(.*)', function($operation) {
     $operation = __DIR__ . '/api/user/' . str_replace('-', '_', htmlentities($operation)) . '.php';
     if(!file_exists($operation)) {
         $response = new Response('User operation not found.');
@@ -75,41 +82,59 @@ $router -> all('/api/user/(\w+)', function($operation) {
     include $operation;
 });
 
-$router -> all('/email/confirm/([^/]+)/(.*)', function($selector, $token) {
-    $response = User::confirmRegistration($selector, $token, (int)(60 * 60 * 24 * 365.25));
-    if($response -> _error != null) {
-        die($response -> _error);
-    }
 
-    header('Location: ' . AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot() . 'admin/?message=validation_success#home');
+$router -> all('/email/confirm/([^/]+)/(.*)', function($selector, $token) {
+    $adsky = AdSky::getInstance();
+    $adsky -> getAuth() -> confirmEmailAndSignIn($selector, $token, (int)(60 * 60 * 24 * 365.25));
+    header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'admin/?message=validation_success#home');
 });
 
 $router -> all('/email/reset/([^/]+)/([^/]+)/(.*)', function($email, $selector, $token) {
-    $user = new User($email);
-    $response = $user -> confirmReset($selector, $token);
+    $adsky = AdSky::getInstance();
+    $auth = $adsky -> getAuth();
 
-    if($response -> _error != null) {
-        die($response -> _error);
+    if(!$auth -> canResetPassword($selector, $token)) {
+        return false;
     }
 
+    $password = \Delight\Auth\Auth::createRandomString(10);
+
+    $auth -> resetPassword($selector, $token, $password);
+    User::sendEmail('Password reset confirmation', $email, 'password.twig', ['password' => $password]);
+    header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'login/?message=password_reset');
+
+
+    $adsky = AdSky::getInstance();
+    $user = $adsky -> getCurrentUserObject();
+    if($user == null) {
+        die($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'));
+    }
+
+    $user -> confirmResetPassword($selector, $token);
     header('Location: ' . AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot() . 'login/?message=password_reset');
 });
 
 $router -> all('/payment/register(.*)', function() {
     handlePayment('admin/?message=create_error#create', 'admin/?message=create_success#create', function(Ad $ad) {
-        return $ad -> register();
+        $ad -> sendUpdateToDatabase();
+        return new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'));
     });
 });
 
 $router -> all('/payment/renew(.*)', function() {
     handlePayment('admin/?message=renew_error#list', 'admin/?message=renew_success#list', function(Ad $ad) {
-        return $ad -> renew($_GET['days']);
+        if(!$ad -> renew($_GET['days'])) {
+            return new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_INVALID_RENEWDAY'));
+        }
+
+        $ad -> sendUpdateToDatabase($_GET['id']);
+        return new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'));
     });
 });
 
 $router -> run();
 
-function twigTemplate($folder, $parameters = []) {
+function twigTemplate($folder, $file = 'content.twig', $parameters = []) {
     $adsky = AdSky::getInstance();
 
     if(!$adsky -> isInstalled()) {
@@ -127,7 +152,7 @@ function twigTemplate($folder, $parameters = []) {
     }
 
     try {
-        return $twig -> render($folder . '/content.twig', $parameters);
+        return $twig -> render($folder . '/' . $file, $parameters);
     }
     catch(Exception $error) {
         return $error;
@@ -143,7 +168,7 @@ function handlePayment($errorLink, $successLink, callable $action) {
         }
 
         $adsky = AdSky::getInstance();
-        $user = User::isLoggedIn() -> _object;
+        $user = AdSky::getInstance() -> getCurrentUserObject();
 
         if($user == null) {
             (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
@@ -158,7 +183,7 @@ function handlePayment($errorLink, $successLink, callable $action) {
 
         $payment -> execute($execution, $apiContext);
 
-        $ad = new Ad($user['username'], intval($_GET['type']), $_GET['title'], $_GET['message'], intval($_GET['interval']), intval($_GET['expiration']), Utils ::notEmptyOrNull($_GET, 'duration'));
+        $ad = isset($_GET['id']) ? Ad::getFromDatabase($_GET['id']) : new Ad($user -> getUsername(), intval($_GET['type']), $_GET['title'], $_GET['message'], intval($_GET['interval']), intval($_GET['expiration']), Utils ::notEmptyOrNull($_GET, 'duration'));
 
         $response = call_user_func_array($action, [$ad]);
         if($response -> _error != null) {

@@ -10,8 +10,7 @@
  * Throttle : 5 requests per 60 seconds.
  *
  * Parameters :
- * [P] type : Type of the ad (Title / Chat).
- * [P] title : Title of the ad.
+ * [P] id : Ad ID.
  * [P] days : Number of days to add to the current expiration date.
  */
 
@@ -20,80 +19,79 @@ require_once __DIR__ . '/../../core/objects/Ad.php';
 
 require_once __DIR__ . '/../../core/Utils.php';
 
+require_once __DIR__ . '/../../core/Response.php';
+
 use Delight\Auth;
 
 try {
-    // We check if all arguments are okay.
-    if(!isset($_POST['type']) || strlen($_POST['type']) === Ad::TYPE_TITLE || empty($_POST['title']) || empty($_POST['days'])) {
-        (new Response($adsky -> getLanguage() -> formatNotSet([$adsky -> getLanguageString('API_ERROR_NOT_SET_TYPE'), $adsky -> getLanguageString('API_ERROR_NOT_SET_TITLE'), $adsky -> getLanguageString('API_ERROR_NOT_SET_DAYS')]))) -> returnResponse();
-    }
-
-    if($_POST['days'] <= 0) {
-        (new Response($adsky -> getLanguageString('API_ERROR_INVALID_RENEWDAY'))) -> returnResponse();
-    }
-
     $adsky = AdSky::getInstance();
-    $auth = $adsky -> getAuth();
+
+    // We check if all arguments are okay.
+    if(!isset($_POST['id']) || strlen($_POST['id']) === 0 || empty($_POST['days'])) {
+        $response = new Response($adsky -> getLanguage() -> formatNotSet([$adsky -> getLanguageString('API_ERROR_NOT_SET_ID'), $adsky -> getLanguageString('API_ERROR_NOT_SET_DAYS')]));
+        $response -> returnResponse();
+    }
+
+    $days = intval($_POST['days']);
+    if($days <= 0) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_RENEWDAY'));
+        $response -> returnResponse();
+    }
 
     // Throttle protection.
+    $auth = $adsky -> getAuth();
     $auth -> throttle([
         'ad-renew',
         $_SERVER['REMOTE_ADDR']
     ], 5, 60);
 
     // We check if the user is logged in.
-    $user = User::isLoggedIn() -> _object;
-
+    $user = $adsky -> getCurrentUserObject();
     if($user == null) {
-        (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'));
+        $response -> returnResponse();
     }
 
     // Okay, now we can select our ad.
-    $medoo = $adsky -> getMedoo();
-    $row = $medoo -> select($adsky -> getMySQLSettings() -> getAdsTable(), ['interval', 'until'], ['title' => $_POST['title']]);
-    if(empty($row)) {
-        (new Response($adsky -> getLanguageString('API_ERROR_NOT_FOUND'))) -> returnResponse();
+    $ad = Ad::getFromDatabase(intval($_POST['id']));
+    if($ad == null) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_AD_NOT_FOUND'));
+        $response -> returnResponse();
     }
 
     // We check if the days parameter is good.
-    $max = ($_POST['type'] == Ad::TYPE_TITLE ? $adSettings -> getTitleAdMaximumExpiration() : $adSettings -> getChatAdMaximumExpiration()) - (($row['expiration'] - mktime(0, 0, 0)) / (60 * 60 * 24));
-    $min = ($_POST['type'] == Ad::TYPE_TITLE ? $adSettings -> getTitleAdMinimumExpiration() : $adSettings -> getChatAdMaximumExpiration());
-
-    if($_POST['days'] < $min || $_POST['days'] > $max) {
-        (new Response($adsky -> getLanguageString('API_ERROR_INVALID_RENEWDAY'))) -> returnResponse();
+    if(!$ad -> renew($days)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_RENEWDAY'));
+        $response -> returnResponse();
     }
 
-    // So now, we are going to create the ad.
-    $type = intval($_POST['type']);
-    $root = $adsky -> getWebsiteSettings() -> getWebsiteRoot();
-
-    $adSettings = $adsky -> getAdSettings();
-
-    $ad = new Ad($user['username'], $type, $_POST['title'], null, $row['interval'], $row['until']);
-
     // If the user is an admin, we don't have to use the PayPal API.
-    if($user['type'] == 0) {
-        $response = $ad -> renew($_POST['days']);
-        if($response -> _error != null) {
-            $response -> returnResponse();
-        }
+    if($user -> isAdmin()) {
+        $ad -> sendUpdateToDatabase($_POST['id']);
 
-        (new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'), $root . 'admin/?message=renew_success#list')) -> returnResponse();
+        $response = new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'), $root . 'admin/?message=renew_success#list');
+        $response -> returnResponse();
     }
 
     // Otherwise, let's create a payment !
+    $root = $adsky -> getWebsiteSettings() -> getWebsiteRoot();
     $url = $root . 'payment/renew/?' . http_build_query($_POST);
-    (new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $adsky -> getPayPalSettings() -> createApprovalLink($url, $type, $row['interval'], $_POST['days']))) -> returnResponse();
+    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $adsky -> getPayPalSettings() -> createApprovalLink($url, $ad -> getType(), $ad -> getInterval(), $days));
+    $response -> returnResponse();
 }
 catch(Auth\TooManyRequestsException $error) {
-    (new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error)) -> returnResponse();
+    $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
+    $response -> returnResponse();
 }
 catch(Auth\AuthError $error) {
-    (new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error)) -> returnResponse();
+    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
+    $response -> returnResponse();
 }
 catch(PDOException $error) {
-    (new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error)) -> returnResponse();
+    $response = new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
+    $response -> returnResponse();
 }
-catch(Exception $ex) {
-    (new Response($adsky -> getLanguageString('API_ERROR_PAYPAL_REQUEST'), null, $error)) -> returnResponse();
+catch(Exception $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_PAYPAL_REQUEST'), null, $error);
+    $response -> returnResponse();
 }

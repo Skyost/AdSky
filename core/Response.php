@@ -12,6 +12,30 @@ class Response {
         $this -> _object = $object;
     }
 
+    public function getError() {
+        return $this -> _error;
+    }
+
+    public function setError($error) {
+        $this -> _error = $error;
+    }
+
+    public function getMessage() {
+        return $this -> _message;
+    }
+
+    public function setMessage($message) {
+        $this -> _message = $message;
+    }
+
+    public function getObject() {
+        return $this -> _object;
+    }
+
+    public function setObject($object) {
+        $this -> _object = $object;
+    }
+
     public function __toString() {
         return json_encode([
             'error' => $this -> _error,

@@ -1,5 +1,11 @@
 <h1><i class="fas fa-user"></i> Profile</h1>
 
+{% if message == 'profile_updated' %}
+    <div class="alert alert-success" role="alert">
+        <p class="mb-0">Successfully updated your profile.</p>
+    </div>
+{% endif %}
+
 <div class="alert alert-danger" role="alert" style="display: none;">
     <p class="mb-0"></p>
 </div>

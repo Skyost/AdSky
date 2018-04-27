@@ -111,5 +111,80 @@ class AdSettings extends Settings {
     public function getChatAdMaximumExpiration() {
         return $this -> getSettings('AD_CHAT_LIMIT_EXPIRATION_MAX');
     }
+    
+    public function validateTitle($title, $type) {
+        if($type == Ad::TYPE_TITLE) {
+            if(!($this -> getTitleAdTitleMinimumCharactersCount() <= strlen($title) && strlen($title) <= $this -> getTitleAdTitleMaximumCharactersCount())) {
+                return false;
+            }
+        }
+        else {
+            if(!($this -> getChatAdTitleMinimumCharactersCount() <= strlen($title) && strlen($title) <= $this -> getChatAdTitleMaximumCharactersCount())) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public function validateMessage($message, $type) {
+        if($type == Ad::TYPE_TITLE) {
+            if(!($this -> getTitleAdMessageMinimumCharactersCount() <= strlen($message) && strlen($message) <= $this -> getTitleAdMessageMaximumCharactersCount())) {
+                return false;
+            }
+        }
+        else {
+            if(!($this -> getChatAdMessageMinimumCharactersCount() <= strlen($message) && strlen($message) <= $this -> getChatAdMessageMaximumCharactersCount())) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public function validateInterval($interval, $type) {
+        if($type == Ad::TYPE_TITLE) {
+            if(!($this -> getTitleAdMinimumDisplayPerDay() <= $interval && $interval <= $this -> getTitleAdMaximumDisplayPerDay())) {
+                return false;
+            }
+        }
+        else {
+            if(!($this -> getChatAdMinimumDisplayPerDay() <= $interval && $interval <= $this -> getChatAdMaximumDisplayPerDay())) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public function validateExpiration($expiration, $type) {
+        $today = gmmktime(0, 0, 0);
+
+        if($type == Ad::TYPE_TITLE) {
+            if(!($today + ($this -> getTitleAdMinimumExpiration() * 60 * 60 * 24) <= $expiration && $expiration <= $today + ($this -> getTitleAdMaximumExpiration() * 60 * 60 * 24))) {
+                return false;
+            }
+        }
+        else {
+            if(!($today + ($this -> getChatAdMinimumExpiration() * 60 * 60 * 24) <= $expiration && $expiration <= $today + ($this -> getChatAdMaximumExpiration() * 60 * 60 * 24))) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public function validateDuration($duration) {
+        return $this -> getTitleAdMinimumSecondsToDisplay() <= $duration && $duration <= $this -> getTitleAdMaximumSecondsToDisplay();
+    }
+
+    public function validate($title, $message, $interval, $expiration, $duration, $type) {
+        return
+            $this -> validateTitle($title, $type) &&
+            $this -> validateMessage($message, $type) &&
+            $this -> validateInterval($interval, $type) &&
+            $this -> validateExpiration($expiration, $type) &&
+            ($type == Ad::TYPE_TITLE ? $this -> validateDuration($duration) : true);
+    }
 
 }

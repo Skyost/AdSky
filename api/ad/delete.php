@@ -10,16 +10,15 @@
  * Throttle : 10 requests per 60 seconds.
  *
  * Parameters :
- * [P] type : Type of the ad (Title / Chat).
- * [P] title : Title of the ad.
- * [P][O] username : Username of the owner of the ad. If not sent, it will be set to the current user's username. An admin can delete anyone's ad.
+ * [P] id : Ad ID.
  */
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 require_once __DIR__ . '/../../core/AdSky.php';
 require_once __DIR__ . '/../../core/objects/Ad.php';
-require_once __DIR__ . '/../../core/objects/User.php';
+
+require_once __DIR__ . '/../../core/Response.php';
 
 try {
     $adsky = AdSky::getInstance();
@@ -28,28 +27,35 @@ try {
         $_SERVER['REMOTE_ADDR']
     ], 10, 60);
 
-    $language = $adsky -> getLanguage();
-
-    if(!isset($_POST['type']) || strlen($_POST['type']) === 0 || empty($_POST['title'])) {
-        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_TITLE'), $language -> getSettings('API_ERROR_NOT_SET_TYPE')]));
-        $response -> returnResponse();
-    }
-
-    $object = User::isLoggedIn() -> _object;
-    if($object == null) {
+    $user = $adsky -> getCurrentUserObject();
+    if($user == null) {
         $response = new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'));
         $response -> returnResponse();
     }
 
-    if(empty($_POST['username'])) {
-        $_POST['username'] = $object['username'];
+    $language = $adsky -> getLanguage();
+
+    if(!isset($_POST['id'])) {
+        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_ID')]));
+        $response -> returnResponse();
     }
-    else if($object['username'] != $_POST['username'] && $object['type'] !== 0) {
+
+    $ad = Ad::getFromDatabase($_POST['id']);
+
+    if($ad == null) {
+        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_AD_NOT_FOUND')]));
+        $response -> returnResponse();
+    }
+
+    if($ad -> getUsername() != $user -> getUsername() && !$user -> isAdmin()) {
         $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
         $response -> returnResponse();
     }
 
-    $response = (new Ad($_POST['username'], intval($_POST['type']), $_POST['title'])) -> delete();
+    $ad -> setDeleted();
+    $ad -> sendUpdateToDatabase($_POST['id']);
+
+    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
     $response -> returnResponse();
 }
 catch(Delight\Auth\TooManyRequestsException $error) {

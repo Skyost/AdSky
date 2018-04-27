@@ -27,15 +27,16 @@ class EnglishLanguage extends Settings {
         $this -> putSettings('API_ERROR_TOKEN_EXPIRED', 'Token has expired.');
         $this -> putSettings('API_ERROR_RESET_DISABLED', 'Password reset is disabled.');
 
-        $this -> putSettings('API_ERROR_NOT_FOUND', 'Ad not found.');
+        $this -> putSettings('API_ERROR_USER_NOT_FOUND', 'User not found.');
+        $this -> putSettings('API_ERROR_AD_NOT_FOUND', 'Ad not found.');
         $this -> putSettings('API_ERROR_SAME_NAME', 'An ad with the same name already exists.');
 
         $this -> putSettings('API_ERROR_PAYPAL_PAY', 'Can\'t pay via PayPal.');
         $this -> putSettings('API_ERROR_PAYPAL_REQUEST', 'Can\'t create a PayPal request.');
 
         $this -> putSettings('API_ERROR_INVALID_TYPE', 'Invalid type set.');
-        $this -> putSettings('API_ERROR_INVALID_TITLE_LENGTH', 'Invalid title length.');
-        $this -> putSettings('API_ERROR_INVALID_MESSAGE_LENGTH', 'Invalid message length.');
+        $this -> putSettings('API_ERROR_INVALID_TITLE', 'Invalid title.');
+        $this -> putSettings('API_ERROR_INVALID_MESSAGE', 'Invalid message.');
         $this -> putSettings('API_ERROR_INVALID_DURATION', 'Invalid duration.');
         $this -> putSettings('API_ERROR_INVALID_INTERVAL', 'Invalid interval.');
         $this -> putSettings('API_ERROR_INVALID_EXPIRATIONDATE', 'Invalid expiration date.');
@@ -52,6 +53,7 @@ class EnglishLanguage extends Settings {
         $this -> putSettings('API_ERROR_NOT_SET_EMAIL', 'email');
         $this -> putSettings('API_ERROR_NOT_SET_PASSWORD', 'password');
         $this -> putSettings('API_ERROR_NOT_SET_OLDPASSWORD', 'old password');
+        $this -> putSettings('API_ERROR_NOT_SET_ID', 'ad ID');
         $this -> putSettings('API_ERROR_NOT_SET_TITLE', 'title');
         $this -> putSettings('API_ERROR_NOT_SET_OLDTITLE', 'old title');
         $this -> putSettings('API_ERROR_NOT_SET_TYPE', 'type');

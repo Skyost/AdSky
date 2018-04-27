@@ -7,7 +7,7 @@
 <p>
     The max ad per day limit is <span class="ad-limitation">{{ settings.AD_PER_DAY_LIMIT }}</span>.
     If you want to change this, head to <code>core/settings/AdSettings.php</code> and edit the line containing
-    <code>$this -> putSettings('AD_PER_DAY_LIMIT', {{ settings.AD_PER_DAY_LIMIT }})</code>.
+    <code>putSettings('AD_PER_DAY_LIMIT', {{ settings.AD_PER_DAY_LIMIT }})</code>.
     Put a number inferior than one to disable this limit.
 </p>
 
@@ -15,6 +15,7 @@
     <table class="table table-bordered">
         <thead class="thead-light">
         <tr>
+            <th scope="col">ID</th>
             <th scope="col">Ad title</th>
             <th scope="col">Ad message</th>
             <th scope="col">Ad type</th>
@@ -25,7 +26,7 @@
         </tr>
         </thead>
         <tbody>
-            <tr><td colspan="7"><em>There is no ad.</em></td></tr>
+            <tr><td colspan="8"><em>There is no ad.</em></td></tr>
         </tbody>
     </table>
 </div>

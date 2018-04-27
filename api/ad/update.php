@@ -6,13 +6,11 @@
  * Name : ad/update.php
  * Target : Ads
  * User role : Admin
- * Description : Update an ad. An admin can update anyone's ad.
+ * Description : Updates an ad.
  * Throttle : 10 requests per 60 seconds.
  *
  * Parameters :
- * [P] oldtype : Current type of the ad (Title / Chat).
- * [P] oldtitle : Current title of the ad.
- * [P] username : Owner of the ad.
+ * [P] id : Ad ID.
  * [P][O] type : New type of the ad (Title / Chat).
  * [P][O] title : New title of the ad.
  * [P][O] message : New message of the ad.
@@ -28,6 +26,8 @@ require_once __DIR__ . '/../../core/objects/Ad.php';
 
 require_once __DIR__ . '/../../core/Utils.php';
 
+require_once __DIR__ . '/../../core/Response.php';
+
 try {
     $adsky = AdSky::getInstance();
     $adsky -> getAuth() -> throttle([
@@ -37,24 +37,64 @@ try {
 
     $language = $adsky -> getLanguage();
 
-    $object = User::isLoggedIn() -> _object;
-
-    if($object == null || $object['type'] != 0) {
+    $user = $adsky -> getCurrentUserObject();
+    if($user == null || !$user -> isAdmin()) {
         $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
         $response -> returnResponse();
     }
 
-    if((!isset($_POST['oldtype']) || strlen($_POST['oldtype']) === 0) || empty($_POST['oldtitle']) || empty($_POST['username'])) {
-        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDTITLE'), $language -> getSettings('API_ERROR_NOT_SET_OLDTYPE'), $language -> getSettings('API_ERROR_NOT_SET_USERNAME')]));
+    if((!isset($_POST['id']) || strlen($_POST['id']) === 0) || empty($_POST['id'])) {
+        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_ID')]));
         $response -> returnResponse();
     }
 
-    if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
+    $ad = Ad::getFromDatabase($_POST['id']);
+
+    if($ad == null) {
+        $response = new Response($language -> getSettings('API_ERROR_AD_NOT_FOUND'));
+        $response -> returnResponse();
+    }
+
+    $type = Utils::notEmptyOrNull($_POST, 'type');
+    $title = Utils::notEmptyOrNull($_POST, 'title');
+    $message = Utils::notEmptyOrNull($_POST, 'message');
+    $interval = Utils::notEmptyOrNull($_POST, 'interval');
+    $expiration = Utils::notEmptyOrNull($_POST, 'expiration');
+    $duration = Utils::notEmptyOrNull($_POST, 'duration');
+
+    if($type != null && !$ad -> setType($type)) {
         $response =  new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
         $response -> returnResponse();
     }
 
-    $response = (new Ad($_POST['username'], $_POST['oldtype'], $_POST['oldtitle'])) -> update(Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration'));
+    if($title != null && !$ad -> setTitle($title)) {
+        $response =  new Response($language -> getSettings('API_ERROR_INVALID_TITLE'));
+        $response -> returnResponse();
+    }
+
+    if($message != null && !$ad -> setMessage($message)) {
+        $response =  new Response($language -> getSettings('API_ERROR_INVALID_MESSAGE'));
+        $response -> returnResponse();
+    }
+
+    if($interval != null && !$ad -> setInterval($interval)) {
+        $response =  new Response($language -> getSettings('API_ERROR_INVALID_INTERVAL'));
+        $response -> returnResponse();
+    }
+
+    if($expiration != null && !$ad -> setExpiration($expiration)) {
+        $response =  new Response($language -> getSettings('API_ERROR_INVALID_EXPIRATIONDATE'));
+        $response -> returnResponse();
+    }
+
+    if($duration != null && !$ad -> setDuration($duration)) {
+        $response =  new Response($language -> getSettings('API_ERROR_INVALID_DURATION'));
+        $response -> returnResponse();
+    }
+
+    $ad -> sendUpdateToDatabase($_POST['id']);
+
+    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
     $response -> returnResponse();
 }
 catch(Delight\Auth\TooManyRequestsException $error) {

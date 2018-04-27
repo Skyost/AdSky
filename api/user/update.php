@@ -3,54 +3,94 @@
 require_once __DIR__ . '/../../core/AdSky.php';
 require_once __DIR__ . '/../../core/objects/User.php';
 
+require_once __DIR__ . '/../../core/Response.php';
+
 use Delight\Auth;
 
 $adsky = AdSky::getInstance();
 $auth = $adsky -> getAuth();
-$language = $adsky -> getLanguage();
 
-$object = User::isLoggedIn() -> _object;
+$user = $adsky -> getCurrentUserObject();
 
-if($object == null) {
-    (new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+if($user == null) {
+    (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
 }
 
-if($object['type'] === 0) {
-    if(empty($_GET['oldpassword']) && !isset($_GET['adminmode'])) {
-        (new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]))) -> returnResponse();
-    }
-
-    if(empty($_GET['oldemail'])) {
-        $_GET['oldemail'] = $auth -> getEmail();
-    }
-
-    if(isset($_GET['type']) && strlen($_GET['type']) !== 0 && ($_GET['type'] != 0 && $_GET['type'] != 1)) {
-        (new Response($language -> getSettings('API_ERROR_INVALID_TYPE'))) -> returnResponse();
-    }
-
-    $email = empty($_GET['email']) ? $auth -> getEmail() : $_GET['email'];
-    $type = isset($_GET['type']) && $_GET['type'] == 0 ? Auth\Role::ADMIN : null;
-
-    $target = new User($_GET['oldemail'], Utils::notEmptyOrNull($_GET, 'oldpassword'));
-    $response = $target -> update($email, Utils::notEmptyOrNull($_GET, 'password'), $type);
-
-    if($response -> _error == null && $_GET['oldemail'] != $email) {
-        try {
-            $auth -> logOut();
-            $auth -> destroySession();
+try {
+    if(isset($_POST['force']) && $_POST['force'] == true) {
+        if(!$user -> isAdmin()) {
+            (new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'))) -> returnResponse();
         }
-        catch(Auth\AuthError $error) {
-            (new Response($language -> getSettings('API_ERROR_GENERIC_AUTH_ERROR'))) -> returnResponse();
+
+        if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != User::TYPE_ADMIN && $_POST['type'] != User::TYPE_PUBLISHER)) {
+            (new Response($adsky -> getLanguageString('API_ERROR_INVALID_TYPE'))) -> returnResponse();
         }
+
+        if(empty($_POST['oldemail'])) {
+            $_POST['oldemail'] = $auth -> getEmail();
+        }
+
+        $target = new User($auth, $_POST['oldemail'], null, null);
+
+        $currentEmail = $target -> loginAsUserIfNeeded();
+
+        if(!empty($_POST['email'])) {
+            $target -> setEmail($_POST['email'], false);
+        }
+
+        if(isset($_POST['type'])) {
+            $target -> setType(intval($_POST['type']));
+        }
+
+        if(!empty($_POST['password'])) {
+            $auth -> changePasswordWithoutOldPassword($_POST['password']);
+        }
+
+        $auth -> admin() -> logInAsUserByEmail($currentEmail);
+        return;
     }
 
+    if(empty($_POST['oldpassword'])) {
+        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]));
+        $response -> returnResponse();
+    }
+
+    if(!empty($_POST['email'])) {
+        $user -> setEmail($_POST['email']);
+    }
+
+    if(!empty($_POST['password'])) {
+        $auth -> changePassword($_POST['oldpassword'], $_POST['password']);
+    }
+
+    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
     $response -> returnResponse();
 }
-
-if(empty($_GET['oldpassword'])) {
-    (new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]))) -> returnResponse();
+catch(Auth\AuthError $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
+    $response -> returnResponse();
 }
-
-$target = new User($auth -> getEmail(), $_GET['oldpassword'], $auth -> getUsername(), $auth -> hasRole(Auth\Role::ADMIN) ? Auth\Role::ADMIN : Auth\Role::PUBLISHER);
-$response = $target -> update(Utils::notEmptyOrNull($_GET, 'email'), Utils::notEmptyOrNull($_GET, 'password'));
-$response -> returnResponse();
+catch(Auth\EmailNotVerifiedException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_VERIFIED'), null, $error);
+    $response -> returnResponse();
+}
+catch(Auth\InvalidEmailException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_EMAIL'), null, $error);
+    $response -> returnResponse();
+}
+catch(Auth\NotLoggedInException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'), null, $error);
+    $response -> returnResponse();
+}
+catch(Auth\TooManyRequestsException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
+    $response -> returnResponse();
+}
+catch(Auth\UserAlreadyExistsException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_USERNAME_ALREADYEXISTS'), null, $error);
+    $response -> returnResponse();
+}
+catch(Auth\InvalidPasswordException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_PASSWORD'), null, $error);
+    $response -> returnResponse();
+}

@@ -8,6 +8,8 @@ require_once __DIR__ . '/settings/PayPalSettings.php';
 require_once __DIR__ . '/settings/PluginSettings.php';
 require_once __DIR__ . '/settings/WebsiteSettings.php';
 
+require_once __DIR__ . '/objects/User.php';
+
 class AdSky {
 
     const APP_NAME = 'AdSky';
@@ -59,6 +61,15 @@ class AdSky {
         }
 
         return $this -> _auth;
+    }
+
+    public function getCurrentUserObject() {
+        $auth = $this -> getAuth();
+        if(!$auth -> isLoggedIn()) {
+            return null;
+        }
+
+        return new User($auth);
     }
 
     public function isInstalled() {

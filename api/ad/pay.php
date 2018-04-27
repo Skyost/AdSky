@@ -23,6 +23,8 @@ require_once __DIR__ . '/../../core/objects/Ad.php';
 
 require_once __DIR__ . '/../../core/Utils.php';
 
+require_once __DIR__ . '/../../core/Response.php';
+
 use Delight\Auth;
 
 try {
@@ -36,53 +38,83 @@ try {
     ], 5, 60);
 
     // We check if the user is logged in.
-    $user = User::isLoggedIn() -> _object;
+    $user = $adsky -> getCurrentUserObject();
 
     if($user == null) {
-        (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'));
+        $response -> returnResponse();
     }
 
     // We check if the ad is okay.
-    $validateResult = Ad::validate(Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration'));
-    if($validateResult -> _error != null) {
-        $validateResult -> returnResponse();
+    if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_TYPE'));
+        $response -> returnResponse();
     }
 
-    if(Ad::adExists(Utils::notEmptyOrNull($_POST, 'title'))) {
-        (new Response($adsky -> getLanguageString('API_ERROR_SAME_NAME'))) -> returnResponse();
+    $type = intval($_POST['type']);
+    $adSettings = $adsky -> getAdSettings();
+
+    if(!$adSettings -> validateTitle(Utils::notEmptyOrNull($_POST, 'title'), $type)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_TITLE'));
+        $response -> returnResponse();
+    }
+
+    if(!$adSettings -> validateMessage(Utils::notEmptyOrNull($_POST, 'message'), $type)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_MESSAGE'));
+        $response -> returnResponse();
+    }
+
+    if(!$adSettings -> validateInterval(Utils::notEmptyOrNull($_POST, 'interval'), $type)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_INTERVAL'));
+        $response -> returnResponse();
+    }
+
+    if(!$adSettings -> validateExpiration(Utils::notEmptyOrNull($_POST, 'expiration'), $type)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_EXPIRATIONDATE'));
+        $response -> returnResponse();
+    }
+
+    if($type == Ad::TYPE_TITLE && !$adSettings -> validateDuration(Utils::notEmptyOrNull($_POST, 'duration'))) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_DURATION'));
+        $response -> returnResponse();
+    }
+
+    if(Ad::titleExists($_POST['title'])) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_SAME_NAME'));
+        $response -> returnResponse();
     }
 
     // So now, we are going to create the ad.
-    $type = intval($_POST['type']);
     $interval = intval($_POST['interval']);
     $expiration = intval($_POST['expiration']);
     $root = $adsky -> getWebsiteSettings() -> getWebsiteRoot();
 
-    $ad = new Ad($user['username'], $type, $_POST['title'], $_POST['message'], $interval, $expiration, Utils::notEmptyOrNull($_POST, 'duration'));
-
     // If the user is an admin, we don't have to use the PayPal API.
-    if($user['type'] == 0) {
-        $response = $ad -> register();
-        if($response -> _error != null) {
-            $response -> returnResponse();
-        }
+    if($user -> isAdmin()) {
+        $ad = new Ad($user -> getUsername(), $type, $_POST['title'], $_POST['message'], $interval, $expiration, Utils::notEmptyOrNull($_POST, 'duration'));
+        $ad -> sendUpdateToDatabase();
 
-        $response = new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'), $root . 'admin/?message=create_success#create');
+        $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $root . 'admin/?message=create_success#create');
         $response -> returnResponse();
     }
 
     // Otherwise, let's create a payment !
     $url = $root . 'payment/register/?' . http_build_query($_POST);
-    $totalDays = ($expiration - mktime(0, 0, 0)) / (60 * 60 * 24);
+    $totalDays = ($expiration - gmmktime(0, 0, 0)) / (60 * 60 * 24);
 
     $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $adsky -> getPayPalSettings() -> createApprovalLink($url, $type, $interval, $totalDays));
     $response -> returnResponse();
 }
 catch(Auth\TooManyRequestsException $error) {
     $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
+    $response -> returnResponse();
 }
 catch(Auth\AuthError $error) {
     $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
+    $response -> returnResponse();
+}
+catch(PDOException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
     $response -> returnResponse();
 }
 catch(Exception $ex) {

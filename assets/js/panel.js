@@ -13,16 +13,18 @@ const REQUESTED = [];
 const ADS_DATA_HANDLER = function(data, i) {
     switch(i) {
         case 0:
-            return ['title', data['title'], 'text'];
+            return ['id', data['id'], 'none'];
         case 1:
-            return ['message', data['message'], 'text'];
+            return ['title', data['title'], 'text'];
         case 2:
-            return ['type', null, 'select', ['Title', 'Chat']];
+            return ['message', data['message'], 'text'];
         case 3:
-            return ['interval', data['interval'], 'number'];
+            return ['type', null, 'select', ['Title', 'Chat']];
         case 4:
-            return ['expiration', formatDate(new Date(data['expiration'] * 1000)), 'date'];
+            return ['interval', data['interval'], 'number'];
         case 5:
+            return ['expiration', formatDate(new Date(data['expiration'] * 1000)), 'date'];
+        case 6:
             return ['username', data['username'], 'none'];
     }
 };
@@ -71,6 +73,10 @@ $(document).ready(function() {
             'email': newEmail && newEmail != USER_DATA.email ? newEmail : null,
             'password': newPassword ? newPassword : null
         }, 'profile', function() {
+            if(newEmail == null) {
+                window.location.href = '?message=profile_updated';
+                return;
+            }
             window.location.href = '../login/?message=updated';
         })
     });
@@ -125,20 +131,21 @@ $(document).ready(function() {
         let date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0)).getTime() / 1000;
 
         let row = $(this).parent().parent().children();
-        let type = row.eq(2).attr('data-type');
+        let type = row.eq(3).attr('data-type');
 
+        let expiration = (row.eq(5).attr('data-expiration') - date) / (60 * 60 * 24);
         let min = null;
         let max = null;
         if(type == 0) {
-            min = TITLE_SETTINGS[8];
-            max = TITLE_SETTINGS[9] - ((row.eq(4).attr('data-expiration') - date) / (60 * 60 * 24));
+            min = expiration >= TITLE_SETTINGS[8] ? 1 : TITLE_SETTINGS[8] - expiration;
+            max = TITLE_SETTINGS[9] - expiration;
         }
         else {
-            min = CHAT_SETTINGS[6];
-            max = TITLE_SETTINGS[7] - ((row.eq(4).attr('data-expiration') - date) / (60 * 60 * 24));
+            min = expiration >= CHAT_SETTINGS[6] ? 1 : CHAT_SETTINGS[6] - expiration;
+            max = CHAT_SETTINGS[7] - expiration;
         }
 
-        if(max <= min || row.eq(4).attr('data-expiration') <= date) {
+        if(max <= min || row.eq(5).attr('data-expiration') <= date) {
             showModal('Cannot renew ad', '<p class="mb-0">Cannot renew this ad because the max expiration date is already reached. Please come back on another day.</p>');
             return;
         }
@@ -150,8 +157,7 @@ $(document).ready(function() {
             callback: function() {
                 closeModal();
                 defaultPostRequest('../api/ad/renew', {
-                    type: type,
-                    title: row.eq(0).attr('data-title'),
+                    id: row.eq(0).attr('data-id'),
                     days: $('#modal input').val()
                 }, 'list', function(data) {
                     goToOrReload(data.object);
@@ -162,10 +168,7 @@ $(document).ready(function() {
 
     $('#fragment-list .table').on('click', '.fa-trash-alt', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('../api/ad/delete', {
-            type: row.eq(2).attr('data-type'),
-            title: row.eq(0).attr('data-title')
-        }, 'list', null);
+        defaultPostRequest('../api/ad/delete', {id: row.eq(0).attr('data-id')}, 'list', null);
     });
 
     let inputs = $('#form-ad-type, #form-ad-expiration');
@@ -192,11 +195,11 @@ $(document).on('fragmentChanged', function(event, fragment) {
         return;
     }
     makeRequest('list', {
-        'url': '../api/user/ads',
+        'url': '../api/ad/list',
         'data': {username: USER_DATA.username}
     }, {
         'buttons': '<i class="fas fa-sync-alt"></i> <i class="fas fa-trash-alt"></i>',
-        'handlingLength': 5,
+        'handlingLength': 6,
         'dataHandler': ADS_DATA_HANDLER
     }, true);
 });
@@ -308,7 +311,11 @@ function makeRequest(fragment, postData, printData, firstRequest) {
 
     let paginator = $('#fragment-' + fragment + ' .paginator');
     let page = paginator.find('.current-page');
-    postData['page'] = page;
+
+    if(postData.data == null) {
+        postData.data = {};
+    }
+    postData.data.page = page.text();
 
     loaderFadeIn();
     $.post(postData.url, postData.data, function(data) {
@@ -376,16 +383,18 @@ function print(fragment, data, buttons, dataHandlingLength, dataHandler) {
         for(let dataHandlingIndex = 0; dataHandlingIndex < dataHandlingLength; dataHandlingIndex++) {
             let tag = 'td';
             let attr = dataHandler(data[dataIndex], dataHandlingIndex);
-
+            let value =  escapeHTML(data[dataIndex][attr[0]]);
 
             let isNone = attr[2] == 'none';
-            html += '<' + tag + ' data-' + attr[0].replace('_', '-') + '="' + escapeHTML(data[dataIndex][attr[0]]) + '"' + (isNone ? '' : 'data-editable="true"') + '>';
+            html += '<' + tag + ' data-' + attr[0].replace('_', '-') + '="' + value + '"' + (isNone ? '' : 'data-editable="true"') + '>';
             if(attr[2] == 'select') {
                 html += '<select class="form-control" disabled="disabled">';
+
                 let options = attr[3];
                 for(let optionIndex = 0, optionsLength = options.length; optionIndex < optionsLength; optionIndex++) {
-                    html += '<option value="' + optionIndex + '">' + options[optionIndex] + '</option>';
+                    html += '<option value="' + optionIndex + '"' + (optionIndex == value ? ' selected' : '') + '>' + options[optionIndex] + '</option>';
                 }
+
                 html += '</select>';
             }
             else {

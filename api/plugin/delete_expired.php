@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../../core/AdSky.php';
 require_once __DIR__ . '/../../core/objects/Ad.php';
 
+require_once __DIR__ . '/../../core/Response.php';
+
 $adsky = AdSky::getInstance();
 
 if(empty($_POST['key']) || $_POST['key'] != $adsky -> getPluginSettings() -> getPluginKey()) {
@@ -10,4 +12,12 @@ if(empty($_POST['key']) || $_POST['key'] != $adsky -> getPluginSettings() -> get
     $response -> returnResponse();
 }
 
-(Ad :: deleteExpired()) -> returnResponse();
+try {
+    $adsky -> getPDO() -> query('DELETE FROM `' . ($adsky -> getMySQLSettings() -> getAdsTable()) . '` WHERE `until` <= UNIX_TIMESTAMP(CONVERT_TZ(DATE(NOW()), \'+00:00\', \'SYSTEM\'))') -> execute();
+    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
+    $response -> returnResponse();
+}
+catch(PDOException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
+    $response -> returnResponse();
+}

@@ -104,6 +104,7 @@ class MySQLSettings extends Settings {
             return new Response(null, $adsky -> getLanguageString('API_SUCCESS'), [
                 'data' => $data,
                 'page' => $page,
+                'minPage' => 1,
                 'maxPage' => $maxPage,
                 'hasPrevious' => $page > 1,
                 'hasNext' => $page < $maxPage
