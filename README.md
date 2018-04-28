@@ -23,7 +23,7 @@ AdSky is a way for you, as a Minecraft server owner, to monetize your server. Cu
 There are two parts : *Server* and *Plugin*.
 
 ### Server part
-The server part is a PHP + MySQL application that you install on your own web server, it is where advertisers will register and broadcast their ads. To see how to install it and the requirements, please check the [*Installation*](#installation) section of the server branch's README.
+The server part is a PHP + MySQL application that you install on your own web server, it is where advertisers will register and broadcast their ads. To see how to install it and the requirements, please check the [*Installation*](https://github.com/Skyost/AdSky/tree/server#installation) section of the server branch's README.
 
 ### Plugin part
 The plugin part is a simple Bukkit plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](#installation) section.
