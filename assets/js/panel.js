@@ -52,7 +52,8 @@ $(document).ready(function() {
         event.preventDefault();
 
         let newEmail = $('#form-user-email').val();
-        if(newEmail && newEmail != USER_DATA.email && newEmail != $('#form-user-email-confirm').val()) {
+        let changeEmail = newEmail && newEmail != USER_DATA.email;
+        if(changeEmail && newEmail != $('#form-user-email-confirm').val()) {
             showError('profile', 'Invalid email confirmation.');
             return;
         }
@@ -63,21 +64,25 @@ $(document).ready(function() {
             return;
         }
 
-        if((!newEmail || newEmail == USER_DATA.email) && !newPassword) {
+        if(!changeEmail && !newPassword) {
             showError('profile', 'No change applied to your current profile.');
             return;
         }
 
-        defaultPostRequest('../api/user/update', {
-            'oldpassword': $('#form-user-current-password').val(),
-            'email': newEmail && newEmail != USER_DATA.email ? newEmail : null,
-            'password': newPassword ? newPassword : null
-        }, 'profile', function() {
-            if(newEmail == null) {
-                window.location.href = '?message=profile_updated';
+        let data = {'oldpassword': $('#form-user-current-password').val()};
+        if(changeEmail) {
+            data.email = newEmail;
+        }
+        if(newPassword) {
+            data.password = newPassword;
+        }
+
+        defaultPostRequest('../api/user/update', data, 'profile', function() {
+            if(changeEmail) {
+                window.location.href = '../login/?message=updated';
                 return;
             }
-            window.location.href = '../login/?message=updated';
+            goToOrReload('?message=profile_updated#profile');
         })
     });
 

@@ -82,7 +82,6 @@ $router -> all('/api/user/(.*)', function($operation) {
     include $operation;
 });
 
-
 $router -> all('/email/confirm/([^/]+)/(.*)', function($selector, $token) {
     $adsky = AdSky::getInstance();
     $adsky -> getAuth() -> confirmEmailAndSignIn($selector, $token, (int)(60 * 60 * 24 * 365.25));
@@ -94,7 +93,7 @@ $router -> all('/email/reset/([^/]+)/([^/]+)/(.*)', function($email, $selector, 
     $auth = $adsky -> getAuth();
 
     if(!$auth -> canResetPassword($selector, $token)) {
-        return false;
+        die('An unexpected error occured while trying to reset your password.');
     }
 
     $password = \Delight\Auth\Auth::createRandomString(10);
@@ -102,16 +101,12 @@ $router -> all('/email/reset/([^/]+)/([^/]+)/(.*)', function($email, $selector, 
     $auth -> resetPassword($selector, $token, $password);
     User::sendEmail('Password reset confirmation', $email, 'password.twig', ['password' => $password]);
     header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'login/?message=password_reset');
+});
 
-
+$router -> all('/email/update/([^/]+)/(.*)', function($selector, $token) {
     $adsky = AdSky::getInstance();
-    $user = $adsky -> getCurrentUserObject();
-    if($user == null) {
-        die($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'));
-    }
-
-    $user -> confirmResetPassword($selector, $token);
-    header('Location: ' . AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot() . 'login/?message=password_reset');
+    $adsky -> getAuth() -> confirmEmailAndSignIn($selector, $token, (int)(60 * 60 * 24 * 365.25));
+    header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'admin/?message=profile_updated#profile');
 });
 
 $router -> all('/payment/register(.*)', function() {

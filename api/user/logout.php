@@ -6,6 +6,11 @@ require_once __DIR__ . '/../../core/Response.php';
 
 try {
     $adsky = AdSky::getInstance();
+
+    if($adsky -> getCurrentUserObject() == null) {
+        throw new \Delight\Auth\AuthError();
+    }
+
     $adsky -> getAuth() -> logOut();
 
     $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));

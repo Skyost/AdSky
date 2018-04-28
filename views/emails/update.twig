@@ -1,7 +1,7 @@
 <!-- Created with MOSAICO -->
 
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Password reset confirmation</title>
+<html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Email update</title>
 
     <meta charset="utf-8"><meta name="viewport" content="width=device-width"><style type="text/css">
 
@@ -122,14 +122,14 @@
             <table border="0" cellpadding="0" cellspacing="0" width="500" class="responsive-table"><tbody><tr><td>
                         <table width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td>
                                     <!-- COPY -->
-                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td align="center" class="padding-copy" style="font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #3F3D33; padding-top: 0;"><strong>Password reset</strong></td>
-                                        </tr><tr><td align="center" class="padding-copy textlightStyle" style="padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #3F3D33;">
-                                                <p>Your new password is <em>{{ password }}</em>. Please do not forget it again ! ;-)</p></td>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td align="center" class="padding-copy" style="font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #3F3D33; padding-top: 0;"><strong>Email update</strong></td>
+                                        </tr><tr><td align="center" class="padding-copy textlightStyle" style="padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #3F3D33;"><p>Hi, you have recently made an <strong>email update request</strong> on {{ settings.WEBSITE_TITLE }}.</p>
+                                                <p>To confirm this update, please click on the button at the bottom of this message. This link will expire in six hours so be careful. If you did not submit any request, please ignore this message.</p></td>
                                         </tr></tbody></table></td>
                             </tr><tr><td>
                                     <!-- BULLETPROOF BUTTON -->
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container"><tbody><tr><td align="center" style="padding: 25px 0 0 0;" class="padding-copy">
-                                                <table border="0" cellspacing="0" cellpadding="0" class="responsive-table"><tbody><tr><td align="center"><a target="_new" class="mobile-button" style="display: inline-block; font-size: 18px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #343a40; padding-top: 15px; padding-bottom: 15px; padding-left: 25px; padding-right: 25px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-bottom: 3px solid #191b1e;" href="{{ url }}login/">Login →</a></td>
+                                                <table border="0" cellspacing="0" cellpadding="0" class="responsive-table"><tbody><tr><td align="center"><a target="_new" class="mobile-button" style="display: inline-block; font-size: 18px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #343a40; padding-top: 15px; padding-bottom: 15px; padding-left: 25px; padding-right: 25px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-bottom: 3px solid #191b1e;" href="{{ url }}email/update/{{ selector }}/{{ token }}">Update →</a></td>
                                                     </tr></tbody></table></td>
                                         </tr></tbody></table></td>
                             </tr></tbody></table></td>

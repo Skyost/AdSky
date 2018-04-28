@@ -9,21 +9,22 @@ use Delight\Auth;
 
 $adsky = AdSky::getInstance();
 $auth = $adsky -> getAuth();
+$language = $adsky -> getLanguage();
 
 $user = $adsky -> getCurrentUserObject();
 
 if($user == null) {
-    (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+    (new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
 }
 
 try {
     if(isset($_POST['force']) && $_POST['force'] == true) {
         if(!$user -> isAdmin()) {
-            (new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'))) -> returnResponse();
+            (new Response($language -> getSettings('API_ERROR_NOT_ADMIN'))) -> returnResponse();
         }
 
         if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != User::TYPE_ADMIN && $_POST['type'] != User::TYPE_PUBLISHER)) {
-            (new Response($adsky -> getLanguageString('API_ERROR_INVALID_TYPE'))) -> returnResponse();
+            (new Response($language -> getSettings('API_ERROR_INVALID_TYPE'))) -> returnResponse();
         }
 
         if(empty($_POST['oldemail'])) {
@@ -55,6 +56,10 @@ try {
         $response -> returnResponse();
     }
 
+    if(!$auth -> reconfirmPassword($_POST['oldpassword'])) {
+        throw new Auth\InvalidPasswordException();
+    }
+
     if(!empty($_POST['email'])) {
         $user -> setEmail($_POST['email']);
     }
@@ -63,34 +68,34 @@ try {
         $auth -> changePassword($_POST['oldpassword'], $_POST['password']);
     }
 
-    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
+    $response = new Response(null, $language -> getSettings('API_SUCCESS'));
     $response -> returnResponse();
 }
 catch(Auth\AuthError $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
     $response -> returnResponse();
 }
 catch(Auth\EmailNotVerifiedException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_VERIFIED'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_NOT_VERIFIED'), null, $error);
     $response -> returnResponse();
 }
 catch(Auth\InvalidEmailException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_EMAIL'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_INVALID_EMAIL'), null, $error);
     $response -> returnResponse();
 }
 catch(Auth\NotLoggedInException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'), null, $error);
     $response -> returnResponse();
 }
 catch(Auth\TooManyRequestsException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_TOOMANYREQUESTS'), null, $error);
     $response -> returnResponse();
 }
 catch(Auth\UserAlreadyExistsException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_USERNAME_ALREADYEXISTS'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_EMAIL_ALREADYEXISTS'), null, $error);
     $response -> returnResponse();
 }
 catch(Auth\InvalidPasswordException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_PASSWORD'), null, $error);
+    $response = new Response($language -> getSettings('API_ERROR_INVALID_PASSWORD'), null, $error);
     $response -> returnResponse();
 }

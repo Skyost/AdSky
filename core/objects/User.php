@@ -31,6 +31,8 @@ class User {
             $auth = AdSky::getInstance() -> getAuth();
         }
 
+        $this -> _auth = $auth;
+
         $this -> _email = $email == null ? $auth -> getEmail() : $email;
         $this -> _username = $username == null ? $auth -> getUsername() : $username;
 
@@ -40,8 +42,6 @@ class User {
         }
 
         $this -> _type = $type;
-
-        $this -> _auth = $auth;
     }
 
     /**
@@ -108,11 +108,11 @@ class User {
 
         $this -> _auth -> changeEmail($email, function($selector, $token) use ($verify) {
             if(!$verify) {
-                $this -> _auth -> confirmEmail($selector, $token);
+                $this -> _auth -> confirmEmailAndSignIn($selector, $token);
                 return;
             }
 
-            self::sendEmail('Confirm your email', $this -> _email, 'confirm.twig', [
+            self::sendEmail('Update your email', $this -> _email, 'update.twig', [
                 'selector' => $selector,
                 'token' => $token
             ]);

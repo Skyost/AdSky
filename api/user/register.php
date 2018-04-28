@@ -13,6 +13,12 @@ if(empty($_POST['username']) || empty($_POST['email']) || empty($_POST['password
 }
 
 try {
+    $adsky = AdSky::getInstance();
+
+    if($adsky -> getCurrentUserObject() != null) {
+        throw new \Delight\Auth\AuthError();
+    }
+
     $user = User::register($_POST['username'], $_POST['email'], $_POST['password']);
 
     $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));

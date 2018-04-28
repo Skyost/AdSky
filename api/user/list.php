@@ -14,14 +14,15 @@ try {
     }
 
     $adsky = AdSky::getInstance();
+    $auth = $adsky -> getAuth();
 
-    $adsky -> getAuth() -> throttle([
+    $auth -> throttle([
         'user-list',
         $_SERVER['REMOTE_ADDR'],
         $page
     ], 10, 60);
 
-    if(!$adsky -> getAuth() -> hasRole(\Delight\Auth\Role::ADMIN)) {
+    if(!$auth -> hasRole(\Delight\Auth\Role::ADMIN)) {
         $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'));
         $response -> returnResponse();
     }

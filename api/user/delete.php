@@ -14,7 +14,7 @@ if($user == null) {
     $response -> returnResponse();
 }
 
-$auth = $adsky -> getAuth();
+$auth = $user -> getAuth();
 $username = empty($_POST['username']) ? $auth -> getEmail() : $_POST['username'];
 if($username != $user -> getUsername() && !$user -> isAdmin()) {
     $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'));
