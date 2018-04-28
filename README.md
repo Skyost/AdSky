@@ -37,7 +37,7 @@ AdSky is built to be lightweight, but it still has a lot of features :
  - Android application. <sup>Coming soon !</sup>
 
 ## Installation
-To install the plugin part, please check the [*Installation*](#) section of the plugin branch's README.
+To install the plugin part, please check the [*Installation*](https://github.com/Skyost/AdSky/tree/plugin#installation) section of the plugin branch's README.
 
 To install the server part, you have to download [this archive](https://github.com/Skyost/AdSky/archive/server.zip) and unzip it on your web server. Once uncompressed, go to `http://yourwebsite.com/adsky/install/` and follow the steps.
 
@@ -47,7 +47,9 @@ Please make sure that your web server meets the following requirements :
  - **MySQL 5.5.3+**.
  - **[mail()](http://php.net/manual/function.mail.php) and .htaccess support**.
  
- If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files.
+If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files (located in `views/` and `assets/css/`, respectively).
+ 
+Oh and I forgot one thing : **everything is configurable**. Just go to `core/settings/` and open the PHP file you want.
 
 ## Contributing
 It's easy to contribute to AdSky ! If you are a developer, first, you have to create a [fork](https://github.com/Skyost/AdSky/fork) and make your changes. Then make a pull request describing what are the improvements.

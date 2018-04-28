@@ -1,9 +1,17 @@
+/**
+ * Shows the loader.
+ */
+
 function loaderFadeIn() {
     $('html, body').css('overflow', 'hidden');
     $('#loader').fadeIn('fast');
 }
 
+/**
+ * Hides the loader.
+ */
+
 function loaderFadeOut() {
-    $('html, body').css('overflow', '');
     $('#loader').fadeOut('slow');
+    $('html, body').css('overflow', '');
 }

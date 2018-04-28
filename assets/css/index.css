@@ -1,3 +1,5 @@
+/* INDEX STYLES : RULES HERE WILL ONLY BE APPLIED TO THE INDEX PAGE. */
+
 #navbar, header {
     background-color: var(--gray-dark);
 }

@@ -23,9 +23,9 @@ require_once __DIR__ . '/../../core/Response.php';
 
 use Delight\Auth;
 
-try {
-    $adsky = AdSky::getInstance();
+$adsky = AdSky::getInstance();
 
+try {
     // We check if all arguments are okay.
     if(!isset($_POST['id']) || strlen($_POST['id']) === 0 || empty($_POST['days'])) {
         $response = new Response($adsky -> getLanguage() -> formatNotSet([$adsky -> getLanguageString('API_ERROR_NOT_SET_ID'), $adsky -> getLanguageString('API_ERROR_NOT_SET_DAYS')]));

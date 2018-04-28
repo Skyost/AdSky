@@ -1,17 +1,33 @@
 <?php
 
+/**
+ * ADSKY API FILE
+ *
+ * Name : user/logout.php
+ * Target : User
+ * User role : User
+ * Description : Logout an user.
+ * Throttle : None.
+ *
+ * Parameters :
+ * None.
+ */
+
 require_once __DIR__ . '/../../core/objects/User.php';
 
 require_once __DIR__ . '/../../core/Response.php';
 
-try {
-    $adsky = AdSky::getInstance();
+$adsky = AdSky::getInstance();
 
-    if($adsky -> getCurrentUserObject() == null) {
+try {
+    // We check if the current user is logged in.
+    $user = $adsky -> getCurrentUserObject();
+    if($user == null) {
         throw new \Delight\Auth\AuthError();
     }
 
-    $adsky -> getAuth() -> logOut();
+    // If yes, let's logout !
+    $user -> getAuth() -> logOut();
 
     $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
     $response -> returnResponse();

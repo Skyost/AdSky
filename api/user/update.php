@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * ADSKY API FILE
+ *
+ * Name : user/update.php
+ * Target : User
+ * User role : User
+ * Description : Edit an user account.
+ * Throttle : None.
+ *
+ * Parameters :
+ * [P][O] username : New account's username.
+ * [P][O] email : New account's email.
+ * [P][O] password : New account's password.
+ * [P][O] force : Force update the account (allows to not enter the the old password and to change the type). If set to true, you must specify the "oldemail" parameter to identify the target account. Only admins can do that.
+ * [P][O] type : New account's type.
+ * [P][O] oldemail : "Old" account's email.
+ * [P][O] oldpassword : "Old" account's password.
+ */
+
 require_once __DIR__ . '/../../core/AdSky.php';
 require_once __DIR__ . '/../../core/objects/User.php';
 
@@ -8,33 +27,38 @@ require_once __DIR__ . '/../../core/Response.php';
 use Delight\Auth;
 
 $adsky = AdSky::getInstance();
-$auth = $adsky -> getAuth();
 $language = $adsky -> getLanguage();
 
-$user = $adsky -> getCurrentUserObject();
-
-if($user == null) {
-    (new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
-}
-
 try {
+    $auth = $adsky -> getAuth();
+    $user = $adsky -> getCurrentUserObject();
+
+    // We check if the current user is logged in.
+    if($user == null) {
+        (new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+    }
+
+    // We also have to check if the force parameter is set to true.
     if(isset($_POST['force']) && $_POST['force'] == true) {
+        // The user must be an admin to use the force mode.
         if(!$user -> isAdmin()) {
-            (new Response($language -> getSettings('API_ERROR_NOT_ADMIN'))) -> returnResponse();
+            $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
+            $response -> returnResponse();
         }
 
+        // We check if a valid type has been sent.
         if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != User::TYPE_ADMIN && $_POST['type'] != User::TYPE_PUBLISHER)) {
-            (new Response($language -> getSettings('API_ERROR_INVALID_TYPE'))) -> returnResponse();
+            $response = new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
+            $response -> returnResponse();
         }
 
-        if(empty($_POST['oldemail'])) {
-            $_POST['oldemail'] = $auth -> getEmail();
-        }
+        // We prepare our target.
+        $target = new User($auth, empty($_POST['oldemail']) ? $auth -> getEmail() : $_POST['oldemail'], null, null);
 
-        $target = new User($auth, $_POST['oldemail'], null, null);
-
+        // We impersonate the user if needed.
         $currentEmail = $target -> loginAsUserIfNeeded();
 
+        // Now we can edit everything.
         if(!empty($_POST['email'])) {
             $target -> setEmail($_POST['email'], false);
         }
@@ -47,19 +71,28 @@ try {
             $auth -> changePasswordWithoutOldPassword($_POST['password']);
         }
 
-        $auth -> admin() -> logInAsUserByEmail($currentEmail);
+        // We login back our admin.
+        if($user -> getEmail() != $target -> getEmail()) {
+            $auth -> admin() -> logInAsUserByEmail($currentEmail);
+        }
+
+        $response = new Response(null, $language -> getSettings('API_SUCCESS'));
+        $response -> returnResponse();
         return;
     }
 
+    // If we are not in force mode, we must have an old password.
     if(empty($_POST['oldpassword'])) {
         $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]));
         $response -> returnResponse();
     }
 
+    // We check if the old password is okay.
     if(!$auth -> reconfirmPassword($_POST['oldpassword'])) {
         throw new Auth\InvalidPasswordException();
     }
 
+    // If yes, we can edit everything.
     if(!empty($_POST['email'])) {
         $user -> setEmail($_POST['email']);
     }

@@ -27,8 +27,9 @@ require_once __DIR__ . '/../../core/Response.php';
 
 use Delight\Auth;
 
+$adsky = AdSky::getInstance();
+
 try {
-    $adsky = AdSky::getInstance();
     $auth = $adsky -> getAuth();
 
     // Throttle protection.
@@ -82,6 +83,11 @@ try {
     if(Ad::titleExists($_POST['title'])) {
         $response = new Response($adsky -> getLanguageString('API_ERROR_SAME_NAME'));
         $response -> returnResponse();
+    }
+
+    $numberOfAdsPerDay = $adsky -> getMedoo() -> sum($adsky -> getMySQLSettings() -> getAdsTable(), 'interval', []);
+    if($adSettings -> getAdPerDayLimit() > 0 && $numberOfAdsPerDay + $interval > $adSettings -> getAdPerDayLimit()) {
+        return new Response($adsky -> getLanguageString('API_ERROR_LIMIT_REACHED'));
     }
 
     // So now, we are going to create the ad.

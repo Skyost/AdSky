@@ -1,3 +1,5 @@
+/* ADMIN STYLES : RULES HERE WILL ONLY BE APPLIED TO THE ADMIN PANEL. */
+
 html, body {
     min-height: 100vh;
 }

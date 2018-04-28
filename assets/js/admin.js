@@ -20,7 +20,7 @@ $(document).ready(function() {
             callback: function() {
                 closeModal();
                 loaderFadeIn();
-                $.post('../api/user/delete', {username: row.eq(0).children().first().val()}, function() {
+                $.post('../api/user/delete', {username: row.eq(0).attr('data-username')}, function() {
                     loaderFadeOut();
                     goToOrReload('?message=user_updated#users');
                 }, 'json');
@@ -46,7 +46,7 @@ $(document).ready(function() {
     });
 });
 
-$(document).on('fragmentChanged', function (event, fragment) {
+$(document).on('fragmentChanged', function(event, fragment) {
     if(fragment == 'ads') {
         makeRequest('ads', {
             'url': '../api/ad/list',

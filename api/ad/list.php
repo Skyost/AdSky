@@ -11,7 +11,7 @@
  *
  * Parameters :
  * [P][O] username : Username to list ads.
- * [P][O] page : Current page (to see how many ads there are by page, go to settings/Others.php and check the PAGINATOR_MAX parameter).
+ * [P][O] page : Current page (to see how many ads are displayed by page, go to core/settings/WebsiteSettings.php and check the WEBSITE_PAGINATOR_ITEMS_PER_PAGE parameter).
  */
 
 require_once __DIR__ . '/../../core/AdSky.php';
@@ -21,14 +21,16 @@ require_once __DIR__ . '/../../core/Utils.php';
 
 require_once __DIR__ . '/../../core/Response.php';
 
-try {
-    $adsky = AdSky::getInstance();
+$adsky = AdSky::getInstance();
 
+try {
+    // We get the required page.
     $page = Utils::notEmptyOrNull($_POST, 'page');
     if($page == null || intval($page) < 1) {
         $page = 1;
     }
 
+    // Throttle protection.
     $where = ['ORDER' => 'title'];
     $data = [
         'ad-list',
@@ -36,20 +38,24 @@ try {
         $page
     ];
 
+    // Username we want to list ads.
     $username = Utils::notEmptyOrNull($_POST, 'username');
     if($username != null) {
         array_push($data, $username);
         $where['username'] = $username;
     }
 
-    AdSky::getInstance() -> getAuth() -> throttle($data, 10, 60);
-
+    // Not we check if the user is a admin (or if the username corresponds to the current user).
     $user = $adsky -> getCurrentUserObject();
     if($user == null || ($username != $user -> getUsername() && !$user -> isAdmin())) {
         $response = new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_NOT_ADMIN'));
         $response -> returnResponse();
     }
 
+    // Throttle protection.
+    $user -> getAuth() -> throttle($data, 10, 60);
+
+    // And let's show everything !
     $mySQLSettings = $adsky -> getMySQLSettings();
     $mySQLSettings -> getPage($mySQLSettings -> getAdsTable(), '*', function($row) {
         return [

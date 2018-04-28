@@ -6,7 +6,7 @@
  * Name : ad/update.php
  * Target : Ads
  * User role : Admin
- * Description : Updates an ad.
+ * Description : Update an ad.
  * Throttle : 10 requests per 60 seconds.
  *
  * Parameters :
@@ -28,8 +28,10 @@ require_once __DIR__ . '/../../core/Utils.php';
 
 require_once __DIR__ . '/../../core/Response.php';
 
+$adsky = AdSky::getInstance();
+
 try {
-    $adsky = AdSky::getInstance();
+    // Throttle protection.
     $adsky -> getAuth() -> throttle([
         'ad-update',
         $_SERVER['REMOTE_ADDR']
@@ -37,17 +39,20 @@ try {
 
     $language = $adsky -> getLanguage();
 
+    // We check if the current user is an admin.
     $user = $adsky -> getCurrentUserObject();
     if($user == null || !$user -> isAdmin()) {
         $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
         $response -> returnResponse();
     }
 
+    // We get the ID.
     if((!isset($_POST['id']) || strlen($_POST['id']) === 0) || empty($_POST['id'])) {
         $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_ID')]));
         $response -> returnResponse();
     }
 
+    // Now we can get our ad.
     $ad = Ad::getFromDatabase($_POST['id']);
 
     if($ad == null) {
@@ -55,6 +60,7 @@ try {
         $response -> returnResponse();
     }
 
+    // And we can update it.
     $type = Utils::notEmptyOrNull($_POST, 'type');
     $title = Utils::notEmptyOrNull($_POST, 'title');
     $message = Utils::notEmptyOrNull($_POST, 'message');

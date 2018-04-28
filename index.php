@@ -93,13 +93,13 @@ $router -> all('/email/reset/([^/]+)/([^/]+)/(.*)', function($email, $selector, 
     $auth = $adsky -> getAuth();
 
     if(!$auth -> canResetPassword($selector, $token)) {
-        die('An unexpected error occured while trying to reset your password.');
+        die('An unexpected error occurred while trying to reset your password.');
     }
 
     $password = \Delight\Auth\Auth::createRandomString(10);
 
     $auth -> resetPassword($selector, $token, $password);
-    User::sendEmail('Password reset confirmation', $email, 'password.twig', ['password' => $password]);
+    User::sendEmail($adsky -> getLanguageString('EMAIL_TITLE_RESET_CONFIRMATION'), $email, 'password.twig', ['password' => $password]);
     header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'login/?message=password_reset');
 });
 

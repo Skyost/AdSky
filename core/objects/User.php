@@ -6,6 +6,10 @@ require_once __DIR__ . '/../AdSky.php';
 
 use Delight\Auth;
 
+/**
+ * Represents an user.
+ */
+
 class User {
 
     const TYPE_ADMIN = 0;
@@ -21,9 +25,9 @@ class User {
      * Creates a new User instance.
      *
      * @param Auth\Auth $auth The PHP-Auth object. The user will be created from it.
-     * @param String $email User's email. If null, will be deduced from the PHP-Auth object.
-     * @param String $username User's name. If null, will be deduced from the PHP-Auth object.
-     * @param String $type User's type (Admin / publisher). If null, will be deduced from the PHP-Auth object.
+     * @param string $email User's email. If null, will be deduced from the PHP-Auth object.
+     * @param string $username User's name. If null, will be deduced from the PHP-Auth object.
+     * @param string $type User's type (Admin / publisher). If null, will be deduced from the PHP-Auth object.
      */
 
     public function __construct(Auth\Auth $auth = null, $email = null, $username = null, $type = null) {
@@ -62,6 +66,10 @@ class User {
 
         $currentAuthEmail = $this -> _auth -> getEmail();
         $this -> _auth -> admin() -> logInAsUserByEmail($this -> _email);
+
+        $this -> _username = $this -> _auth -> getUsername();
+        $this -> _type = $this -> _auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
+
         return $currentAuthEmail;
     }
 
@@ -112,7 +120,7 @@ class User {
                 return;
             }
 
-            self::sendEmail('Update your email', $this -> _email, 'update.twig', [
+            self::sendEmail(AdSky::getInstance() -> getLanguageString('EMAIL_TITLE_UPDATE'), $this -> _email, 'update.twig', [
                 'selector' => $selector,
                 'token' => $token
             ]);
@@ -175,20 +183,20 @@ class User {
             return;
         }
 
-        if($this -> isAdmin()) {
-            $this -> _auth -> admin() -> addRoleForUserByEmail($this -> _email, $type);
+        if($currentAuthType == self::TYPE_ADMIN) {
+            $this -> _auth -> admin() -> removeRoleForUserByEmail($this -> _email, Auth\Role::ADMIN);
         }
         else {
-            $this -> _auth -> admin() -> removeRoleForUserByEmail($this -> _email, Auth\Role::ADMIN);
+            $this -> _auth -> admin() -> addRoleForUserByEmail($this -> _email, Auth\Role::ADMIN);
         }
     }
 
     /**
      * Registers an user and returns its corresponding object.
      *
-     * @param String $username The username.
-     * @param String $email The email.
-     * @param String $password The password.
+     * @param string $username The username.
+     * @param string $email The email.
+     * @param string $password The password.
      * @param bool $confirm If a confirmation email should be sent.
      * @param int $type The user's type.
      *
@@ -204,9 +212,10 @@ class User {
      */
 
     public static function register($username, $email, $password, $confirm = true, $type = (AdSky::APP_DEBUG ? self::TYPE_ADMIN : self::TYPE_PUBLISHER)) {
-        $auth = AdSky::getInstance() -> getAuth();
-        $id = $auth -> registerWithUniqueUsername($email, $password, $username, function($selector, $token) use ($email, $confirm) {
-            self::sendEmail('Confirm your email', $email, 'confirm.twig', [
+        $adsky = AdSky::getInstance();
+        $auth = $adsky -> getAuth();
+        $id = $auth -> registerWithUniqueUsername($email, $password, $username, function($selector, $token) use ($adsky, $email, $confirm) {
+            self::sendEmail($adsky -> getLanguageString('EMAIL_TITLE_CONFIRM'), $email, 'confirm.twig', [
                 'selector' => $selector,
                 'token' => $token
             ]);
@@ -222,9 +231,9 @@ class User {
     /**
      * Sends an email.
      *
-     * @param String $title Email's title.
-     * @param String $email Target's email.
-     * @param String $template Template file.
+     * @param string $title Email's title.
+     * @param string $email Target's email.
+     * @param string $template Template file.
      * @param array $parameters Parameters (used by twig).
      */
 
@@ -257,6 +266,12 @@ class User {
             mail($email, $title, $error);
         }
     }
+
+    /**
+     * Constructs an array from this user.
+     *
+     * @return array The array.
+     */
 
     public function toArray() {
         return [

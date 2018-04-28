@@ -1,12 +1,21 @@
 <?php
 
-require __DIR__ . '/../settings/Settings.php';
+require __DIR__ . '/Language.php';
 
-class EnglishLanguage extends Settings {
+/**
+ * English translation of AdSky.
+ */
+
+class EnglishLanguage extends Language {
     
     public function __construct() {
         $this -> putSettings('AD_TYPE_TITLE', 'Title');
         $this -> putSettings('AD_TYPE_CHAT', 'Chat');
+
+        $this -> putSettings('EMAIL_TITLE_RESET', 'Password reset');
+        $this -> putSettings('EMAIL_TITLE_RESET_CONFIRMATION', 'Password reset confirmation');
+        $this -> putSettings('EMAIL_TITLE_UPDATE', 'Update your email');
+        $this -> putSettings('EMAIL_TITLE_CONFIRM', 'Confirm your email');
 
         $this -> putSettings('API_SUCCESS', 'Success.');
 
@@ -62,6 +71,18 @@ class EnglishLanguage extends Settings {
 
         $this -> putSettings('API_PAYPAL_ITEM', '%d %s ad(s) per day during %d day(s)');
     }
+
+    public function getLanguage() {
+        return 'English';
+    }
+
+    /**
+     * Formats the not set string according to the specified array of Strings.
+     *
+     * @param array $what The array of Strings.
+     *
+     * @return string The formatted String.
+     */
 
     public function formatNotSet($what) {
         $string = ucfirst($what[0]);

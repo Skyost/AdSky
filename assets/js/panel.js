@@ -209,6 +209,15 @@ $(document).on('fragmentChanged', function(event, fragment) {
     }, true);
 });
 
+/**
+ * Sends a POST request, shows the error if an error is returned and call the "href" callable otherwise.
+ *
+ * @param url The URL.
+ * @param postData The POST parameters.
+ * @param fragment Target fragment (where to show errors).
+ * @param href Will be called if there is no error.
+ */
+
 function defaultPostRequest(url, postData, fragment, href) {
     loaderFadeIn();
     $.post(url, postData, function(data) {
@@ -227,6 +236,12 @@ function defaultPostRequest(url, postData, fragment, href) {
         href(data);
     }, 'json');
 }
+
+/**
+ * Prints limitations on the screen according to the specified data array.
+ *
+ * @param data The data array (see views/admin/content.twig).
+ */
 
 function printLimitations(data) {
     let now = new Date();
@@ -282,6 +297,12 @@ function printLimitations(data) {
     }
 }
 
+/**
+ * Shows a fragment.
+ *
+ * @param fragment The fragment's name.
+ */
+
 function showFragment(fragment) {
     if(!($('#fragment-' + fragment).length)) {
         fragment = 'home';
@@ -304,10 +325,26 @@ function showFragment(fragment) {
     $(document).trigger('fragmentChanged', fragment);
 }
 
+/**
+ * Displays an error.
+ *
+ * @param fragment The target fragment.
+ * @param error The error to display.
+ */
+
 function showError(fragment, error) {
     $('html').scrollTop(0);
     $('#fragment-' + fragment + ' .alert-danger').css('display', '').find('p').text(error);
 }
+
+/**
+ * Makes a request towards an API file that returns pages (api/ad/list for example).
+ *
+ * @param fragment The target fragment.
+ * @param postData The POST data : must contain a "url" and POST parameters ("data").
+ * @param printData The print data : must contain "buttons", how many data you want to handle ("handlingLength") and a callable "dataHandler"
+ * @param firstRequest Whether or no this is the first request.
+ */
 
 function makeRequest(fragment, postData, printData, firstRequest) {
     if(firstRequest && REQUESTED.filter(function(element) { return element == fragment; }).length > 0) {
@@ -377,6 +414,16 @@ function makeRequest(fragment, postData, printData, firstRequest) {
     });
 }
 
+/**
+ * Prints returned data to the target fragment.
+ *
+ * @param fragment The fragment.
+ * @param data The data.
+ * @param buttons The buttons.
+ * @param dataHandlingLength How many data you want to handle.
+ * @param dataHandler The data handler.
+ */
+
 function print(fragment, data, buttons, dataHandlingLength, dataHandler) {
     if(data == null || data.length == 0) {
         return;
@@ -413,12 +460,26 @@ function print(fragment, data, buttons, dataHandlingLength, dataHandler) {
     $('#fragment-' + fragment + ' table tbody').html(html);
 }
 
+/**
+ * Formats a date.
+ *
+ * @param date The date.
+ *
+ * @returns {string} The formatted date.
+ */
+
 function formatDate(date) {
     let month = '' + (date.getMonth() + 1);
     let day = '' + date.getDate();
 
     return date.getFullYear() + '-' + (month.length === 1 ? '0' : '') + month + '-' + (day.length === 1 ? '0' : '') + day;
 }
+
+/**
+ * Goes to the specified link or, if we're already visiting this link, refreshes the page.
+ *
+ * @param href The link.
+ */
 
 function goToOrReload(href) {
     if(window.location.href.endsWith(href)) {
@@ -428,6 +489,14 @@ function goToOrReload(href) {
 
     window.location.href = href;
 }
+
+/**
+ * Escapes an HTML String.
+ *
+ * @param string The String.
+ *
+ * @returns {string} The escaped HTML String.
+ */
 
 function escapeHTML(string) {
     return String(string).replace(/[&<>"'`=\/]/g, function(s) {
