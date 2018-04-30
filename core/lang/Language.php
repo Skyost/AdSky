@@ -18,7 +18,7 @@ abstract class Language extends Settings {
      */
 
     public function getSettings($key) {
-        if(!in_array($key, $this -> _data)) {
+        if(!array_key_exists($key, $this -> _data)) {
             return 'Translation not found ("' . $key . '")."';
         }
         return parent::getSettings($key);
