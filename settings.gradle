@@ -1,2 +1,4 @@
-rootProject.name = 'fr.skyost.adsky'
+rootProject.name = 'adsky'
 
+include 'adsky-core'
+include 'adsky-bukkit'

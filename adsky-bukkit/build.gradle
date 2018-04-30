@@ -1,0 +1,11 @@
+repositories {
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'http://repo.bstats.org/content/repositories/releases/' }
+}
+
+dependencies {
+    compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    extraLibs 'org.bstats:bstats-bukkit-lite:1.2'
+
+    extraLibs project(':adsky-core')
+}
