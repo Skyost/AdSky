@@ -3,4 +3,4 @@ main: fr.skyost.adsky.bukkit.AdSkyBukkitPlugin
 description: Monetize your Minecraft server !
 version: 0.1
 author: Skyost
-website: http://dev.bukkit.org/projects/adsky/
+website: https://github.com/Skyost/AdSky

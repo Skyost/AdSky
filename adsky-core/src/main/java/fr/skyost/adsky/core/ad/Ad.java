@@ -1,4 +1,4 @@
-package fr.skyost.adsky.core.objects;
+package fr.skyost.adsky.core.ad;
 
 import com.udojava.evalex.Expression;
 import fr.skyost.adsky.core.AdSkyConfiguration;

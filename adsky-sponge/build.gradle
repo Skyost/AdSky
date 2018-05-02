@@ -1,0 +1,23 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+repositories {
+    maven { url = 'http://repo.bstats.org/content/repositories/releases/' }
+}
+
+version '0.1'
+description = 'Monetize your Minecraft server !'
+
+apply plugin: 'signing'
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:7.0.0'
+    extraLibs 'com.squareup.okhttp3:okhttp:3.10.0'
+
+    extraLibs project(':adsky-core')
+}
+
+signing {
+    sign configurations.archives
+}

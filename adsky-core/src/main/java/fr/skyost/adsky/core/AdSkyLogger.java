@@ -23,6 +23,15 @@ public interface AdSkyLogger {
 	void error(final String message);
 
 	/**
+	 * Logs an error with its stack trace.
+	 *
+	 * @param message The message.
+	 * @param throwable The throwable.
+	 */
+
+	void error(final String message, final Throwable throwable);
+
+	/**
 	 * Logs a success.
 	 *
 	 * @param message The success message.

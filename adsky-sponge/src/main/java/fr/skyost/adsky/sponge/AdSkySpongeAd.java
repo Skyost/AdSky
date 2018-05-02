@@ -1,23 +1,25 @@
-package fr.skyost.adsky.bukkit;
+package fr.skyost.adsky.sponge;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import fr.skyost.adsky.bukkit.config.AdSkyBukkitConfiguration;
 import fr.skyost.adsky.core.ad.Ad;
 import fr.skyost.adsky.core.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import fr.skyost.adsky.sponge.config.AdSkySpongeConfiguration;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.title.Title;
 
-public class AdSkyBukkitAd extends Ad {
+public class AdSkySpongeAd extends Ad {
 
 	/**
 	 * The plugin config.
 	 */
 
-	private final AdSkyBukkitConfiguration config;
+	private final AdSkySpongeConfiguration config;
 
 	/**
-	 * Creates a new AdSkyBukkitAd instance.
+	 * Creates a new AdSkySpongeAd instance.
 	 *
 	 * @param config Plugin config.
 	 * @param username The username.
@@ -29,39 +31,39 @@ public class AdSkyBukkitAd extends Ad {
 	 * @param duration The duration.
 	 */
 
-	private AdSkyBukkitAd(final AdSkyBukkitConfiguration config, final String username, final int type, final String title, final String message, final int interval, final long expiration, final int duration) {
+	private AdSkySpongeAd(final AdSkySpongeConfiguration config, final String username, final int type, final String title, final String message, final int interval, final long expiration, final int duration) {
 		super(username, type, title, message, interval, expiration, duration);
 
 		this.config = config;
 	}
 
 	/**
-	 * Allows to clone a AdSkyBukkitAd.
+	 * Allows to clone a AdSkySpongeAd.
 	 *
-	 * @param ad The AdSkyBukkitAd to clone.
+	 * @param ad The AdSkySpongeAd to clone.
 	 */
 
-	private AdSkyBukkitAd(final AdSkyBukkitAd ad) {
+	private AdSkySpongeAd(final AdSkySpongeAd ad) {
 		this(ad.config, ad.getUsername(), ad.getType(), ad.getTitle(), ad.getMessage(), ad.getInterval(), ad.getExpiration(), ad.getDuration());
 	}
-
+	
 	@Override
 	public void broadcast() {
 		if(this.isTitleAd()) {
-			final int stay = this.getDuration() * 20;
-			for(final Player player : Bukkit.getOnlinePlayers()) {
-				if(player.hasPermission("adsky.bypass") || config.adsWorldBlackList.contains(player.getWorld().getName())) {
+			final Title title = Title.builder().title(Text.of(this.getTitle())).subtitle(Text.of(this.getMessage())).stay(this.getDuration() * 20).build();
+			for(final Player player : Sponge.getServer().getOnlinePlayers()) {
+				if(player.hasPermission("adsky.bypass") || config.ads.worldBlackList.contains(player.getWorld().getName())) {
 					continue;
 				}
 
-				player.sendTitle(this.getTitle(), this.getMessage(), 10, stay, 20);
+				player.sendTitle(title);
 			}
 			return;
 		}
 
-		final String[] message = new String[]{this.getTitle(), this.getMessage()};
-		for(final Player player : Bukkit.getOnlinePlayers()) {
-			if(player.hasPermission("adsky.bypass") || config.adsWorldBlackList.contains(player.getWorld().getName())) {
+		final Text message = Text.of(this.getTitle(), this.getMessage());
+		for(final Player player : Sponge.getServer().getOnlinePlayers()) {
+			if(player.hasPermission("adsky.bypass") || config.ads.worldBlackList.contains(player.getWorld().getName())) {
 				continue;
 			}
 
@@ -76,23 +78,23 @@ public class AdSkyBukkitAd extends Ad {
 		Ad[] array = new Ad[interval];
 		array[0] = this;
 		for(int i = 1; i < interval; i++) {
-			array[i] = new AdSkyBukkitAd(this);
+			array[i] = new AdSkySpongeAd(this);
 		}
 
 		return array;
 	}
 
 	/**
-	 * Creates an AdSkyBukkitAd instance from a JSON object.
+	 * Creates an AdSkySpongeAd instance from a JSON object.
 	 *
 	 * @param config Plugin config.
 	 * @param object The JSON object.
 	 *
-	 * @return The new AdSkyBukkitAd instance.
+	 * @return The new AdSkySpongeAd instance.
 	 */
 
-	public static AdSkyBukkitAd fromJSON(final AdSkyBukkitConfiguration config, final JsonObject object) {
-		final AdSkyBukkitAd ad = new AdSkyBukkitAd(config, "Skyost", TYPE_CHAT, "An ad", "This is an ad !", 1, Utils.tomorrowMidnight().getTimeInMillis(), 4);
+	public static AdSkySpongeAd fromJSON(final AdSkySpongeConfiguration config, final JsonObject object) {
+		final AdSkySpongeAd ad = new AdSkySpongeAd(config, "Skyost", TYPE_CHAT, "An ad", "This is an ad !", 1, Utils.tomorrowMidnight().getTimeInMillis(), 4);
 
 		JsonValue username = object.get("username");
 		if(username.isString() && !username.asString().isEmpty()) {
@@ -131,5 +133,5 @@ public class AdSkyBukkitAd extends Ad {
 
 		return ad;
 	}
-
+	
 }

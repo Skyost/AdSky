@@ -16,7 +16,7 @@ public class AdSkyBukkitPlugin extends JavaPlugin {
 		// Creates a new application instance.
 		this.app = new AdSkyBukkitApplication(this);
 
-		// Gets required objects.
+		// Gets required ad.
 		final AdSkyLogger logger = app.getLogger();
 		final AdSkyBukkitConfiguration config = (AdSkyBukkitConfiguration)app.getConfiguration();
 

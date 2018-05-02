@@ -1,20 +1,17 @@
-package fr.skyost.adsky;
+package fr.skyost.adsky.core.ad;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import fr.skyost.adsky.config.PluginConfig;
-import fr.skyost.adsky.utils.Utils;
+import fr.skyost.adsky.core.AdSkyApplication;
+import fr.skyost.adsky.core.AdSkyConfiguration;
+import fr.skyost.adsky.core.utils.ArrayMultiMap;
+import fr.skyost.adsky.core.utils.Utils;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * A class that is used to broadcast ads.
  */
 
-public class Scheduler {
+public class AdScheduler {
 
 	/**
 	 * All ads that have not been scheduled yet.
@@ -26,23 +23,23 @@ public class Scheduler {
 	 * All scheduled ads.
 	 */
 
-	private final Multimap<Integer, Ad> scheduled = ArrayListMultimap.create();
+	private final ArrayMultiMap<Integer, Ad> scheduled = new ArrayMultiMap<>();
 
 	/**
-	 * The plugin's configuration.
+	 * The application configuration.
 	 */
 
-	private final PluginConfig config;
+	private final AdSkyConfiguration config;
 
 	/**
 	 * Creates a new scheduler.
 	 *
-	 * @param plugin The plugin instance.
+	 * @param app The AdSky application.
 	 * @param ads Ads to schedule.
 	 */
 
-	public Scheduler(final AdSky plugin, final List<Ad> ads) {
-		this.config = plugin.getAdSkyConfig();
+	public AdScheduler(final AdSkyApplication app, final List<Ad> ads) {
+		this.config = app.getConfiguration();
 		notScheduled = ads;
 	}
 
@@ -62,7 +59,7 @@ public class Scheduler {
 		while(!notScheduled.isEmpty()) {
 			final int adsNumber = notScheduled.size();
 
-			int preferredHour = config.adsPreferredHour;
+			int preferredHour = config.getAdsPreferredHour();
 			if(currentHour >= preferredHour) {
 				preferredHour = currentHour;
 
@@ -132,9 +129,9 @@ public class Scheduler {
 
 		final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
-		final List<Ad> ads = (List<Ad>)scheduled.get(hour);
+		final List<Ad> ads = scheduled.get(hour);
 		final Ad ad = ads.get(new Random().nextInt(ads.size()));
-		ad.broadcast(config);
+		ad.broadcast();
 
 		scheduled.remove(hour, ad);
 	}

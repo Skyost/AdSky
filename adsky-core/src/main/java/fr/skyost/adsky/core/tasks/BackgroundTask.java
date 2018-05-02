@@ -4,8 +4,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import fr.skyost.adsky.core.*;
-import fr.skyost.adsky.core.objects.Ad;
-import fr.skyost.adsky.core.objects.Scheduler;
+import fr.skyost.adsky.core.ad.Ad;
+import fr.skyost.adsky.core.ad.AdScheduler;
 import fr.skyost.adsky.core.utils.Utils;
 
 import java.io.DataOutputStream;
@@ -40,10 +40,10 @@ public class BackgroundTask implements Runnable {
 	private static final String AD_REQUEST_URL = "%sapi/plugin/today";
 
 	/**
-	 * The scheduler.
+	 * The adScheduler.
 	 */
 
-	private Scheduler scheduler;
+	private AdScheduler adScheduler;
 
 	/**
 	 * The application instance.
@@ -63,12 +63,12 @@ public class BackgroundTask implements Runnable {
 
 	@Override
 	public void run() {
-		// Let's get required objects.
+		// Let's get required ad.
 		final AdSkyLogger logger = app.getLogger();
 		final AdSkyConfiguration config = app.getConfiguration();
 
-		// If scheduler is null, it means this is the first time of the day that this tasks is running.
-		if(scheduler == null) {
+		// If adScheduler is null, it means this is the first time of the day that this tasks is running.
+		if(adScheduler == null) {
 
 			// So let's delete expired ads if needed.
 			if(config.shouldAutoDeleteAds()) {
@@ -87,27 +87,27 @@ public class BackgroundTask implements Runnable {
 
 			if(ads != null) {
 				logger.success("Found " + ads.size() + " ad(s) to broadcast today.");
-				scheduler = new Scheduler(app, new ArrayList<>(ads));
-				scheduler.schedule();
+				adScheduler = new AdScheduler(app, new ArrayList<>(ads));
+				adScheduler.schedule();
 			}
 		}
 		else {
 			// Here we are going to broadcast a random ad from the list.
 			logger.success("Broadcasting a random ad from list...");
-			scheduler.broadcastRandomAd();
+			adScheduler.broadcastRandomAd();
 
-			if(!scheduler.hasRemaining()) {
-				scheduler = null;
+			if(!adScheduler.hasRemaining()) {
+				adScheduler = null;
 			}
 			logger.success("Success !");
 		}
 
 		// And then let's reschedule the tasks.
-		final Calendar nextSchedule = scheduler == null ? Utils.tomorrowMidnight() : scheduler.getNextSchedule();
+		final Calendar nextSchedule = adScheduler == null ? Utils.tomorrowMidnight() : adScheduler.getNextSchedule();
 		logger.success("Scheduled next ad broadcast (if available) on " + nextSchedule.getTime() + ".");
 
 		final long delay = nextSchedule.getTimeInMillis() - System.currentTimeMillis();
-		Executors.newScheduledThreadPool(1).schedule(this, delay < 0 ? 0 : delay, TimeUnit.MILLISECONDS);
+		app.getTaskScheduler().schedule(this, delay);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class BackgroundTask implements Runnable {
 			return httpPost(AD_DELETE_EXPIRED_URL).get("error") == null;
 		}
 		catch(final Exception ex) {
-			ex.printStackTrace();
+			app.getLogger().error("Unable to delete expired ads :", ex);
 		}
 
 		return false;
@@ -152,8 +152,7 @@ public class BackgroundTask implements Runnable {
 			return result;
 		}
 		catch(final Exception ex) {
-			app.getLogger().error("Unable to request ads.");
-			ex.printStackTrace();
+			app.getLogger().error("Unable to request ads :", ex);
 		}
 
 		return null;

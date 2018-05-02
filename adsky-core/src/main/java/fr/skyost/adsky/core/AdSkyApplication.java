@@ -1,7 +1,7 @@
 package fr.skyost.adsky.core;
 
 import com.eclipsesource.json.JsonObject;
-import fr.skyost.adsky.core.objects.Ad;
+import fr.skyost.adsky.core.ad.Ad;
 import fr.skyost.adsky.core.tasks.BackgroundTask;
 
 /**
@@ -25,6 +25,16 @@ public abstract class AdSkyApplication {
 	 */
 
 	public abstract AdSkyConfiguration getConfiguration();
+
+	/**
+	 * Gets a AdSky task scheduler.
+	 *
+	 * @return A AdSky task scheduler.
+	 */
+
+	public AdSkyTaskScheduler getTaskScheduler() {
+		return new DefaultAdSkyTaskScheduler();
+	}
 
 	/**
 	 * Gets the plugin server key.

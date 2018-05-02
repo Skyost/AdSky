@@ -24,22 +24,28 @@ public class AdSkyBukkitLogger implements AdSkyLogger {
 	}
 
 	@Override
-	public final void message(String message) {
+	public final void message(final String message) {
 		log(message, ChatColor.GOLD);
 	}
 
 	@Override
-	public final void error(String message) {
+	public final void error(final String message) {
 		log(message, ChatColor.DARK_RED);
 	}
 
 	@Override
-	public final void success(String message) {
+	public final void error(final String message, final Throwable throwable) {
+		error(message);
+		throwable.printStackTrace();
+	}
+
+	@Override
+	public final void success(final String message) {
 		log(message, ChatColor.DARK_GREEN);
 	}
 
 	@Override
-	public final void log(String message) {
+	public final void log(final String message) {
 		log(message, null);
 	}
 

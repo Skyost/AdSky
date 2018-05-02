@@ -5,7 +5,7 @@ import fr.skyost.adsky.bukkit.config.AdSkyBukkitConfiguration;
 import fr.skyost.adsky.bukkit.logger.AdSkyBukkitLogger;
 import fr.skyost.adsky.core.AdSkyApplication;
 import fr.skyost.adsky.core.AdSkyLogger;
-import fr.skyost.adsky.core.objects.Ad;
+import fr.skyost.adsky.core.ad.Ad;
 
 /**
  * Represents the Bukkit implementation of core AdSky.

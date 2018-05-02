@@ -2,3 +2,5 @@ rootProject.name = 'adsky'
 
 include 'adsky-core'
 include 'adsky-bukkit'
+include 'adsky-sponge'
+
