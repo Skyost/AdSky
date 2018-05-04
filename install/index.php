@@ -71,8 +71,14 @@ else if($_POST['step'] == 2) {
 else if($_POST['step'] == 3) {
     try {
         $pdo = $adsky -> getPDO();
-        $pdo -> query(file_get_contents('sql/phpAuth.sql')) -> execute();
-        $pdo -> query(file_get_contents('sql/ads.sql')) -> execute();
+
+        $statement = $pdo -> prepare(file_get_contents('sql/phpAuth.sql'));
+        $statement -> execute();
+        $statement -> closeCursor();
+
+        $statement = $pdo -> prepare(file_get_contents('sql/ads.sql'));
+        $statement -> execute();
+        $statement -> closeCursor();
     }
     catch(Exception $error) {
         $_POST['step'] = 2;
@@ -82,7 +88,7 @@ else if($_POST['step'] == 3) {
 }
 
 else if($_POST['step'] == 4) {
-    if(empty($_POST['form-website-title']) || empty($_POST['form-website-subtitle']) || empty($_POST['form-website-link']) || empty($_POST['form-user-username']) || empty($_POST['form-user-email']) || empty($_POST['form-user-password']) || empty($_POST['form-user-password-confirm']) || $_POST['form-user-password'] != $_POST['form-user-password-confirm']) {
+    if(empty($_POST['form-website-title']) || empty($_POST['form-website-subtitle']) || empty($_POST['form-website-root']) || empty($_POST['form-user-username']) || empty($_POST['form-user-email']) || empty($_POST['form-user-password']) || empty($_POST['form-user-password-confirm']) || $_POST['form-user-password'] != $_POST['form-user-password-confirm']) {
         $_POST['step'] = 3;
         $parameters['error'] = 'form';
     }

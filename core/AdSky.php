@@ -3,10 +3,6 @@
 require_once __DIR__ . '/lang/EnglishLanguage.php';
 
 require_once __DIR__ . '/settings/AdSettings.php';
-require_once __DIR__ . '/settings/MySQLSettings.php';
-require_once __DIR__ . '/settings/PayPalSettings.php';
-require_once __DIR__ . '/settings/PluginSettings.php';
-require_once __DIR__ . '/settings/WebsiteSettings.php';
 
 require_once __DIR__ . '/objects/User.php';
 
@@ -63,6 +59,10 @@ class AdSky {
      */
 
     public function getMedoo() {
+        if(!$this -> hasMySQLSettings()) {
+            return null;
+        }
+
         if($this -> _medoo == null) {
             $this -> _medoo = $this -> getMySQLSettings() -> constructMedoo();
         }
@@ -77,7 +77,12 @@ class AdSky {
      */
 
     public function getPDO() {
-        return $this -> getMedoo() -> pdo;
+        $medoo = $this -> getMedoo();
+        if($medoo == null) {
+            return null;
+        }
+
+        return $medoo -> pdo;
     }
 
     /**
@@ -87,6 +92,10 @@ class AdSky {
      */
 
     public function getAuth() {
+        if(!$this -> hasMySQLSettings()) {
+            return null;
+        }
+
         if($this -> _auth == null) {
             $mySQLSettings = $this -> getMySQLSettings();
             $this -> _auth = new \Delight\Auth\Auth($this -> getPDO(), null, $mySQLSettings -> getMySQLTablesPrefixes(), $mySQLSettings -> isThrottlingEnabled());
@@ -103,7 +112,7 @@ class AdSky {
 
     public function getCurrentUserObject() {
         $auth = $this -> getAuth();
-        if(!$auth -> isLoggedIn()) {
+        if($auth == null || !$auth -> isLoggedIn()) {
             return null;
         }
 
@@ -157,6 +166,8 @@ class AdSky {
 
     public function getMySQLSettings() {
         if($this -> _mySQLSettings == null && $this -> hasMySQLSettings()) {
+            require_once __DIR__ . '/settings/MySQLSettings.php';
+
             $this -> _mySQLSettings = new MySQLSettings();
         }
 
@@ -181,6 +192,8 @@ class AdSky {
 
     public function getPayPalSettings() {
         if($this -> _payPalSettings == null && $this -> hasPayPalSettings()) {
+            require_once __DIR__ . '/settings/PayPalSettings.php';
+
             $this -> _payPalSettings = new PayPalSettings();
         }
 
@@ -205,6 +218,8 @@ class AdSky {
 
     public function getPluginSettings() {
         if($this -> _pluginSettings == null && $this -> hasPluginSettings()) {
+            require_once __DIR__ . '/settings/PluginSettings.php';
+
             $this -> _pluginSettings = new PluginSettings();
         }
 
@@ -229,6 +244,8 @@ class AdSky {
 
     public function getWebsiteSettings() {
         if($this -> _websiteSettings == null && $this -> hasWebsiteSettings()) {
+            require_once __DIR__ . '/settings/WebsiteSettings.php';
+
             $this -> _websiteSettings = new WebsiteSettings();
         }
 

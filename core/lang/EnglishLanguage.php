@@ -54,6 +54,7 @@ class EnglishLanguage extends Language {
 
         $this -> putSettings('API_ERROR_INVALID_PLUGIN_KEY', 'Incorrect plugin key.');
 
+        $this -> putSettings('API_ERROR_NOT_INSTALLED', 'AdSky has not been correctly installed.');
         $this -> putSettings('API_ERROR_NOT_LOGGEDIN', 'You are not logged in.');
         $this -> putSettings('API_ERROR_NOT_ADMIN', 'You must be an admin in order to do that.');
         $this -> putSettings('API_ERROR_NOT_SET', '%s not set.');
@@ -68,6 +69,10 @@ class EnglishLanguage extends Language {
         $this -> putSettings('API_ERROR_NOT_SET_TYPE', 'type');
         $this -> putSettings('API_ERROR_NOT_SET_OLDTYPE', 'old type');
         $this -> putSettings('API_ERROR_NOT_SET_DAYS', 'days');
+
+        $this -> putSettings('API_ERROR_AD_OPERATION_NOTFOUND', 'Ad operation not found.');
+        $this -> putSettings('API_ERROR_USER_OPERATION_NOTFOUND', 'User operation not found.');
+        $this -> putSettings('API_ERROR_PLUGIN_OPERATION_NOTFOUND', 'Plugin operation not found.');
 
         $this -> putSettings('API_PAYPAL_ITEM', '%d %s ad(s) per day during %d day(s)');
     }

@@ -246,7 +246,10 @@ class User {
             $websiteSettings = $adsky -> getWebsiteSettings();
 
             $parameters['url'] = $websiteSettings -> getWebsiteRoot();
-            $parameters['settings'] = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $websiteSettings]);
+
+            $settings = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $websiteSettings]);
+            $settings['PAYPAL_CURRENCY'] = $adsky -> getPayPalSettings() -> getPayPalCurrency();
+            $parameters['settings'] = $settings;
 
             $sender = $websiteSettings -> getWebsiteEmail();
             $headers = 'From: ' . $sender . "\r\n";

@@ -7,9 +7,6 @@ require_once __DIR__ . '/core/AdSky.php';
 require_once __DIR__ . '/core/objects/Ad.php';
 require_once __DIR__ . '/core/objects/User.php';
 
-require_once __DIR__ . '/core/settings/AdSettings.php';
-require_once __DIR__ . '/core/settings/WebsiteSettings.php';
-
 require_once __DIR__ . '/core/Response.php';
 
 use PayPal\Api\Payment;
@@ -31,10 +28,16 @@ $router -> all('/', function() {
 });
 
 $router -> all('/login/', function() {
-    $user = AdSky::getInstance() -> getCurrentUserObject();
+    $adsky = AdSky::getInstance();
+    if(!$adsky -> isInstalled()) {
+        header('Location: ../install/');
+        die();
+    }
+
+    $user = $adsky -> getCurrentUserObject();
 
     if($user != null) {
-        header('Location: ../admin/');
+        header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'admin/');
         die();
     }
 
@@ -42,10 +45,16 @@ $router -> all('/login/', function() {
 });
 
 $router -> all('/admin/', function() {
-    $user = AdSky::getInstance() -> getCurrentUserObject();
+    $adsky = AdSky::getInstance();
+    if(!$adsky -> isInstalled()) {
+        header('Location: ../install/');
+        die();
+    }
+
+    $user = $adsky -> getCurrentUserObject();
 
     if($user == null) {
-        header('Location: ../login/');
+        header('Location: ' . $adsky -> getWebsiteSettings() -> getWebsiteRoot() . 'login/');
         die();
     }
 
@@ -53,9 +62,16 @@ $router -> all('/admin/', function() {
 });
 
 $router -> all('/api/ad/(.*)', function($operation) {
+    $adsky = AdSky::getInstance();
+
     $operation = __DIR__ . '/api/ad/' . str_replace('-', '_', htmlentities($operation)) . '.php';
     if(!file_exists($operation)) {
-        $response = new Response('Ad operation not found.');
+        $response = new Response($adsky -> getLanguageString('API_ERROR_AD_OPERATION_NOTFOUND'));
+        $response -> returnResponse();
+    }
+
+    if(!$adsky -> isInstalled()) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
         $response -> returnResponse();
     }
 
@@ -63,9 +79,16 @@ $router -> all('/api/ad/(.*)', function($operation) {
 });
 
 $router -> all('/api/plugin/(.*)', function($operation) {
+    $adsky = AdSky::getInstance();
+
     $operation = __DIR__ . '/api/plugin/' . str_replace('-', '_', htmlentities($operation)) . '.php';
     if(!file_exists($operation)) {
-        $response = new Response('Plugin operation not found.');
+        $response = new Response($adsky -> getLanguageString('API_ERROR_PLUGIN_OPERATION_NOTFOUND'));
+        $response -> returnResponse();
+    }
+
+    if(!$adsky -> isInstalled()) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
         $response -> returnResponse();
     }
 
@@ -73,9 +96,16 @@ $router -> all('/api/plugin/(.*)', function($operation) {
 });
 
 $router -> all('/api/user/(.*)', function($operation) {
+    $adsky = AdSky::getInstance();
+
     $operation = __DIR__ . '/api/user/' . str_replace('-', '_', htmlentities($operation)) . '.php';
     if(!file_exists($operation)) {
-        $response = new Response('User operation not found.');
+        $response = new Response($adsky -> getLanguageString('API_ERROR_USER_OPERATION_NOTFOUND'));
+        $response -> returnResponse();
+    }
+
+    if(!$adsky -> isInstalled()) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
         $response -> returnResponse();
     }
 
@@ -140,7 +170,9 @@ function twigTemplate($folder, $file = 'content.twig', $parameters = []) {
     $loader = new Twig_Loader_Filesystem('views/');
     $twig = new Twig_Environment($loader);
 
-    $parameters['settings'] = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $adsky -> getWebsiteSettings()]);
+    $settings = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $adsky -> getWebsiteSettings()]);
+    $settings['PAYPAL_CURRENCY'] = $adsky -> getPayPalSettings() -> getPayPalCurrency();
+    $parameters['settings'] = $settings;
 
     if(!empty($_GET['message'])) {
         $parameters['message'] = $_GET['message'];
