@@ -1,3 +1,5 @@
+let newsLoaded = false;
+
 $(document).ready(function() {
     $('#fragment-users .table').on('click', '.fa-check', function() {
         let row = $(this).parent().parent().children();
@@ -83,6 +85,34 @@ $(document).on('fragmentChanged', function(event, fragment) {
                 }
             }
         }, true);
+        return;
+    }
+
+    if(fragment == 'news') {
+        if(newsLoaded) {
+            return;
+        }
+
+        loaderFadeIn();
+        $.get('https://skyost.github.io/AdSky/feed.xml', function(data) {
+            let html = '';
+            $(data).find('item').each(function() {
+                let element = $(this);
+                html += '<div class="news">';
+                html += '<h2>' + element.find('title').text() + '</h2>';
+                html += '<small><i class="far fa-calendar-alt"></i> ' + new Date(element.find('pubDate').text()).toLocaleDateString() + '</small>';
+                html += '<p>' + element.find('description').text() + '</p>';
+                html += '<a class="news-read" href="' + element.find('link').text() + '"><i class="fas fa-share"></i> Read more</a>';
+                html += '</div>';
+            });
+
+            if(html != '') {
+                $('#news-content').html(html);
+            }
+
+            newsLoaded = true;
+            loaderFadeOut();
+        });
     }
 });
 

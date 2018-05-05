@@ -52,7 +52,7 @@ try {
         $response -> returnResponse();
     }
 
-    $type = intval($_POST['type']);
+    $type = intval(Utils::notEmptyOrNull($_POST, 'type'));
     $adSettings = $adsky -> getAdSettings();
 
     if(!$adSettings -> validateTitle(Utils::notEmptyOrNull($_POST, 'title'), $type)) {
@@ -85,15 +85,15 @@ try {
         $response -> returnResponse();
     }
 
-    $numberOfAdsPerDay = $adsky -> getMedoo() -> sum($adsky -> getMySQLSettings() -> getAdsTable(), 'interval', []);
-    if($adSettings -> getAdPerDayLimit() > 0 && $numberOfAdsPerDay + $interval > $adSettings -> getAdPerDayLimit()) {
-        return new Response($adsky -> getLanguageString('API_ERROR_LIMIT_REACHED'));
-    }
-
     // So now, we are going to create the ad.
     $interval = intval($_POST['interval']);
     $expiration = intval($_POST['expiration']);
     $root = $adsky -> getWebsiteSettings() -> getWebsiteRoot();
+	
+	$numberOfAdsPerDay = $adsky -> getMedoo() -> sum($adsky -> getMySQLSettings() -> getAdsTable(), 'interval', []);
+    if($adSettings -> getAdPerDayLimit() > 0 && $numberOfAdsPerDay + $interval > $adSettings -> getAdPerDayLimit()) {
+        return new Response($adsky -> getLanguageString('API_ERROR_LIMIT_REACHED'));
+    }
 
     // If the user is an admin, we don't have to use the PayPal API.
     if($user -> isAdmin()) {

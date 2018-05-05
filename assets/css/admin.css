@@ -133,3 +133,24 @@ html, body {
 #fragment-create p {
     margin-bottom: 0;
 }
+
+#news-content .news {
+    margin-bottom: 30px;
+}
+
+#news-content .news h2 {
+    margin-bottom: 0;
+}
+
+#news-content .news small {
+    display: block;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+#news-content .news .news-read {
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: none !important;
+}
