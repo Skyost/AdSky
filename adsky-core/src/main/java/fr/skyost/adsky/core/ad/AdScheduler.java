@@ -56,22 +56,21 @@ public class AdScheduler {
 		final int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
 		// While there are still ads to schedule, we run the following loop.
-		while(!notScheduled.isEmpty()) {
-			final int adsNumber = notScheduled.size();
+		final int adsNumber = notScheduled.size();
+		int preferredHour = config.getAdsPreferredHour();
+		if(currentHour >= preferredHour) {
+			preferredHour = currentHour;
 
-			int preferredHour = config.getAdsPreferredHour();
-			if(currentHour >= preferredHour) {
-				preferredHour = currentHour;
-
-				// If there are only ten minutes left, we switch to the next hour.
-				if(Calendar.getInstance().get(Calendar.MINUTE) >= 50) {
-					preferredHour++;
-				}
+			// If there are only ten minutes left, we switch to the next hour.
+			if(Calendar.getInstance().get(Calendar.MINUTE) >= 50) {
+				preferredHour++;
 			}
+		}
 
+		while(!notScheduled.isEmpty()) {
 			// The following loop is run once for hourMinus, once for hourPlus, then we substract one to hourMinus and add one to hourPlus (until we hit a limitation).
 			boolean minus = true;
-			for(int hourMinus = preferredHour, hourPlus = preferredHour; (hourMinus > currentHour || hourPlus <= 23) && !notScheduled.isEmpty(); minus = !minus) {
+			for(int hourMinus = preferredHour, hourPlus = preferredHour; hourMinus > currentHour || hourPlus <= 23;) {
 				// We evaluates how many ads we need to schedule for the current ad.
 				final int hour = minus ? hourMinus : hourPlus;
 				final int hourAdsNumber = Ad.getAdsPerHour(config, preferredHour, hour, adsNumber);
@@ -96,12 +95,13 @@ public class AdScheduler {
 				}
 
 				// Then we check if we need to inverse the boolean.
+				minus = !minus;
 				if(hourMinus <= currentHour) {
-					minus = true;
+					minus = false;
 					hourPlus++;
 				}
 				if(hourPlus > 23) {
-					minus = false;
+					minus = true;
 					hourMinus--;
 				}
 			}

@@ -31,7 +31,7 @@ public class BackgroundTask implements Runnable {
 	 * The non formatted delete expired ads url.
 	 */
 
-	private static final String AD_DELETE_EXPIRED_URL = "%sapi/plugin/deleted-expired";
+	private static final String AD_DELETE_EXPIRED_URL = "%sapi/plugin/delete-expired";
 
 	/**
 	 * The non formatted delete request ads url.
@@ -72,13 +72,7 @@ public class BackgroundTask implements Runnable {
 
 			// So let's delete expired ads if needed.
 			if(config.shouldAutoDeleteAds()) {
-				logger.message("Deleting expired ads...");
-				if(deleteExpiredAds()) {
-					logger.success("Success !");
-				}
-				else {
-					logger.error("Error while deleting expired ads.");
-				}
+				deleteExpiredAds();
 			}
 
 			// And let's get ads of the day and schedule them.
@@ -112,19 +106,23 @@ public class BackgroundTask implements Runnable {
 
 	/**
 	 * Sends a delete expired ads request.
-	 *
-	 * @return A boolean indicating the success.
 	 */
 
-	private boolean deleteExpiredAds() {
+	private void deleteExpiredAds() {
+		final AdSkyLogger logger = app.getLogger();
 		try {
-			return httpPost(AD_DELETE_EXPIRED_URL).get("error") == null;
+			logger.message("Deleting expired ads...");
+
+			final JsonValue error = httpPost(AD_DELETE_EXPIRED_URL).get("error");
+			if(!error.isNull()) {
+				logger.error("Unable to delete expired ads : \"" + error.asString() + "\".");
+				return;
+			}
+			logger.success("Success !");
 		}
 		catch(final Exception ex) {
-			app.getLogger().error("Unable to delete expired ads :", ex);
+			logger.error("Unable to delete expired ads :", ex);
 		}
-
-		return false;
 	}
 
 	/**
@@ -140,7 +138,7 @@ public class BackgroundTask implements Runnable {
 			final JsonValue object = jsonResponse.get("object");
 			final JsonValue error = jsonResponse.get("error");
 			if(object.isNull() || !error.isNull()) {
-				app.getLogger().error("Unable to get ads : \"" + (object.isNull() ? "Object is null" : error.asString()) + "\".");
+				app.getLogger().error("Unable to get ads : \"" + (error.isNull() ? "Object is null" : error.asString()) + "\".");
 				return null;
 			}
 

@@ -39,6 +39,11 @@ public class OreUpdater extends Thread {
 			final Request request = new Request.Builder().url("https://ore.spongepowered.org/api/v1/projects/" + PLUGIN_ID).build();
 			final Response response = client.newCall(request).execute();
 
+			if(!String.valueOf(response.code()).startsWith("2")) {
+				logger.error("Bad response : \"" + response.message() + "\".");
+				return;
+			}
+
 			final String version = Json.parse(response.body().string()).asObject().get("recommended").asObject().get("name").asString();
 
 			if(versionCompare(optionalLocalVersion.get(), version) >= 0) {
