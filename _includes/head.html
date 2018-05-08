@@ -10,7 +10,7 @@
 <meta property="og:title" content="{% if page.fulltitle %}{{ page.fulltitle }}{% else %}{{ page.title }} | {{ site.title }} {% endif %}"/>
 <meta property="og:site_name" content="{{ site.title }}"/>
 <meta property="og:url" content="{{ site.url }}{{ page.url }}"/>
-<meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.tagline }}{% endif %}"/>
+<meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.description }}{% endif %}"/>
 <meta property="og:image" content="{% if page.image %}{{ site.url }}{{ page.image }}{% else %}{{ site.url }}/assets/img/logo.png{% endif %}"/>
 
 <!-- Twitter -->
@@ -19,7 +19,7 @@
 <meta name="twitter:site" content="Skyost_"/>
 <meta name="twitter:creator" content="Skyost_"/>
 <meta name="twitter:url" content="{{ site.url }}{{ page.url }}"/>
-<meta name="twitter:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.tagline }}{% endif %}"/>
+<meta name="twitter:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.description }}{% endif %}"/>
 <meta name="twitter:image" content="{{ site.url }}/assets/img/logo.png"/>
 
 <!-- Styles -->

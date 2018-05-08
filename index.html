@@ -6,7 +6,7 @@ layout: default
 {% for post in paginator.posts %}
 	<div class="post">
 		<header>
-			<h2 class="title"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+			<h2 class="title"><a href="{{ site.url }}{{ post.url }}">{{ post.title }}</a></h2>
 			<small class="date text-muted"><i class="far fa-calendar-alt"></i> {{ post.date | date_to_long_string }}</small>
 		</header>
 		
