@@ -1,5 +1,13 @@
 /* ADMIN STYLES : RULES HERE WILL ONLY BE APPLIED TO THE ADMIN PANEL. */
 
+::selection {
+    background-color: #bae0ff;
+}
+
+::-moz-selection {
+    background-color: #bae0ff;
+}
+
 html, body {
     min-height: 100vh;
 }
@@ -135,11 +143,15 @@ html, body {
 }
 
 #news-content .news {
-    margin-bottom: 30px;
+    margin-bottom: 70px;
 }
 
 #news-content .news h2 {
     margin-bottom: 0;
+}
+
+#news-content .news p {
+    text-align: justify;
 }
 
 #news-content .news small {
