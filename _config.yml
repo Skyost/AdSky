@@ -1,0 +1,18 @@
+# Site settings
+title: "AdSky Blog"
+description: "Monetize your Minecraft server !"
+url: "https://skyost.github.io/AdSky/"
+timezone: Europe/Paris
+
+# Paginator
+paginate: 5
+paginate_path: "/page-:num/"
+
+# SASS options
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Production
+exclude: [".scss", "README.md", "CNAME"]
+github: [metadata]

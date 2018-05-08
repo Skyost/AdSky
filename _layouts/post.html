@@ -1,0 +1,18 @@
+---
+layout: default
+---
+
+<div class="post">
+	<header>
+		<h2 class="title"><a href="{{ page.url }}">{{ page.title }}</a></h2>
+		<small class="date text-muted"><i class="far fa-calendar-alt"></i> {{ page.date | date_to_long_string }}</small>
+	</header>
+	
+	<div class="content">
+		{{ page.content }}
+	</div>
+</div>
+
+<div id="pagination" class="clearfix">
+	<a href="/" class="float-left text-muted"><i class="fas fa-caret-left"></i> Back to Home</a>
+</div>

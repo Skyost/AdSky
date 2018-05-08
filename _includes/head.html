@@ -1,0 +1,33 @@
+<meta charset="utf-8">
+<title>{% if page.fulltitle %}{{ page.fulltitle }}{% else %}{{ page.title }} | {{ site.title }} {% endif %}</title>
+
+<!-- Description -->
+<meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.description }}{% endif %}"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<!-- OpenGraph -->
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="{% if page.fulltitle %}{{ page.fulltitle }}{% else %}{{ page.title }} | {{ site.title }} {% endif %}"/>
+<meta property="og:site_name" content="{{ site.title }}"/>
+<meta property="og:url" content="{{ site.url }}{{ page.url }}"/>
+<meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.tagline }}{% endif %}"/>
+<meta property="og:image" content="{% if page.image %}{{ site.url }}{{ page.image }}{% else %}{{ site.url }}/assets/img/logo.png{% endif %}"/>
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="{% if page.fulltitle %}{{ page.fulltitle }}{% else %}{{ page.title }} | {{ site.title }} {% endif %}"/>
+<meta name="twitter:site" content="Skyost_"/>
+<meta name="twitter:creator" content="Skyost_"/>
+<meta name="twitter:url" content="{{ site.url }}{{ page.url }}"/>
+<meta name="twitter:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.tagline }}{% endif %}"/>
+<meta name="twitter:image" content="{{ site.url }}/assets/img/logo.png"/>
+
+<!-- Styles -->
+<meta name="theme-color" content="#343a40"/>
+
+<link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.0.12/css/all.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css">
+
+<link rel="stylesheet" type="text/css" href="/assets/css/default.css">
+
+<link rel="icon" type="image/png" href="/assets/img/logo.png"/>

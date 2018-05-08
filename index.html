@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8"/>
-	<title>AdSky Blog</title>
-</head>
-<body>
-	<p>This blog is currently under construction. Please come back later !</p>
-</body>
-</html>
+---
+title: Home
+layout: default
+---
+
+{% for post in paginator.posts %}
+	<div class="post">
+		<header>
+			<h2 class="title"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+			<small class="date text-muted"><i class="far fa-calendar-alt"></i> {{ post.date | date_to_long_string }}</small>
+		</header>
+		
+		<div class="content">
+			{{ post.content }}
+		</div>
+	</div>
+{% endfor %}
+
+<div id="pagination" class="clearfix">
+	{% if paginator.previous_page %}
+		<a href="{{ paginator.previous_page_path }}" class="float-left text-muted"><i class="fas fa-caret-left"></i> Previous</a>
+	{% endif %}
+	
+	<span class="text-muted"><i class="fas fa-newspaper"></i> Page <strong>{{ paginator.page }}</strong> of <strong>{{ paginator.total_pages }}</strong></span>
+	
+	{% if paginator.next_page %}
+		<a href="{{ paginator.next_page_path }}" class="float-right text-muted">Next <i class="fas fa-caret-right"></i></a>
+	{% endif %}
+</div>
