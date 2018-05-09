@@ -25,7 +25,7 @@ There are two parts : *Server* and *Plugin*.
 The server part is a PHP + MySQL application that you install on your own web server, it is where advertisers will register and broadcast their ads. To see how to install it and the requirements, please check the [*Installation*](#installation) section.
 
 ### Plugin part
-The plugin part is a simple Bukkit plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](https://github.com/Skyost/AdSky/tree/plugin#installation) section of the plugin branch's README.
+The plugin part is a simple Bukkit / Sponge plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](https://github.com/Skyost/AdSky/tree/plugin#installation) section of the plugin branch's README.
 
 ## Features
 AdSky is built to be lightweight, but it still has a lot of features :
