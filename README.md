@@ -69,7 +69,7 @@ The configuration file (`config.yml`) is located in `plugins/AdSky/`. Open it an
 |          | `max-hour`              | Ads are not going to be broadcasted after this hour.                                                                                                                                                                                                                                                                                                                                                                                                 |
 |          | `distribution-function` | Here's how it works. The `h` will be replaced by the preferred hour, the `n` by the number of ads of the day and `x` by the current hour. For instance, to see how many ads will be displayed at 3PM if there are 20 ads to display and if the preferred hour is 12 : `((-1/20) * (15-12)^2) + log(20) = 0.85`. With a rounding mode of [UP](https://docs.oracle.com/javase/7/docs/api/java/math/RoundingMode.html), there will be 1 ad broadcasted. |
 
-Another thing to know is that players with the permission `adsky.bypass` (not given by default) are not going to see ads.
+**Important :** If you cannot see ads, it means you have the permission `adsky.bypass` (which is granted to ops by default). If you want to see ads, please turn off the permission for yourself.
 
 ## Contributing
 It's easy to contribute to AdSky ! If you are a developer, first, you have to create a [fork](https://github.com/Skyost/AdSky/fork) and make your changes. Then make a pull request describing what are the improvements.

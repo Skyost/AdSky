@@ -5,11 +5,11 @@ version: 0.1
 author: Skyost
 website: https://github.com/Skyost/AdSky
 permissions:
-  adsky.*:
+  adsky:
     description: Gives access to all AdSky permissions.
-    default: false
+    default: op
     children:
       adsky.bypass
   adsky.bypass:
     description: Allows to not see ads.
-    default: false
+    default: op
