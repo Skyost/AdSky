@@ -1,9 +1,8 @@
 package fr.skyost.adsky.sponge.utils;
 
 import com.eclipsesource.json.Json;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.goebl.david.Webb;
+import com.goebl.david.WebbException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -34,17 +33,10 @@ public class OreUpdater extends Thread {
 				return;
 			}
 
-			final OkHttpClient client = new OkHttpClient();
+			final Webb webb = Webb.create();
+			webb.setBaseUri("https://ore.spongepowered.org/api/v1");
 
-			final Request request = new Request.Builder().url("https://ore.spongepowered.org/api/v1/projects/" + PLUGIN_ID).build();
-			final Response response = client.newCall(request).execute();
-
-			if(!String.valueOf(response.code()).startsWith("2")) {
-				logger.error("Bad response : \"" + response.message() + "\".");
-				return;
-			}
-
-			final String version = Json.parse(response.body().string()).asObject().get("recommended").asObject().get("name").asString();
+			final String version = Json.parse(webb.get("/projects/" + PLUGIN_ID).ensureSuccess().asString().getBody()).asObject().get("recommended").asObject().get("name").asString();
 
 			if(versionCompare(optionalLocalVersion.get(), version) >= 0) {
 				logger.info("No update found.");

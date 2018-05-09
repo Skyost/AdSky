@@ -25,7 +25,7 @@ public class AdSkyBukkitConfiguration extends Skyoconfig implements AdSkyConfigu
 	@ConfigOptions(name = "ads.preferred-hour")
 	public int adsPreferredHour = 12;
 	@ConfigOptions(name = "ads.distribution-function")
-	public String adsDistributionFunction = "((-1/n) * (x-h)^2) + (log(n)/log(10))";
+	public String adsDistributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
 	@ConfigOptions(name = "ads.world-blacklist")
 	public List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
 

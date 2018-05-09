@@ -68,7 +68,7 @@ public class AdScheduler {
 		}
 
 		while(!notScheduled.isEmpty()) {
-			// The following loop is run once for hourMinus, once for hourPlus, then we substract one to hourMinus and add one to hourPlus (until we hit a limitation).
+			// The following loop is run once for hourMinus, once for hourPlus, then we substrate one to hourMinus and add one to hourPlus (until we hit a limitation).
 			boolean minus = true;
 			for(int hourMinus = preferredHour, hourPlus = preferredHour; hourMinus > currentHour || hourPlus <= 23;) {
 				// We evaluates how many ads we need to schedule for the current ad.

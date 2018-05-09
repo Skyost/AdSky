@@ -26,7 +26,7 @@ There are two parts : *Server* and *Plugin*.
 The server part is a PHP + MySQL application that you install on your own web server, it is where advertisers will register and broadcast their ads. To see how to install it and the requirements, please check the [*Installation*](https://github.com/Skyost/AdSky/tree/server#installation) section of the server branch's README.
 
 ### Plugin part
-The plugin part is a simple Bukkit plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](#installation) section.
+The plugin part is a simple Bukkit / Sponge plugin that is going to link up with the server part. To see how to install it and the requirements, please check the [*Installation*](#installation) section.
 
 ## Features
 AdSky is built to be lightweight, but it still has a lot of features :
@@ -38,19 +38,28 @@ AdSky is built to be lightweight, but it still has a lot of features :
  - Android application. <sub>Coming soon !</sub>
 
 ## Installation
+
 To install the server part, please check the [*Installation*](https://github.com/Skyost/AdSky#installation) section of the server branch's README.
 
-To install the plugin part, you have to download [the JAR](https://dev.bukkit.org/projects/adsky/files) put it inside the `plugins` folder located in your server directory.
+### CraftBukkit / Spigot
 
-Yes, you need either Bukkit or Spigot. Any version above _1.8_ should work.
+To install the Bukkit plugin, you have to download [the JAR](https://dev.bukkit.org/projects/adsky/files) and put it inside the `plugins` folder located in your server directory.
+
+You need either Bukkit or Spigot. Any version above _1.8_ should work.
+
+### Sponge
+
+To install the Sponge plugin, you have to download [the JAR](https://ore.spongepowered.org/Skyost/AdSky/versions/recommended/download) and put it inside the `mods` folder located in your server directory.
+
+Any version Sponge version above _7.0.0_ (included) should work.
 
 ## Configuration
 The configuration file (`config.yml`) is located in `plugins/AdSky/`. Open it and configure it as you want :
 
 | Depth 0  | Depth 1                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | -------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enable` | `updater`               | Whether [Skyupdater](https://www.skyost.eu/skyupdater.txt) should be enabled.                                                                                                                                                                                                                                                                                                                                                                        |
-|          | `metrics`               | Whether [bStats Metrics](https://bstats.org/) should be enabled.                                                                                                                                                                                                                                                                                                                                                                                     |
+| `enable` | `updater`               | Whether the updater should be enabled ([Skyupdater](https://www.skyost.eu/skyupdater.txt) for Bukkit, OreUpdater for Sponge).                                                                                                                                                                                                                                                                                                                        |
+|          | `metrics`               | **Bukkit only :** Whether [bStats Metrics](https://bstats.org/) should be enabled.                                                                                                                                                                                                                                                                                                                                                                   |
 | `server` | `url`                   | AdSky's root URL on your server.                                                                                                                                                                                                                                                                                                                                                                                                                     |
 |          | `plugin-key`            | The key given at the end of the installation. If you don't remember me, it is available in `api/settings/Plugin.php`.                                                                                                                                                                                                                                                                                                                                |
 |          | `event-scheduler`       | Whether you have scheduled the MySQL event (downloadable [here](https://github.com/Skyost/AdSky/blob/server/install/sql/clearExpiredAds.sql)). If you did not, then the plugin is going to clear expired ads each day at midnight.                                                                                                                                                                                                                   |

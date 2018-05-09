@@ -1,4 +1,6 @@
-package fr.skyost.adsky.core;
+package fr.skyost.adsky.core.scheduler;
+
+import fr.skyost.adsky.core.AdSkyTaskScheduler;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A tasks that broadcasts ad on the server.
@@ -52,6 +50,12 @@ public class BackgroundTask implements Runnable {
 	private final AdSkyApplication app;
 
 	/**
+	 * The language.
+	 */
+
+	private final AdSkyLanguage lang;
+
+	/**
 	 * Creates a new tasks instance.
 	 *
 	 * @param app The AdSky application.
@@ -59,6 +63,7 @@ public class BackgroundTask implements Runnable {
 
 	public BackgroundTask(final AdSkyApplication app) {
 		this.app = app;
+		this.lang = app.getLanguage();
 	}
 
 	@Override
@@ -76,32 +81,32 @@ public class BackgroundTask implements Runnable {
 			}
 
 			// And let's get ads of the day and schedule them.
-			logger.message("Getting ads...");
+			logger.message(lang.gettingAds());
 			final HashSet<Ad> ads = requestAds();
 
 			if(ads != null) {
-				logger.success("Found " + ads.size() + " ad(s) to broadcast today.");
+				logger.success(lang.foundAds(ads.size()));
 				adScheduler = new AdScheduler(app, new ArrayList<>(ads));
 				adScheduler.schedule();
 			}
 		}
 		else {
 			// Here we are going to broadcast a random ad from the list.
-			logger.success("Broadcasting a random ad from list...");
+			logger.success(lang.broadcastingRandomAd());
 			adScheduler.broadcastRandomAd();
 
 			if(!adScheduler.hasRemaining()) {
 				adScheduler = null;
 			}
-			logger.success("Success !");
+			logger.success(lang.success());
 		}
 
 		// And then let's reschedule the tasks.
 		final Calendar nextSchedule = adScheduler == null ? Utils.tomorrowMidnight() : adScheduler.getNextSchedule();
-		logger.success("Scheduled next ad broadcast (if available) on " + nextSchedule.getTime() + ".");
+		logger.success(lang.scheduledAt(nextSchedule));
 
 		final long delay = nextSchedule.getTimeInMillis() - System.currentTimeMillis();
-		app.getTaskScheduler().schedule(this, delay);
+		app.getTaskScheduler().schedule(this, delay <= 0 ? (System.currentTimeMillis() + 1000) : delay);
 	}
 
 	/**
@@ -111,17 +116,17 @@ public class BackgroundTask implements Runnable {
 	private void deleteExpiredAds() {
 		final AdSkyLogger logger = app.getLogger();
 		try {
-			logger.message("Deleting expired ads...");
+			logger.message(lang.deletingExpiredAds());
 
 			final JsonValue error = httpPost(AD_DELETE_EXPIRED_URL).get("error");
 			if(!error.isNull()) {
-				logger.error("Unable to delete expired ads : \"" + error.asString() + "\".");
+				logger.error(lang.unableDeleteExpiredAds() + " \"" + error.asString() + "\".");
 				return;
 			}
-			logger.success("Success !");
+			logger.success(lang.success());
 		}
 		catch(final Exception ex) {
-			logger.error("Unable to delete expired ads :", ex);
+			logger.error(lang.unableDeleteExpiredAds(), ex);
 		}
 	}
 
@@ -138,7 +143,7 @@ public class BackgroundTask implements Runnable {
 			final JsonValue object = jsonResponse.get("object");
 			final JsonValue error = jsonResponse.get("error");
 			if(object.isNull() || !error.isNull()) {
-				app.getLogger().error("Unable to get ads : \"" + (error.isNull() ? "Object is null" : error.asString()) + "\".");
+				app.getLogger().error(lang.unableRequestAds() + " \"" + (error.isNull() ? "Object is null" : error.asString()) + "\".");
 				return null;
 			}
 
@@ -150,7 +155,7 @@ public class BackgroundTask implements Runnable {
 			return result;
 		}
 		catch(final Exception ex) {
-			app.getLogger().error("Unable to request ads :", ex);
+			app.getLogger().error(lang.unableRequestAds(), ex);
 		}
 
 		return null;
@@ -184,7 +189,7 @@ public class BackgroundTask implements Runnable {
 
 		// If the response code is not 200, we throw an error.
 		if(connection.getResponseCode() != 200) {
-			throw new IOException("Invalid response code.");
+			throw new IOException(lang.invalidResponseCode(connection.getResponseCode()));
 		}
 
 		// We can now build the response.

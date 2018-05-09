@@ -4,3 +4,12 @@ description: Monetize your Minecraft server !
 version: 0.1
 author: Skyost
 website: https://github.com/Skyost/AdSky
+permissions:
+  adsky.*:
+    description: Gives access to all AdSky permissions.
+    default: false
+    children:
+      adsky.bypass
+  adsky.bypass:
+    description: Allows to not see ads.
+    default: false

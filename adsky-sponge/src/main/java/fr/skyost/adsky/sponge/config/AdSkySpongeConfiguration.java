@@ -54,7 +54,7 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 		public int preferredHour = 12;
 
 		@Setting("distribution-function")
-		public String pluginKey = "((-1/n) * (x-h)^2) + (log(n) / log(10))";
+		public String distributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
 
 		@Setting("world-blacklist")
 		public List<String> worldBlackList = ImmutableList.of();
@@ -73,7 +73,7 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 
 	@Override
 	public String getAdsDistributionFunction() {
-		return ads.pluginKey;
+		return ads.distributionFunction;
 	}
 
 	@Override
