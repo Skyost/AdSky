@@ -29,7 +29,7 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 	public static class Enable {
 
 		@Setting
-		public boolean updater = true;
+		public final boolean updater = true;
 
 	}
 
@@ -37,13 +37,13 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 	public static class Server {
 
 		@Setting
-		public String url = "http://yourwebsite.com/adsky/";
+		public final String url = "http://yourwebsite.com/adsky/";
 
 		@Setting("plugin-key")
-		public String pluginKey = "Paste your plugin key here.";
+		public final String pluginKey = "Paste your plugin key here.";
 
 		@Setting("event-scheduled")
-		public boolean eventScheduled = false;
+		public final boolean eventScheduled = false;
 
 	}
 
@@ -51,33 +51,33 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 	public static class Ads {
 
 		@Setting("preferred-hour")
-		public int preferredHour = 12;
+		public final int preferredHour = 12;
 
 		@Setting("distribution-function")
-		public String distributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
+		public final String distributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
 
 		@Setting("world-blacklist")
-		public List<String> worldBlackList = ImmutableList.of();
+		public final List<String> worldBlackList = ImmutableList.of();
 
 	}
 
 	@Override
-	public String getServerURL() {
+	public final String getServerURL() {
 		return server.url;
 	}
 
 	@Override
-	public boolean shouldAutoDeleteAds() {
+	public final boolean shouldAutoDeleteAds() {
 		return !server.eventScheduled;
 	}
 
 	@Override
-	public String getAdsDistributionFunction() {
+	public final String getAdsDistributionFunction() {
 		return ads.distributionFunction;
 	}
 
 	@Override
-	public int getAdsPreferredHour() {
+	public final int getAdsPreferredHour() {
 		return ads.preferredHour;
 	}
 

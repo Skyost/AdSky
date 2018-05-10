@@ -8,26 +8,30 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Default plugin configuration.
+ */
+
 public class AdSkyBukkitConfiguration extends Skyoconfig implements AdSkyConfiguration {
 
 	@ConfigOptions(name = "enable.updater")
-	public boolean enableUpdater = true;
+	public final boolean enableUpdater = true;
 	@ConfigOptions(name = "enable.metrics")
-	public boolean enableMetrics = true;
+	public final boolean enableMetrics = true;
 
 	@ConfigOptions(name = "server.url")
-	public String serverUrl = "http://yourwebsite.com/adsky/";
+	public final String serverUrl = "http://yourwebsite.com/adsky/";
 	@ConfigOptions(name = "server.plugin-key")
-	public String serverPluginKey = "Paste your plugin key here.";
+	public final String serverPluginKey = "Paste your plugin key here.";
 	@ConfigOptions(name = "server.event-scheduled")
-	public boolean serverEventScheduled = false;
+	public final boolean serverEventScheduled = false;
 
 	@ConfigOptions(name = "ads.preferred-hour")
 	public int adsPreferredHour = 12;
 	@ConfigOptions(name = "ads.distribution-function")
-	public String adsDistributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
+	public final String adsDistributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
 	@ConfigOptions(name = "ads.world-blacklist")
-	public List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
+	public final List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
 
 	/**
 	 * Creates a new plugin configuration instance.
@@ -40,22 +44,22 @@ public class AdSkyBukkitConfiguration extends Skyoconfig implements AdSkyConfigu
 	}
 
 	@Override
-	public String getServerURL() {
+	public final String getServerURL() {
 		return serverUrl;
 	}
 
 	@Override
-	public boolean shouldAutoDeleteAds() {
+	public final boolean shouldAutoDeleteAds() {
 		return !serverEventScheduled;
 	}
 
 	@Override
-	public String getAdsDistributionFunction() {
+	public final String getAdsDistributionFunction() {
 		return adsDistributionFunction;
 	}
 
 	@Override
-	public int getAdsPreferredHour() {
+	public final int getAdsPreferredHour() {
 		return adsPreferredHour;
 	}
 

@@ -2,7 +2,7 @@ package fr.skyost.adsky.sponge;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import fr.skyost.adsky.core.ad.Ad;
+import fr.skyost.adsky.core.ad.AbstractAd;
 import fr.skyost.adsky.core.utils.Utils;
 import fr.skyost.adsky.sponge.config.AdSkySpongeConfiguration;
 import org.spongepowered.api.Sponge;
@@ -10,7 +10,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
 
-public class AdSkySpongeAd extends Ad {
+public class AdSkySpongeAd extends AbstractAd {
 
 	/**
 	 * The plugin config.
@@ -44,7 +44,9 @@ public class AdSkySpongeAd extends Ad {
 	 */
 
 	private AdSkySpongeAd(final AdSkySpongeAd ad) {
-		this(ad.config, ad.getUsername(), ad.getType(), ad.getTitle(), ad.getMessage(), ad.getInterval(), ad.getExpiration(), ad.getDuration());
+		super(ad);
+
+		this.config = ad.config;
 	}
 	
 	@Override
@@ -72,10 +74,10 @@ public class AdSkySpongeAd extends Ad {
 	}
 
 	@Override
-	public Ad[] multiply() {
+	public AbstractAd[] multiply() {
 		final int interval = this.getInterval();
 
-		Ad[] array = new Ad[interval];
+		AbstractAd[] array = new AbstractAd[interval];
 		array[0] = this;
 		for(int i = 1; i < interval; i++) {
 			array[i] = new AdSkySpongeAd(this);

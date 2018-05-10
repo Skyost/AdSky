@@ -1,7 +1,7 @@
 package fr.skyost.adsky.core;
 
 import com.eclipsesource.json.JsonObject;
-import fr.skyost.adsky.core.ad.Ad;
+import fr.skyost.adsky.core.ad.AbstractAd;
 import fr.skyost.adsky.core.lang.AdSkyEnglishLanguage;
 import fr.skyost.adsky.core.scheduler.DefaultAdSkyTaskScheduler;
 import fr.skyost.adsky.core.tasks.BackgroundTask;
@@ -10,7 +10,7 @@ import fr.skyost.adsky.core.tasks.BackgroundTask;
  * Represents an abstract AdSky application.
  */
 
-public abstract class AdSkyApplication {
+public abstract class AbstractAdSkyApplication {
 
 	/**
 	 * Gets a logger instance.
@@ -64,7 +64,7 @@ public abstract class AdSkyApplication {
 	 * @return The Ad.
 	 */
 
-	public abstract Ad createAdFromJSON(final JsonObject jsonObject);
+	public abstract AbstractAd createAdFromJSON(final JsonObject jsonObject);
 
 	/**
 	 * Starts the main task.

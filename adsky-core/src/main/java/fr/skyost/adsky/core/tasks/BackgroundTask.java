@@ -4,7 +4,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import fr.skyost.adsky.core.*;
-import fr.skyost.adsky.core.ad.Ad;
+import fr.skyost.adsky.core.ad.AbstractAd;
 import fr.skyost.adsky.core.ad.AdScheduler;
 import fr.skyost.adsky.core.utils.Utils;
 
@@ -47,7 +47,7 @@ public class BackgroundTask implements Runnable {
 	 * The application instance.
 	 */
 
-	private final AdSkyApplication app;
+	private final AbstractAdSkyApplication app;
 
 	/**
 	 * The language.
@@ -61,7 +61,7 @@ public class BackgroundTask implements Runnable {
 	 * @param app The AdSky application.
 	 */
 
-	public BackgroundTask(final AdSkyApplication app) {
+	public BackgroundTask(final AbstractAdSkyApplication app) {
 		this.app = app;
 		this.lang = app.getLanguage();
 	}
@@ -82,7 +82,7 @@ public class BackgroundTask implements Runnable {
 
 			// And let's get ads of the day and schedule them.
 			logger.message(lang.gettingAds());
-			final HashSet<Ad> ads = requestAds();
+			final HashSet<AbstractAd> ads = requestAds();
 
 			if(ads != null) {
 				logger.success(lang.foundAds(ads.size()));
@@ -136,7 +136,7 @@ public class BackgroundTask implements Runnable {
 	 * @return A Set containing today's ads.
 	 */
 
-	private HashSet<Ad> requestAds() {
+	private HashSet<AbstractAd> requestAds() {
 		try {
 			final JsonObject jsonResponse = httpPost(AD_REQUEST_URL);
 
@@ -147,7 +147,7 @@ public class BackgroundTask implements Runnable {
 				return null;
 			}
 
-			final HashSet<Ad> result = new HashSet<>();
+			final HashSet<AbstractAd> result = new HashSet<>();
 			for(JsonValue ad : object.asArray()) {
 				result.addAll(Arrays.asList(app.createAdFromJSON(ad.asObject()).multiply()));
 			}

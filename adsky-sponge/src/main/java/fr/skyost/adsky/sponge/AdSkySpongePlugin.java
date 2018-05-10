@@ -1,10 +1,9 @@
 package fr.skyost.adsky.sponge;
 
 import com.eclipsesource.json.JsonObject;
-import fr.skyost.adsky.core.AdSkyApplication;
+import fr.skyost.adsky.core.AbstractAdSkyApplication;
 import fr.skyost.adsky.core.AdSkyConfiguration;
 import fr.skyost.adsky.core.AdSkyLogger;
-import fr.skyost.adsky.core.ad.Ad;
 import fr.skyost.adsky.sponge.config.AdSkySpongeConfiguration;
 import fr.skyost.adsky.sponge.logger.AdSkySpongeLogger;
 import fr.skyost.adsky.sponge.scheduler.AdSkySpongeTaskScheduler;
@@ -31,7 +30,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 @Plugin(id = "adsky-sponge", name = "AdSky", description = "Monetize your Minecraft server !", version = "0.1", url = "https://github.com/Skyost/AdSky", authors = "Skyost")
-public class AdSkySpongePlugin extends AdSkyApplication {
+public class AdSkySpongePlugin extends AbstractAdSkyApplication {
 
 	@Inject
 	@DefaultConfig(sharedRoot = true)
@@ -85,7 +84,7 @@ public class AdSkySpongePlugin extends AdSkyApplication {
 	}
 
 	@Listener
-	public void onReload(final GameReloadEvent event) throws IOException, ObjectMappingException {
+	public void onReload(final GameReloadEvent event) {
 		try {
 			adSkySpongeConfiguration = loader.load().getValue(AdSkySpongeConfiguration.TYPE);
 		}
@@ -113,7 +112,7 @@ public class AdSkySpongePlugin extends AdSkyApplication {
 	}
 
 	@Override
-	public final Ad createAdFromJSON(final JsonObject jsonObject) {
+	public final AdSkySpongeAd createAdFromJSON(final JsonObject jsonObject) {
 		return AdSkySpongeAd.fromJSON(adSkySpongeConfiguration, jsonObject);
 	}
 

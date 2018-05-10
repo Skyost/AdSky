@@ -7,6 +7,10 @@ import org.bstats.bukkit.MetricsLite;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Main plugin class.
+ */
+
 public class AdSkyBukkitPlugin extends JavaPlugin {
 
 	private AdSkyBukkitApplication app;
@@ -18,7 +22,7 @@ public class AdSkyBukkitPlugin extends JavaPlugin {
 
 		// Gets required ad.
 		final AdSkyLogger logger = app.getLogger();
-		final AdSkyBukkitConfiguration config = (AdSkyBukkitConfiguration)app.getConfiguration();
+		final AdSkyBukkitConfiguration config = app.getConfiguration();
 
 		try {
 			// Loads the config.

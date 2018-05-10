@@ -2,7 +2,6 @@ package fr.skyost.adsky.sponge.utils;
 
 import com.eclipsesource.json.Json;
 import com.goebl.david.Webb;
-import com.goebl.david.WebbException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -68,7 +67,7 @@ public class OreUpdater extends Thread {
 	 * @author Alex Gitelman.
 	 */
 
-	public static int versionCompare(final String str1, final String str2) {
+	private static int versionCompare(final String str1, final String str2) {
 		final String[] vals1 = str1.split("\\.");
 		final String[] vals2 = str2.split("\\.");
 		int i = 0;

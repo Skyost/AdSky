@@ -15,7 +15,7 @@ public class ArrayMultiMap<K, V> {
 	 * Inner representation.
 	 */
 
-	private final HashMap<K, List<V>> map = new HashMap<K, List<V>>();
+	private final HashMap<K, List<V>> map = new HashMap<>();
 
 	/**
 	 * Puts a value to this HashMap.
@@ -27,7 +27,7 @@ public class ArrayMultiMap<K, V> {
 	 */
 
 	public final List<V> put(final K key, final V value) {
-		final List<V> values = map.containsKey(key) ? map.get(key) : new ArrayList<V>();
+		final List<V> values = map.containsKey(key) ? map.get(key) : new ArrayList<>();
 		values.add(value);
 		return map.put(key, values);
 	}

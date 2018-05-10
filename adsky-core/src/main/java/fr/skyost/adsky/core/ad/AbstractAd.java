@@ -10,7 +10,7 @@ import java.math.RoundingMode;
  * Represents an AdSky Ad.
  */
 
-public abstract class Ad {
+public abstract class AbstractAd {
 
 	/**
 	 * The Title ad type.
@@ -78,7 +78,7 @@ public abstract class Ad {
 	 * @param duration The duration.
 	 */
 
-	protected Ad(final String username, final int type, final String title, final String message, final int interval, final long expiration, final int duration) {
+	protected AbstractAd(final String username, final int type, final String title, final String message, final int interval, final long expiration, final int duration) {
 		this.username = username;
 		this.type = type;
 		this.title = title;
@@ -86,6 +86,16 @@ public abstract class Ad {
 		this.interval = interval;
 		this.expiration = expiration;
 		this.duration = duration;
+	}
+
+	/**
+	 * Allows to clone an AbstractAd.
+	 *
+	 * @param ad The AbstractAd to clone.
+	 */
+
+	protected AbstractAd(final AbstractAd ad) {
+		this(ad.getUsername(), ad.getType(), ad.getTitle(), ad.getMessage(), ad.getInterval(), ad.getExpiration(), ad.getDuration());
 	}
 
 	/**
@@ -254,7 +264,7 @@ public abstract class Ad {
 	 * @return An array containing all ads.
 	 */
 
-	public abstract Ad[] multiply();
+	public abstract AbstractAd[] multiply();
 
 	/**
 	 * Evaluates the distribution function at the given hour.

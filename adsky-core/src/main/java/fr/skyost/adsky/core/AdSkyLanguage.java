@@ -10,7 +10,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String gettingAds();
+	String gettingAds();
 
 	/**
 	 * Translation of "Found %d ad(s) to broadcast today.".
@@ -20,7 +20,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String foundAds(final int adsNumber);
+	String foundAds(final int adsNumber);
 
 	/**
 	 * Translation of "Broadcasting a random ad from list...".
@@ -28,7 +28,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String broadcastingRandomAd();
+	String broadcastingRandomAd();
 
 	/**
 	 * Translation of "Success !".
@@ -36,7 +36,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String success();
+	String success();
 
 	/**
 	 * Translation of "Scheduled next ad broadcast (if available) on %s.".
@@ -46,7 +46,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String scheduledAt(final Calendar date);
+	String scheduledAt(final Calendar date);
 
 	/**
 	 * Translation of "Deleting expired ads...".
@@ -54,7 +54,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String deletingExpiredAds();
+	String deletingExpiredAds();
 
 	/**
 	 * Translation of "Unable to delete expired ads :".
@@ -62,7 +62,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String unableDeleteExpiredAds();
+	String unableDeleteExpiredAds();
 
 	/**
 	 * Translation of "Unable to request ads :".
@@ -70,7 +70,7 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String unableRequestAds();
+	String unableRequestAds();
 
 	/**
 	 * Translation of "Invalid response code : %d.".
@@ -80,6 +80,6 @@ public interface AdSkyLanguage {
 	 * @return The translation.
 	 */
 
-	public String invalidResponseCode(final int responseCode);
+	String invalidResponseCode(final int responseCode);
 
 }

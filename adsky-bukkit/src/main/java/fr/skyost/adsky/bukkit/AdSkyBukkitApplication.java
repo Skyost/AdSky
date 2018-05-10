@@ -3,15 +3,14 @@ package fr.skyost.adsky.bukkit;
 import com.eclipsesource.json.JsonObject;
 import fr.skyost.adsky.bukkit.config.AdSkyBukkitConfiguration;
 import fr.skyost.adsky.bukkit.logger.AdSkyBukkitLogger;
-import fr.skyost.adsky.core.AdSkyApplication;
+import fr.skyost.adsky.core.AbstractAdSkyApplication;
 import fr.skyost.adsky.core.AdSkyLogger;
-import fr.skyost.adsky.core.ad.Ad;
 
 /**
  * Represents the Bukkit implementation of core AdSky.
  */
 
-public class AdSkyBukkitApplication extends AdSkyApplication {
+public class AdSkyBukkitApplication extends AbstractAdSkyApplication {
 
 	/**
 	 * The logger.
@@ -72,7 +71,7 @@ public class AdSkyBukkitApplication extends AdSkyApplication {
 	}
 
 	@Override
-	public Ad createAdFromJSON(JsonObject jsonObject) {
+	public AdSkyBukkitAd createAdFromJSON(JsonObject jsonObject) {
 		return AdSkyBukkitAd.fromJSON(config, jsonObject);
 	}
 

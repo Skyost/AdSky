@@ -5,13 +5,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Default plugin logger.
+ */
+
 public class AdSkyBukkitLogger implements AdSkyLogger {
 
 	/**
 	 * The plugin's instance.
 	 */
 
-	private Plugin plugin;
+	private final Plugin plugin;
 
 	/**
 	 * Creates a new logger instance.

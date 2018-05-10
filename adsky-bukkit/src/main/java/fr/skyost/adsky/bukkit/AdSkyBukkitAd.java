@@ -3,12 +3,16 @@ package fr.skyost.adsky.bukkit;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import fr.skyost.adsky.bukkit.config.AdSkyBukkitConfiguration;
-import fr.skyost.adsky.core.ad.Ad;
+import fr.skyost.adsky.core.ad.AbstractAd;
 import fr.skyost.adsky.core.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class AdSkyBukkitAd extends Ad {
+/**
+ * Bukkit implementation of Ad.
+ */
+
+public class AdSkyBukkitAd extends AbstractAd {
 
 	/**
 	 * The plugin config.
@@ -42,7 +46,9 @@ public class AdSkyBukkitAd extends Ad {
 	 */
 
 	private AdSkyBukkitAd(final AdSkyBukkitAd ad) {
-		this(ad.config, ad.getUsername(), ad.getType(), ad.getTitle(), ad.getMessage(), ad.getInterval(), ad.getExpiration(), ad.getDuration());
+		super(ad);
+
+		this.config = ad.config;
 	}
 
 	@Override
@@ -70,10 +76,10 @@ public class AdSkyBukkitAd extends Ad {
 	}
 
 	@Override
-	public Ad[] multiply() {
+	public AbstractAd[] multiply() {
 		final int interval = this.getInterval();
 
-		Ad[] array = new Ad[interval];
+		AbstractAd[] array = new AbstractAd[interval];
 		array[0] = this;
 		for(int i = 1; i < interval; i++) {
 			array[i] = new AdSkyBukkitAd(this);

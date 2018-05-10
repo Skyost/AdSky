@@ -1,6 +1,6 @@
 package fr.skyost.adsky.core.ad;
 
-import fr.skyost.adsky.core.AdSkyApplication;
+import fr.skyost.adsky.core.AbstractAdSkyApplication;
 import fr.skyost.adsky.core.AdSkyConfiguration;
 import fr.skyost.adsky.core.utils.ArrayMultiMap;
 import fr.skyost.adsky.core.utils.Utils;
@@ -17,13 +17,13 @@ public class AdScheduler {
 	 * All ads that have not been scheduled yet.
 	 */
 
-	private final List<Ad> notScheduled;
+	private final List<AbstractAd> notScheduled;
 
 	/**
 	 * All scheduled ads.
 	 */
 
-	private final ArrayMultiMap<Integer, Ad> scheduled = new ArrayMultiMap<>();
+	private final ArrayMultiMap<Integer, AbstractAd> scheduled = new ArrayMultiMap<>();
 
 	/**
 	 * The application configuration.
@@ -38,7 +38,7 @@ public class AdScheduler {
 	 * @param ads Ads to schedule.
 	 */
 
-	public AdScheduler(final AdSkyApplication app, final List<Ad> ads) {
+	public AdScheduler(final AbstractAdSkyApplication app, final List<AbstractAd> ads) {
 		this.config = app.getConfiguration();
 		notScheduled = ads;
 	}
@@ -73,7 +73,7 @@ public class AdScheduler {
 			for(int hourMinus = preferredHour, hourPlus = preferredHour; hourMinus > currentHour || hourPlus <= 23;) {
 				// We evaluates how many ads we need to schedule for the current ad.
 				final int hour = minus ? hourMinus : hourPlus;
-				final int hourAdsNumber = Ad.getAdsPerHour(config, preferredHour, hour, adsNumber);
+				final int hourAdsNumber = AbstractAd.getAdsPerHour(config, preferredHour, hour, adsNumber);
 
 				// And we schedule them.
 				for(int i = 0; i < hourAdsNumber; i++) {
@@ -81,7 +81,7 @@ public class AdScheduler {
 						break;
 					}
 
-					final Ad ad = notScheduled.get(random.nextInt(notScheduled.size()));
+					final AbstractAd ad = notScheduled.get(random.nextInt(notScheduled.size()));
 					scheduled.put(hour, ad);
 					notScheduled.remove(ad);
 				}
@@ -129,8 +129,8 @@ public class AdScheduler {
 
 		final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
-		final List<Ad> ads = scheduled.get(hour);
-		final Ad ad = ads.get(new Random().nextInt(ads.size()));
+		final List<AbstractAd> ads = scheduled.get(hour);
+		final AbstractAd ad = ads.get(new Random().nextInt(ads.size()));
 		ad.broadcast();
 
 		scheduled.remove(hour, ad);
@@ -150,7 +150,7 @@ public class AdScheduler {
 
 		// We get the next ads schedule.
 		int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-		Collection<Ad> ads = null;
+		Collection<AbstractAd> ads = null;
 		for(; ads == null || ads.isEmpty(); hour++) {
 			ads = scheduled.get(hour);
 		}
