@@ -1,12 +1,14 @@
 <?php
 
+require_once __DIR__ . '/../Utils.php';
+
 /**
  * A Github update check and downloader.
  */
 
 class GithubUpdater {
 
-    const DOWNLOADS_FOLDER = '../../downloads/';
+    const UPDATES_FOLDER = '../../updates/';
 
     private $_repo;
 
@@ -54,12 +56,12 @@ class GithubUpdater {
             return false;
         }
 
-        if(!is_dir(self::DOWNLOADS_FOLDER)) {
-            mkdir(self::DOWNLOADS_FOLDER);
+        if(!is_dir(self::UPDATES_FOLDER)) {
+            mkdir(self::UPDATES_FOLDER);
         }
 
         $zip = self::githubApiRequest($response['download'], false);
-        $destination = fopen(self::DOWNLOADS_FOLDER . 'update.zip', 'w');
+        $destination = fopen(self::UPDATES_FOLDER . 'update.zip', 'w');
 
         return fwrite($destination, $zip) && fclose($destination);
     }
@@ -76,22 +78,22 @@ class GithubUpdater {
         }
 
         $zip = new ZipArchive();
-        if(!$zip -> open(self::DOWNLOADS_FOLDER . 'update.zip')) {
+        if(!$zip -> open(self::UPDATES_FOLDER . 'update.zip')) {
             return false;
         }
 
-        $zip -> extractTo(self::DOWNLOADS_FOLDER);
+        $zip -> extractTo(self::UPDATES_FOLDER);
         $zip -> close();
 
-        unlink(self::DOWNLOADS_FOLDER . 'update.zip');
+        unlink(self::UPDATES_FOLDER . 'update.zip');
 
-        if(!file_exists(self::DOWNLOADS_FOLDER . 'upgrade.php')) {
+        if(!file_exists(self::UPDATES_FOLDER . 'upgrade.php')) {
             return false;
         }
 
-        include self::DOWNLOADS_FOLDER . 'upgrade.php';
+        include self::UPDATES_FOLDER . 'upgrade.php';
 
-        if(!unlink(self::DOWNLOADS_FOLDER  . 'upgrade.php')) {
+        if(!Utils::delTree(self::UPDATES_FOLDER)) {
             return false;
         }
 

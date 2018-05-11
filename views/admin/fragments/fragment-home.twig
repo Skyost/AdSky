@@ -1,5 +1,9 @@
 <h1><i class="fas fa-home"></i> Home</h1>
 
+<div class="alert alert-danger" role="alert" style="display: none;">
+    <p class="mb-0"></p>
+</div>
+
 {% if message == 'renewed' %}
     <div class="alert alert-success" role="alert">
         <p class="mb-0">Successfully renewed ad. Thank you !</p>
@@ -7,6 +11,10 @@
 {% elseif message == 'validation_success' %}
     <div class="alert alert-success" role="alert">
         <p class="mb-0">Successfully confirmed your account. Welcome on our ad server !</p>
+    </div>
+{% elseif message == 'adsky_updated' %}
+    <div class="alert alert-success" role="alert">
+        <p class="mb-0">AdSky updated with success.</p>
     </div>
 {% endif %}
 

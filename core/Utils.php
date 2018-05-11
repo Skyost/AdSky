@@ -7,6 +7,22 @@
 class Utils {
 
     /**
+     * Deletes a file or a folder.
+     *
+     * @param string $dir The directory.
+     *
+     * @return bool Whether this is a success.
+     */
+
+    public static function delTree($dir) {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach($files as $file) {
+            (is_dir($dir . '/' . $file)) ? self::delTree($dir . '/' . $file) : unlink($dir . '/' . $file);
+        }
+        return rmdir($dir);
+    }
+
+    /**
      * If $array[$index] is not empty, then returns it. null otherwise.
      *
      * @param array $array The array.

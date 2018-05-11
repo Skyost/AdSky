@@ -49,21 +49,18 @@ $(document).ready(function() {
 });
 
 $(document).on('fragmentChanged', function(event, fragment) {
-    if(fragment == 'news') {
-        if(newsLoaded) {
-            return;
-        }
-
+    if(fragment == 'news' && !newsLoaded) {
         loaderFadeIn();
         $.get('https://skyost.github.io/AdSky/feed.xml', function(data) {
             let html = '';
             $(data).find('item').each(function() {
                 let element = $(this);
                 html += '<div class="news">';
-                html += '<h2>' + element.find('title').text() + '</h2>';
-                html += '<small><i class="far fa-calendar-alt"></i> ' + new Date(element.find('pubDate').text()).toLocaleDateString() + '</small>';
-                html += '<p>' + element.find('description').text() + '</p>';
-                html += '<a class="news-read" href="' + element.find('link').text() + '"><i class="fas fa-share"></i> Read post</a>';
+                html += '<header>';
+                html += '<h2 class="news-title"><a href="' + element.find('link').text() + '">' + element.find('title').text() + '</a></h2>';
+                html += '<small class="news-date"><i class="far fa-calendar-alt"></i> ' + new Date(element.find('pubDate').text()).toLocaleDateString() + '</small>';
+                html += '</header>';
+                html += element.find('description').text();
                 html += '</div>';
             });
 

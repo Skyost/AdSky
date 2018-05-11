@@ -29,6 +29,8 @@ const ADS_DATA_HANDLER = function(data, i) {
     }
 };
 
+let updateChecked = false;
+
 $(document).ready(function() {
     $('#nav-drawer').click(function(event) {
         event.preventDefault();
@@ -196,18 +198,55 @@ $(document).ready(function() {
 });
 
 $(document).on('fragmentChanged', function(event, fragment) {
-    if(fragment != 'list') {
+    if(fragment == 'home' && USER_DATA.type == 0 && !updateChecked) {
+        loaderFadeIn();
+        $.get('../api/update/check', function(data) {
+            if(data.object == null) {
+                return;
+            }
+
+            showUpdateMessage(data.object);
+            updateChecked = true;
+            loaderFadeOut();
+        });
+
         return;
     }
-    makeRequest('list', {
-        'url': '../api/ad/list',
-        'data': {username: USER_DATA.username}
-    }, {
-        'buttons': '<i class="fas fa-sync-alt"></i> <i class="fas fa-trash-alt"></i>',
-        'handlingLength': 6,
-        'dataHandler': ADS_DATA_HANDLER
-    }, true);
+
+    if(fragment == 'list') {
+        makeRequest('list', {
+            'url': '../api/ad/list',
+            'data': {username: USER_DATA.username}
+        }, {
+            'buttons': '<i class="fas fa-sync-alt"></i> <i class="fas fa-trash-alt"></i>',
+            'handlingLength': 6,
+            'dataHandler': ADS_DATA_HANDLER
+        }, true);
+    }
 });
+
+/**
+ * Shows an update message according to the specified object.
+ *
+ * @param object The object (must contain a version and a download link).
+ */
+
+function showUpdateMessage(object) {
+    let message = '<h4 class="alert-heading">Update available !</h4>';
+    message += '<p>An update (' + object.version + ') seems to be available to download. ';
+    message += 'You have two choices : you click on the button on the bottom of this alert to install it (Bêta).</p>';
+    message += '<hr>';
+    message += '<p>Or you can download it manually by clicking <a href="' + object.download + '">here</a>. ';
+    message += 'Don\'t forget to check the <em>MIGRATION.md</em> file if required.</p>';
+    message += '<strong id="update-trigger" class="float-right text-uppercase" style="cursor: pointer;">Update</strong>';
+
+    $('#fragment-home h1').after('<div class="alert alert-info clearfix" role="alert">' + message + '</div>');
+    $('#update-trigger').click(function() {
+        defaultPostRequest('../api/update/update', {}, 'home', function() {
+            goToOrReload('?message=adsky_updated#home');
+        });
+    });
+}
 
 /**
  * Sends a POST request, shows the error if an error is returned and call the "href" callable otherwise.
