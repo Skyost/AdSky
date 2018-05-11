@@ -46,8 +46,8 @@ button.btn {
     text-transform: uppercase;
 }
 
-.modal .modal-content {
-    border-radius: 0;
+.modal .modal-content, .alert {
+    border-radius: 0 !important;
 }
 
 .modal button.btn {

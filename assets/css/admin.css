@@ -143,7 +143,7 @@ html, body {
 }
 
 #news-content .news {
-    margin-top: 70px;
+    margin-top: 30px;
     background-color: rgba(0, 0, 0, 0.025);
     padding: 40px;
 }
@@ -182,7 +182,7 @@ html, body {
 }
 
 @media(max-width: 767px) {
-    #news-content .post .news-date {
+    #news-content .news .news-date {
         display: block;
         position: relative;
         margin-top: 10px;

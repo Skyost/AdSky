@@ -201,14 +201,15 @@ $(document).on('fragmentChanged', function(event, fragment) {
     if(fragment == 'home' && USER_DATA.type == 0 && !updateChecked) {
         loaderFadeIn();
         $.get('../api/update/check', function(data) {
+            updateChecked = true;
+            loaderFadeOut();
+
             if(data.object == null) {
                 return;
             }
 
             showUpdateMessage(data.object);
-            updateChecked = true;
-            loaderFadeOut();
-        });
+        }, 'json');
 
         return;
     }

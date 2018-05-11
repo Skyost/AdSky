@@ -70,7 +70,7 @@ $(document).on('fragmentChanged', function(event, fragment) {
 
             newsLoaded = true;
             loaderFadeOut();
-        });
+        }, 'xml');
         return;
     }
 
