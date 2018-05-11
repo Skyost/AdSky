@@ -112,6 +112,23 @@ $router -> all('/api/user/(.*)', function($operation) {
     include $operation;
 });
 
+$router -> all('/api/update/(.*)', function($operation) {
+    $adsky = AdSky::getInstance();
+
+    $operation = __DIR__ . '/api/update/' . str_replace('-', '_', htmlentities($operation)) . '.php';
+    if(!file_exists($operation)) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_UPDATE_OPERATION_NOTFOUND'));
+        $response -> returnResponse();
+    }
+
+    if(!$adsky -> isInstalled()) {
+        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
+        $response -> returnResponse();
+    }
+
+    include $operation;
+});
+
 $router -> all('/email/confirm/([^/]+)/(.*)', function($selector, $token) {
     $adsky = AdSky::getInstance();
     $adsky -> getAuth() -> confirmEmailAndSignIn($selector, $token, (int)(60 * 60 * 24 * 365.25));

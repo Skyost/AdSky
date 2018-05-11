@@ -45,7 +45,7 @@ Please make sure that your web server meets the following requirements :
 
  - **PHP 5.6.0+** with the [following extensions](https://scripts.mit.edu/faq/64/how-do-i-enable-additional-php-extensions) : PDO (`pdo`), MySQL Native Driver (`mysqlnd`) and OpenSSL (`openssl`).
  - **MySQL 5.5.3+**.
- - **[mail()](http://php.net/manual/function.mail.php) and .htaccess support**.
+ - **[mail()](http://php.net/manual/function.mail.php) and [URL Rewriting](https://gist.github.com/bramus/5332525) support**.
  
 If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files (located in `views/` and `assets/css/`, respectively).
  
