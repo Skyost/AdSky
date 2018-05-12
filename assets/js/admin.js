@@ -3,8 +3,7 @@ let newsLoaded = false;
 $(document).ready(function() {
     $('#fragment-users .table').on('click', '.fa-check', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('../api/user/update', {
-            oldemail: row.eq(1).attr('data-email'),
+        defaultPostRequest('../api/v1/users/' + row.eq(1).attr('data-email') + '/update', {
             email: row.eq(1).children().first().val(),
             type: row.eq(3).children().first().val(),
             force: true
@@ -22,7 +21,7 @@ $(document).ready(function() {
             callback: function() {
                 closeModal();
                 loaderFadeIn();
-                $.post('../api/user/delete', {username: row.eq(0).attr('data-username')}, function() {
+                $.post('../api/v1/users/' + row.eq(1).attr('data-email') + '/delete', {}, function() {
                     loaderFadeOut();
                     goToOrReload('?message=user_updated#users');
                 }, 'json');
@@ -32,8 +31,7 @@ $(document).ready(function() {
 
     $('#fragment-ads .table').on('click', '.fa-check', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('../api/ad/update', {
-            id: row.eq(0).attr('data-id'),
+        defaultPostRequest('../api/v1/ads/' + row.eq(0).attr('data-id') + '/update', {
             title: row.eq(1).children().first().val(),
             message: row.eq(2).children().first().val(),
             type: row.eq(3).children().first().val(),
@@ -44,7 +42,7 @@ $(document).ready(function() {
 
     $('#fragment-ads .table').on('click', '.fa-trash-alt', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('../api/ad/delete', {id: row.eq(0).attr('data-id')}, 'ads', null);
+        defaultPostRequest('../api/v1/ads/' + row.eq(0).attr('data-id') + '/delete', {}, 'ads', null);
     });
 });
 
@@ -76,7 +74,7 @@ $(document).on('fragmentChanged', function(event, fragment) {
 
     if(fragment == 'users') {
         makeRequest('users', {
-            'url': '../api/user/list',
+            'url': '../api/v1/users',
             'data': null
         }, {
             'buttons': '<i class="fas fa-edit"></i> <i class="fas fa-trash-alt"></i>',
@@ -103,7 +101,7 @@ $(document).on('fragmentChanged', function(event, fragment) {
 
     if(fragment == 'ads') {
         makeRequest('ads', {
-            'url': '../api/ad/list',
+            'url': '../api/v1/ads',
             'data': null
         }, {
             'buttons': '<i class="fas fa-edit"></i> <i class="fas fa-trash-alt"></i>',

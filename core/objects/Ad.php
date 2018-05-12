@@ -38,8 +38,8 @@ class Ad {
     public function __construct($username = null, $type = null, $title = null, $message = null, $interval = null, $expiration = null, $duration = null) {
         $this -> _username = $username;
         $this -> _type = intval($type);
-        $this -> _title = htmlspecialchars($title);
-        $this -> _message = htmlspecialchars($message);
+        $this -> _title = $title;
+        $this -> _message = $message;
         $this -> _interval = intval($interval);
         $this -> _expiration = intval($expiration);
         $this -> _duration = intval($duration);
@@ -138,7 +138,7 @@ class Ad {
             return false;
         }
 
-        $this -> _title = htmlspecialchars($title);
+        $this -> _title = $title;
         return true;
     }
 
@@ -165,7 +165,7 @@ class Ad {
             return false;
         }
 
-        $this -> _message = htmlspecialchars($message);
+        $this -> _message = $message;
         return true;
     }
 
@@ -281,38 +281,29 @@ class Ad {
     public function sendUpdateToDatabase($id = 0) {
         $adsky = AdSky::getInstance();
 
+        // If the ad has been deleted, then we trigger the delete on the database.
         if($this -> _isDeleted) {
             $adsky -> getMedoo() -> delete($adsky -> getMySQLSettings() -> getAdsTable(), ['id' => $id]);
             return;
         }
 
+        // Expiration column name is not available in MySQL so we have to replace it by something else.
+        $data = $this -> toArray();
+        $data['until'] = $data['expiration'];
+        unset($data['expiration']);
+
+        // If ads does not exist, then we have to insert it.
         if(!self::adExists($id)) {
             if(!$adsky -> getAdSettings() -> validate($this -> _title, $this -> _message, $this -> _interval, $this -> _expiration, $this -> _duration, $this -> _type)) {
                 return;
             }
 
-            $adsky -> getMedoo() -> insert($adsky -> getMySQLSettings() -> getAdsTable(), [
-                'title' => htmlspecialchars($this -> _title),
-                'message' => htmlspecialchars($this -> _message),
-                'username' => $this -> _username,
-                'interval' => intval($this -> _interval),
-                'until' => intval($this -> _expiration),
-                'type' => intval($this -> _type),
-                'duration' => intval($this -> _duration)
-            ]);
-
+            $adsky -> getMedoo() -> insert($adsky -> getMySQLSettings() -> getAdsTable(), $data);
             return;
         }
 
-        $adsky -> getMedoo() -> update($adsky -> getMySQLSettings() -> getAdsTable(), [
-            'title' => $this -> _title,
-            'message' => $this -> _message,
-            'username' => $this -> _username,
-            'interval' => $this -> _interval,
-            'until' => $this -> _expiration,
-            'type' => $this -> _type,
-            'duration' => $this -> _duration
-        ], ['id' => $id]);
+        // Otherwise, we update it.
+        $adsky -> getMedoo() -> update($adsky -> getMySQLSettings() -> getAdsTable(), $data, ['id' => $id]);
     }
 
     /**

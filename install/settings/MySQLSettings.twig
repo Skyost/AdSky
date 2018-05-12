@@ -81,6 +81,17 @@ class MySQLSettings extends Settings {
             $medoo = $adsky -> getMedoo();
             $rows = $medoo -> count($table, []);
 
+            if($rows <= 0) {
+                return new Response(null, $adsky -> getLanguageString('API_SUCCESS'), [
+                    'data' => [],
+                    'page' => 1,
+                    'minPage' => 1,
+                    'maxPage' => 1,
+                    'hasPrevious' => false,
+                    'hasNext' => false
+                ]);
+            }
+
             $itemsPerPage = $adsky -> getWebsiteSettings() -> getWebsitePaginatorItemsPerPage();
             $maxPage = ceil($rows / $itemsPerPage);
             if($page > $maxPage) {

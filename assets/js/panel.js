@@ -17,7 +17,7 @@ const ADS_DATA_HANDLER = function(data, i) {
         case 1:
             return ['title', data['title'], 'text'];
         case 2:
-            return ['message', data['message'], 'text'];
+            return ['message', data['message'] == null ? 'None' : data['message'], 'text'];
         case 3:
             return ['type', null, 'select', ['Title', 'Chat']];
         case 4:
@@ -45,7 +45,7 @@ $(document).ready(function() {
     $('#nav-logout').click(function(event) {
         event.preventDefault();
         loaderFadeIn();
-        $.getJSON('../api/user/logout', function() {
+        $.getJSON('../api/v1/users/logout', function() {
             window.location.href = '../login/';
         });
     });
@@ -79,7 +79,7 @@ $(document).ready(function() {
             data.password = newPassword;
         }
 
-        defaultPostRequest('../api/user/update', data, 'profile', function() {
+        defaultPostRequest('../api/v1/users/current/update', data, 'profile', function() {
             if(changeEmail) {
                 window.location.href = '../login/?message=updated';
                 return;
@@ -91,7 +91,7 @@ $(document).ready(function() {
     $('#btn-create').click(function(event) {
         event.preventDefault();
         let type = $('#form-ad-type').val();
-        defaultPostRequest('../api/ad/pay', {
+        defaultPostRequest('../api/v1/ads/pay', {
             type: type,
             title: $('#form-ad-title').val(),
             message: $('#form-ad-message').val(),
@@ -163,10 +163,7 @@ $(document).ready(function() {
             text: 'OK',
             callback: function() {
                 closeModal();
-                defaultPostRequest('../api/ad/renew', {
-                    id: row.eq(0).attr('data-id'),
-                    days: $('#modal input').val()
-                }, 'list', function(data) {
+                defaultPostRequest('../api/v1/ads/' + row.eq(0).attr('data-id') + '/renew', {days: $('#modal input').val()}, 'list', function(data) {
                     goToOrReload(data.object);
                 });
             }
@@ -175,7 +172,7 @@ $(document).ready(function() {
 
     $('#fragment-list .table').on('click', '.fa-trash-alt', function() {
         let row = $(this).parent().parent().children();
-        defaultPostRequest('../api/ad/delete', {id: row.eq(0).attr('data-id')}, 'list', null);
+        defaultPostRequest('../api/v1/ads/' + row.eq(0).attr('data-id') + '/delete', {}, 'list', null);
     });
 
     let inputs = $('#form-ad-type, #form-ad-expiration');
@@ -200,7 +197,7 @@ $(document).ready(function() {
 $(document).on('fragmentChanged', function(event, fragment) {
     if(fragment == 'home' && USER_DATA.type == 0 && !updateChecked) {
         loaderFadeIn();
-        $.get('../api/update/check', function(data) {
+        $.get('../api/v1/update/check', function(data) {
             updateChecked = true;
             loaderFadeOut();
 
@@ -216,7 +213,7 @@ $(document).on('fragmentChanged', function(event, fragment) {
 
     if(fragment == 'list') {
         makeRequest('list', {
-            'url': '../api/ad/list',
+            'url': '../api/v1/ads',
             'data': {username: USER_DATA.username}
         }, {
             'buttons': '<i class="fas fa-sync-alt"></i> <i class="fas fa-trash-alt"></i>',
@@ -243,7 +240,7 @@ function showUpdateMessage(object) {
 
     $('#fragment-home h1').after('<div class="alert alert-info clearfix" role="alert">' + message + '</div>');
     $('#update-trigger').click(function() {
-        defaultPostRequest('../api/update/update', {}, 'home', function() {
+        defaultPostRequest('../api/v1/update/update', {}, 'home', function() {
             goToOrReload('?message=adsky_updated#home');
         });
     });
@@ -378,7 +375,7 @@ function showError(fragment, error) {
 }
 
 /**
- * Makes a request towards an API file that returns pages (api/ad/list for example).
+ * Makes a request towards an API file that returns pages (/api/v1/ads for example).
  *
  * @param fragment The target fragment.
  * @param postData The POST data : must contain a "url" and POST parameters ("data").

@@ -36,6 +36,19 @@ class Utils {
     }
 
     /**
+     * Checks if a var is empty (and allowing 0 to work).
+     *
+     * @param array $array The array.
+     * @param mixed $index The index.
+     *
+     * @return bool Whether the variable is empty.
+     */
+
+    public static function trueEmpty($array, $index) {
+        return !isset($array[$index]) || strlen($array[$index]) === 0;
+    }
+
+    /**
      * Replaces separators by slashes in a String.
      *
      * @param string $string The String.

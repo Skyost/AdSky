@@ -12,14 +12,14 @@ $(document).ready(function() {
             }
         };
         if($('.visible-login').is(':visible')) {
-            data.url = '../api/user/login';
+            data.url = '../api/v1/users/login';
             if($('#form-rememberme').is(':checked')) {
                 data.postData.rememberduration = 60 * 60 * 24 * 365.25;
             }
             data.successUrl = '../admin/';
         }
         else {
-            data.url = '../api/user/register';
+            data.url = '../api/v1/users/register';
             data.postData.username = $('#form-username').val();
             data.successUrl = '?message=registered';
         }
@@ -51,7 +51,7 @@ $(document).ready(function() {
             text: 'OK',
             callback: function() {
                 loaderFadeIn();
-                $.post('../api/user/forgot-password', {email: $('.modal-body input').val()}, function(data) {
+                $.post('../api/v1/users/' + $('.modal-body input').val() + '/forgot', {}, function(data) {
                     loaderFadeOut();
                     $('.modal-body').html('<p class="mb-0">' + (data.error == null ? data.message : data.error) + '</p>');
                     $('#forgot-password-ok').remove();

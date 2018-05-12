@@ -1,7 +1,8 @@
+DROP TABLE IF EXISTS `adsky_ads`;
 CREATE TABLE IF NOT EXISTS `adsky_ads` (
   `id` int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `title` text COLLATE utf8_unicode_ci NOT NULL,
-  `message` text COLLATE utf8_unicode_ci NOT NULL,
+  `message` text COLLATE utf8_unicode_ci,
   `username` text COLLATE utf8_unicode_ci NOT NULL,
   `interval` int NOT NULL,
   `until` bigint NOT NULL,

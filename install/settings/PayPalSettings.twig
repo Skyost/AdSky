@@ -1,5 +1,14 @@
 
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use PayPal\Api\Amount;
+use PayPal\Api\Payment;
+use PayPal\Api\Transaction;
+use PayPal\Api\RedirectUrls;
+
+use PayPal\Rest\ApiContext;
+
 class PayPalSettings extends Settings {
 
     public function __construct() {
