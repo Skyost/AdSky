@@ -18,7 +18,7 @@
  6. [Support](#support)
 
 ## Introduction
-AdSky is a way for you, as a Minecraft server owner, to monetize your server. Currently, there are two kinds of ads : [Title ads](https://github.com/Skyost/AdSky/blob/server/assets/img/previews/preview-0.png) and [Chat ads](https://github.com/Skyost/AdSky/blob/server/assets/img/previews/preview-1.png). Advertisers choose the type of ad they want to broadcast on your server, customize it (Title / subtitle, duration, display per day, ...), pay it according to the price you setup and voilà !
+AdSky is a way for you, as a Minecraft server owner, to monetize your server. Currently, there are two kinds of ads : [Title ads](https://github.com/Skyost/AdSky/blob/server/assets/img/previews/preview-0.png) and [Chat ads](https://github.com/Skyost/AdSky/blob/server/assets/img/previews/preview-1.png). Advertisers choose the type of ad they want to broadcast on your server, customize it (Title / subtitle, duration, display per day, ...), pay it according to the price you set up and voilà !
 
 There are two parts : *Server* and *Plugin*.
 
@@ -50,16 +50,16 @@ Please make sure that your web server meets the following requirements :
  
 If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files (located in `views/` and `assets/css/`, respectively).
  
-Oh and I forgot one thing : **everything is configurable**. Just go to `core/settings/` and open the PHP file you want.
+Oh, and I forgot one thing : **everything is configurable**. Just go to `core/settings/` and open the PHP file you want.
 
 ## API
 
 AdSky server is provided with a little API. Below are the available methods.
-Each of these will return you a JSON response containing : an `error`, an `message` and an `object` (all values can be null).
+Each of these will return you a JSON response containing : an `error`, a `message` and an `object` (all values can be null).
 
 ### Ads
 
-Here are the available ads operations :
+Here are the available ad operations :
 
 #### List all ads
 
@@ -148,7 +148,7 @@ Sample output :
 
 #### Pay for an ad
 
-**POST /api/v1/ads/:id/pay** : Send a pay request to the PayPal REST API. An admin will see its ad immediately registered (if valid).
+**POST /api/v1/ads/:id/pay** : Sends a payment request to the PayPal REST API. An admin will see its ad immediately registered (if valid).
 
 * _"title" (string)_ : Ad's title.
 * _"type" (int)_ : Ad's type (0 for Title Ad, 1 for Chat Ad).
@@ -225,9 +225,9 @@ Sample output :
 }
 ```
 
-#### Get today ads
+#### Get today's ads
 
-**POST /api/v1/plugin/today** : Allows you to get today ads.
+**POST /api/v1/plugin/today** : Allows you to get today's ads.
 
 * _"key" (string)_ : Plugin key.
 
@@ -282,11 +282,11 @@ Sample output :
 
 ### Users
 
-Here are the available users operations :
+Here are the available user operations :
 
 #### List all users
 
-**\* /api/v1/users** : Allows you to list all users (for administrators only).
+*POST /api/v1/users** : Allows you to list all users (for administrators only).
 
 * _"page" (int)_ : The page you want to see (optional).
 
@@ -324,9 +324,9 @@ Sample output :
 }
 ```
 
-#### Get an user
+#### Get a user
 
-**\* /api/v1/users/:email** : Allows you to get an user. Put `current` in _email_ to target current user.
+**\* /api/v1/users/:email** : Allows you to get a user. Put `current` in _email_ to target current user.
 You must be an admin to get another user.
 
 _No additional parameters needed._
@@ -345,9 +345,9 @@ Sample output :
 }
 ```
 
-#### List an user's ads
+#### List a user's ads
 
-**\* /api/v1/users/:email/ads** : Lists all user's ads. Put `current` in _email_ to target current user.
+*POST /api/v1/users/:email/ads** : Lists all user's ads. Put `current` in _email_ to target current user.
 You must be an admin to list another user's ads.
 
 * _"page" (int)_ : The page you want to see (optional).
@@ -378,7 +378,7 @@ You must be an admin to list another user's ads.
 }
 ```
 
-#### Delete an user
+#### Delete a user
 
 **\* /api/v1/users/:email/delete** : Allows you to delete someone's account. Put `current` in _email_ to target current user.
 You must be an admin to delete someone else's account.
@@ -395,7 +395,7 @@ Sample output :
 }
 ```
 
-#### Update an user
+#### Update a user
 
 **POST /api/v1/users/:email/update** : Updates someone's account. Put `current` in _email_ to target current user.
 You must be an admin to update someone else's account.
@@ -404,7 +404,7 @@ You must be an admin to update someone else's account.
 * _"password" (string)_ : The new password (optional).
 * _"force" (boolean)_ : Allows to not enter "oldpassword" parameter, to edit the type and to not confirm the new email (for admins only, optional).
 * _"type" (int)_ : The new type (0 for admin, 1 for publisher), optional.
-* _"oldpassword" (string)_ : Confirmation password.
+* _"oldpassword" (string)_ : Password confirmation.
 
 Sample output :
 
@@ -416,7 +416,7 @@ Sample output :
 }
 ```
 
-#### Register an user
+#### Register a user
 
 **POST /api/v1/users/register** : Registers an account.
 
@@ -434,9 +434,9 @@ Sample output :
 }
 ```
 
-#### Login an user
+#### Login a user
 
-**POST /api/v1/users/login** : Allows you to login an user.
+**POST /api/v1/users/login** : Allows you to login a user.
 
 * _"email" (string)_ : The email.
 * _"password" (string)_ : The password.
