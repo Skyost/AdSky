@@ -29,13 +29,13 @@ public class BackgroundTask implements Runnable {
 	 * The non formatted delete expired ads url.
 	 */
 
-	private static final String AD_DELETE_EXPIRED_URL = "%sapi/plugin/delete-expired";
+	private static final String AD_DELETE_EXPIRED_URL = "%sapi/v1/plugin/delete-expired";
 
 	/**
 	 * The non formatted delete request ads url.
 	 */
 
-	private static final String AD_REQUEST_URL = "%sapi/plugin/today";
+	private static final String AD_REQUEST_URL = "%sapi/v1/plugin/today";
 
 	/**
 	 * The adScheduler.
