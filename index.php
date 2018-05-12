@@ -133,6 +133,11 @@ $router -> mount('/api/v1/users', function() use ($router) {
         include __DIR__ . '/api/v1/user/info.php';
     });
 
+    $router -> all('/([^/]+)/ads', function($email) {
+        $_POST['email'] = $email;
+        include __DIR__ . '/api/v1/ad/list.php';
+    });
+
     $router -> all('/([^/]+)/delete', function($email) {
         $_POST['email'] = $email;
         include __DIR__ . '/api/v1/user/delete.php';

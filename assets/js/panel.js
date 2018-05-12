@@ -213,8 +213,8 @@ $(document).on('fragmentChanged', function(event, fragment) {
 
     if(fragment == 'list') {
         makeRequest('list', {
-            'url': '../api/v1/ads',
-            'data': {username: USER_DATA.username}
+            'url': '../api/v1/users/current/ads',
+            'data': {}
         }, {
             'buttons': '<i class="fas fa-sync-alt"></i> <i class="fas fa-trash-alt"></i>',
             'handlingLength': 6,

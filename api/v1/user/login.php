@@ -12,6 +12,7 @@
  * Parameters :
  * [P] email : Account's email.
  * [P] password : Account's password.
+ * [P][O] rememberduration : Remember duration in seconds.
  */
 
 require_once __DIR__ . '/../../../core/AdSky.php';

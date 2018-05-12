@@ -10,7 +10,7 @@
  * Throttle : 10 requests per 60 seconds.
  *
  * Parameters :
- * [P][O] username : Username to list ads.
+ * [P][O] email : Email to list ads.
  * [P][O] page : Current page (to see how many ads are displayed by page, go to core/settings/WebsiteSettings.php and check the WEBSITE_PAGINATOR_ITEMS_PER_PAGE parameter).
  */
 
@@ -30,7 +30,25 @@ try {
         $page = 1;
     }
 
-    // Throttle protection.
+    // We check if the user is logged in.
+    $email = Utils::notEmptyOrNull($_POST, 'email');
+    $user = $adsky -> getCurrentUserObject();
+    if($user == null) {
+        $response = new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_NOT_LOGGEDIN'));
+        $response -> returnResponse();
+    }
+
+    // Username we want to list ads.
+    if($user != null && $email == 'current') {
+        $email = $user -> getEmail();
+    }
+
+    // Not we check if the user is a admin (or if the username corresponds to the current user).
+    if($email != $user -> getEmail() && !$user -> isAdmin()) {
+        $response = new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_NOT_ADMIN'));
+        $response -> returnResponse();
+    }
+
     $where = ['ORDER' => 'title'];
     $data = [
         'ad-list',
@@ -38,18 +56,20 @@ try {
         $page
     ];
 
-    // Username we want to list ads.
-    $username = Utils::notEmptyOrNull($_POST, 'username');
-    if($username != null) {
-        array_push($data, $username);
-        $where['username'] = $username;
-    }
+    if($email != null) {
+        // We get its username by its email.
+        $username = $adsky -> getMedoo() -> select($adsky -> getMySQLSettings() -> getUsersTable(), 'username', ['email' => $email]);
+        if(empty($username)) {
+            throw new Delight\Auth\InvalidEmailException();
+        }
 
-    // Not we check if the user is a admin (or if the username corresponds to the current user).
-    $user = $adsky -> getCurrentUserObject();
-    if($user == null || ($username != $user -> getUsername() && !$user -> isAdmin())) {
-        $response = new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_NOT_ADMIN'));
-        $response -> returnResponse();
+        // And then we delete him.
+        $username = $username[0];
+
+        if($username != null) {
+            array_push($data, $username);
+            $where['username'] = $username;
+        }
     }
 
     // Throttle protection.
@@ -72,6 +92,10 @@ try {
 }
 catch(Delight\Auth\TooManyRequestsException $error) {
     $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
+    $response -> returnResponse();
+}
+catch(\Delight\Auth\InvalidEmailException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_EMAIL'), null, $error);
     $response -> returnResponse();
 }
 catch(Delight\Auth\AuthError $error) {

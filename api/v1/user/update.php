@@ -10,13 +10,12 @@
  * Throttle : None.
  *
  * Parameters :
- * [P][O] username : New account's username.
+ * [O] oldemail : "Old" account's email.
+ * [O] oldpassword : "Old" account's password.
  * [P][O] email : New account's email.
  * [P][O] password : New account's password.
  * [P][O] force : Force update the account (allows to not enter the the old password and to change the type). If set to true, you must specify the "oldemail" parameter to identify the target account. Only admins can do that.
  * [P][O] type : New account's type.
- * [P][O] oldemail : "Old" account's email.
- * [P][O] oldpassword : "Old" account's password.
  */
 
 require_once __DIR__ . '/../../../core/AdSky.php';
