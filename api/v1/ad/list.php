@@ -14,12 +14,12 @@
  * [P][O] page : Current page (to see how many ads are displayed by page, go to core/settings/WebsiteSettings.php and check the WEBSITE_PAGINATOR_ITEMS_PER_PAGE parameter).
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/Ad.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/Ad.php';
 
-require_once __DIR__ . '/../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Utils.php';
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 $adsky = AdSky::getInstance();
 

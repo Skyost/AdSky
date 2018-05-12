@@ -19,14 +19,12 @@
  * [P][O] duration : New duration of the ad (for Title ads).
  */
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/Ad.php';
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/Ad.php';
+require_once __DIR__ . '/../../../core/Utils.php';
 
-require_once __DIR__ . '/../../core/Utils.php';
-
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 $adsky = AdSky::getInstance();
 
@@ -47,7 +45,7 @@ try {
     }
 
     // We get the ID.
-    if((!isset($_POST['id']) || strlen($_POST['id']) === 0) || empty($_POST['id'])) {
+    if(Utils::trueEmpty($_POST, 'id')) {
         $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_ID')]));
         $response -> returnResponse();
     }

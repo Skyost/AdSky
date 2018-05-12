@@ -10,14 +10,14 @@
  * Throttle : None.
  *
  * Parameters :
- * [P][O] username : User to delete. If you do not specify an user, it will delete your account and all your ads. An admin can delete anyone's account.
+ * [P][O] email : User to delete. If you do not specify an user, it will delete your account and all your ads. An admin can delete anyone's account.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/Ad.php';
-require_once __DIR__ . '/../../core/objects/User.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/Ad.php';
+require_once __DIR__ . '/../../../core/objects/User.php';
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 $adsky = AdSky::getInstance();
 
@@ -32,13 +32,20 @@ try {
 
     // If it's okay, we can check which user we want to delete.
     $auth = $user -> getAuth();
-    $username = empty($_POST['username']) ? $auth -> getUsername() : $_POST['username'];
-    if($username != $user -> getUsername() && !$user -> isAdmin()) {
+    $email = empty($_POST['email']) || $_POST['email'] == 'current' ? $auth -> getEmail() : $_POST['email'];
+    if($email != $user -> getEmail() && !$user -> isAdmin()) {
         $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'));
         $response -> returnResponse();
     }
 
-    // And we delete him.
+    // We get its username by its email.
+    $username = $adsky -> getMedoo() -> select($adsky -> getMySQLSettings() -> getUsersTable(), 'username', ['email' => $email]);
+    if(empty($username)) {
+        throw new \Delight\Auth\InvalidEmailException();
+    }
+
+    // And then we delete him.
+    $username = $username[0];
     $auth -> admin() -> deleteUserByUsername($username);
 
     $adsky -> getMedoo() -> delete($adsky -> getMySQLSettings() -> getAdsTable(), ['username' => $username]);
@@ -50,8 +57,8 @@ catch(PDOException $error) {
     $response = new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
     $response -> returnResponse();
 }
-catch(\Delight\Auth\UnknownUsernameException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_USER_NOT_FOUND'), null, $error);
+catch(\Delight\Auth\InvalidEmailException $error) {
+    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_EMAIL'), null, $error);
     $response -> returnResponse();
 }
 catch(Exception $error) {

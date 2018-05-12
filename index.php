@@ -61,72 +61,97 @@ $router -> all('/admin/', function() {
     echo twigTemplate('admin', 'content.twig', ['user' => $user]);
 });
 
-$router -> all('/api/ad/(.*)', function($operation) {
-    $adsky = AdSky::getInstance();
+$router -> mount('/api/v1/ads', function() use ($router) {
+    $router -> all('/', function() {
+        include __DIR__ . '/api/v1/ad/list.php';
+    });
 
-    $operation = __DIR__ . '/api/ad/' . str_replace('-', '_', htmlentities($operation)) . '.php';
-    if(!file_exists($operation)) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_AD_OPERATION_NOTFOUND'));
-        $response -> returnResponse();
-    }
+    $router -> all('/pay', function() {
+        include __DIR__ . '/api/v1/ad/pay.php';
+    });
 
-    if(!$adsky -> isInstalled()) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
-        $response -> returnResponse();
-    }
+    $router -> all('/([^/]+)', function($id) {
+        $_POST['id'] = $id;
+        include __DIR__ . '/api/v1/ad/info.php';
+    });
 
-    include $operation;
+    $router -> all('/([^/]+)/delete', function($id) {
+        $_POST['id'] = $id;
+        include __DIR__ . '/api/v1/ad/delete.php';
+    });
+
+    $router -> all('/([^/]+)/renew', function($id) {
+        $_POST['id'] = $id;
+        include __DIR__ . '/api/v1/ad/renew.php';
+    });
+
+    $router -> all('/([^/]+)/update', function($id) {
+        $_POST['id'] = $id;
+        include __DIR__ . '/api/v1/ad/update.php';
+    });
 });
 
-$router -> all('/api/plugin/(.*)', function($operation) {
-    $adsky = AdSky::getInstance();
+$router -> mount('/api/v1/plugin', function() use ($router) {
+    $router -> all('/delete-expired', function() {
+        include __DIR__ . '/api/v1/plugin/delete_expired.php';
+    });
 
-    $operation = __DIR__ . '/api/plugin/' . str_replace('-', '_', htmlentities($operation)) . '.php';
-    if(!file_exists($operation)) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_PLUGIN_OPERATION_NOTFOUND'));
-        $response -> returnResponse();
-    }
-
-    if(!$adsky -> isInstalled()) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
-        $response -> returnResponse();
-    }
-
-    include $operation;
+    $router -> all('/today', function() {
+        include __DIR__ . '/api/v1/plugin/today.php';
+    });
 });
 
-$router -> all('/api/user/(.*)', function($operation) {
-    $adsky = AdSky::getInstance();
+$router -> mount('/api/v1/update', function() use ($router) {
+    $router -> all('/check', function() {
+        include __DIR__ . '/api/v1/update/check.php';
+    });
 
-    $operation = __DIR__ . '/api/user/' . str_replace('-', '_', htmlentities($operation)) . '.php';
-    if(!file_exists($operation)) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_USER_OPERATION_NOTFOUND'));
-        $response -> returnResponse();
-    }
-
-    if(!$adsky -> isInstalled()) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
-        $response -> returnResponse();
-    }
-
-    include $operation;
+    $router -> all('/update', function() {
+        include __DIR__ . '/api/v1/update/update.php';
+    });
 });
 
-$router -> all('/api/update/(.*)', function($operation) {
-    $adsky = AdSky::getInstance();
+$router -> mount('/api/v1/users', function() use ($router) {
+    $router -> all('/', function() {
+        include __DIR__ . '/api/v1/user/list.php';
+    });
 
-    $operation = __DIR__ . '/api/update/' . str_replace('-', '_', htmlentities($operation)) . '.php';
-    if(!file_exists($operation)) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_UPDATE_OPERATION_NOTFOUND'));
-        $response -> returnResponse();
-    }
+    $router -> all('/login', function() {
+        include __DIR__ . '/api/v1/user/login.php';
+    });
 
-    if(!$adsky -> isInstalled()) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_INSTALLED'));
-        $response -> returnResponse();
-    }
+    $router -> all('/logout', function() {
+        include __DIR__ . '/api/v1/user/logout.php';
+    });
 
-    include $operation;
+    $router -> all('/register', function() {
+        include __DIR__ . '/api/v1/user/register.php';
+    });
+
+    $router -> all('/([^/]+)', function($email) {
+        $_POST['email'] = $email;
+        include __DIR__ . '/api/v1/user/info.php';
+    });
+
+    $router -> all('/([^/]+)/delete', function($email) {
+        $_POST['email'] = $email;
+        include __DIR__ . '/api/v1/user/delete.php';
+    });
+
+    $router -> all('/([^/]+)/forgot', function($email) {
+        $_POST['email'] = $email;
+        include __DIR__ . '/api/v1/user/forgot_password.php';
+    });
+
+    $router -> all('/([^/]+)/update', function($email) {
+        $_POST['oldemail'] = $email;
+        include __DIR__ . '/api/v1/user/update.php';
+    });
+});
+
+$router -> all('/api/(.*)', function() {
+    $response = new Response('Please check the API documentation here : ' . AdSky::APP_WEBSITE . '.');
+    $response -> returnResponse();
 });
 
 $router -> all('/email/confirm/([^/]+)/(.*)', function($selector, $token) {

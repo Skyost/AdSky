@@ -13,12 +13,10 @@
  * [P] id : Ad ID.
  */
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/Ad.php';
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/Ad.php';
-
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 $adsky = AdSky::getInstance();
 $language = $adsky -> getLanguage();

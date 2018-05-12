@@ -15,10 +15,10 @@
  * [P] password : Account's password.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/User.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/User.php';
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 $adsky = AdSky::getInstance();
 $language = AdSky::getInstance() -> getLanguage();

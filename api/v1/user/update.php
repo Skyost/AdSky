@@ -19,10 +19,12 @@
  * [P][O] oldpassword : "Old" account's password.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/User.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/User.php';
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
+
+require_once __DIR__ . '/../../../core/Utils.php';
 
 use Delight\Auth;
 
@@ -47,16 +49,16 @@ try {
         }
 
         // We check if a valid type has been sent.
-        if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != User::TYPE_ADMIN && $_POST['type'] != User::TYPE_PUBLISHER)) {
+        if(!Utils::trueEmpty($_POST, 'type') && ($_POST['type'] != User::TYPE_ADMIN && $_POST['type'] != User::TYPE_PUBLISHER)) {
             $response = new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
             $response -> returnResponse();
         }
 
         // We prepare our target.
-        $target = new User($auth, empty($_POST['oldemail']) ? $auth -> getEmail() : $_POST['oldemail'], null, null);
+        $target = new User($auth, empty($_POST['oldemail']) || $_POST['oldemail'] == 'current' ? $auth -> getEmail() : $_POST['oldemail'], null, null);
 
         // We impersonate the user if needed.
-        $currentEmail = $target -> loginAsUserIfNeeded();
+        $target -> loginAsUserIfNeeded();
 
         // Now we can edit everything.
         if(!empty($_POST['email'])) {
@@ -72,9 +74,7 @@ try {
         }
 
         // We login back our admin.
-        if($user -> getEmail() != $target -> getEmail()) {
-            $auth -> admin() -> logInAsUserByEmail($currentEmail);
-        }
+        $user -> loginAsUserIfNeeded();
 
         $response = new Response(null, $language -> getSettings('API_SUCCESS'));
         $response -> returnResponse();

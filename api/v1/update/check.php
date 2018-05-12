@@ -13,10 +13,10 @@
  * None.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
 
-require_once __DIR__ . '/../../core/Response.php';
-require_once __DIR__ . '/../../core/objects/GithubUpdater.php';
+require_once __DIR__ . '/../../../core/Response.php';
+require_once __DIR__ . '/../../../core/objects/GithubUpdater.php';
 
 $adsky = AdSky::getInstance();
 

@@ -18,12 +18,12 @@
  * [P][O] duration : Duration of a Title ad.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/Ad.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/Ad.php';
 
-require_once __DIR__ . '/../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Utils.php';
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 use Delight\Auth;
 
@@ -47,12 +47,14 @@ try {
     }
 
     // We check if the ad is okay.
-    if(isset($_POST['type']) && strlen($_POST['type']) !== 0 && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
+    if(!Utils::trueEmpty($_POST, 'type') && ($_POST['type'] != Ad::TYPE_TITLE && $_POST['type'] != Ad::TYPE_CHAT)) {
         $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_TYPE'));
         $response -> returnResponse();
     }
 
     $type = intval(Utils::notEmptyOrNull($_POST, 'type'));
+    $message = Utils::notEmptyOrNull($_POST, 'message');
+
     $adSettings = $adsky -> getAdSettings();
 
     if(!$adSettings -> validateTitle(Utils::notEmptyOrNull($_POST, 'title'), $type)) {
@@ -60,7 +62,7 @@ try {
         $response -> returnResponse();
     }
 
-    if(!$adSettings -> validateMessage(Utils::notEmptyOrNull($_POST, 'message'), $type)) {
+    if(!$adSettings -> validateMessage($message, $type)) {
         $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_MESSAGE'));
         $response -> returnResponse();
     }
@@ -89,15 +91,16 @@ try {
     $interval = intval($_POST['interval']);
     $expiration = intval($_POST['expiration']);
     $root = $adsky -> getWebsiteSettings() -> getWebsiteRoot();
-	
+
 	$numberOfAdsPerDay = $adsky -> getMedoo() -> sum($adsky -> getMySQLSettings() -> getAdsTable(), 'interval', []);
     if($adSettings -> getAdPerDayLimit() > 0 && $numberOfAdsPerDay + $interval > $adSettings -> getAdPerDayLimit()) {
-        return new Response($adsky -> getLanguageString('API_ERROR_LIMIT_REACHED'));
+        $response = new Response($adsky -> getLanguageString('API_ERROR_LIMIT_REACHED'));
+        $response -> returnResponse();
     }
 
     // If the user is an admin, we don't have to use the PayPal API.
     if($user -> isAdmin()) {
-        $ad = new Ad($user -> getUsername(), $type, $_POST['title'], $_POST['message'], $interval, $expiration, Utils::notEmptyOrNull($_POST, 'duration'));
+        $ad = new Ad($user -> getUsername(), $type, $_POST['title'], $message, $interval, $expiration, Utils::notEmptyOrNull($_POST, 'duration'));
         $ad -> sendUpdateToDatabase();
 
         $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $root . 'admin/?message=create_success#create');

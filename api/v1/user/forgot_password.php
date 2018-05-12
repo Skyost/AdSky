@@ -13,12 +13,12 @@
  * [P] email : Where the password reset request should be sent.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/User.php';
+require_once __DIR__ . '/../../../core/AdSky.php';
+require_once __DIR__ . '/../../../core/objects/User.php';
 
-require_once __DIR__ . '/../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Utils.php';
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Response.php';
 
 $adsky = AdSky::getInstance();
 $language = $adsky -> getLanguage();
