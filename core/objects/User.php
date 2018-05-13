@@ -1,10 +1,18 @@
 <?php
 
+namespace AdSky\Core\Objects;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../Autoloader.php';
 
-require_once __DIR__ . '/../AdSky.php';
-
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
 use Delight\Auth;
+use Twig_Environment;
+use Twig_Error_Loader;
+use Twig_Error_Runtime;
+use Twig_Error_Syntax;
+use Twig_Loader_Filesystem;
 
 /**
  * Represents an user.
@@ -15,11 +23,11 @@ class User {
     const TYPE_ADMIN = 0;
     const TYPE_PUBLISHER = 1;
 
-    private $_email;
-    private $_username;
-    private $_type;
+    private $email;
+    private $username;
+    private $type;
 
-    private $_auth;
+    private $auth;
 
     /**
      * Creates a new User instance.
@@ -30,22 +38,24 @@ class User {
      * @param string $type User's type (Admin / publisher). If null, will be deduced from the PHP-Auth object.
      */
 
-    public function __construct(Auth\Auth $auth = null, $email = null, $username = null, $type = null) {
+    public function __construct($auth = null, $email = null, $username = null, $type = null) {
+        Autoloader::register();
+
         if($auth == null) {
             $auth = AdSky::getInstance() -> getAuth();
         }
 
-        $this -> _auth = $auth;
+        $this -> auth = $auth;
 
-        $this -> _email = $email == null ? $auth -> getEmail() : $email;
-        $this -> _username = $username == null ? $auth -> getUsername() : $username;
+        $this -> email = $email == null ? $auth -> getEmail() : $email;
+        $this -> username = $username == null ? $auth -> getUsername() : $username;
 
         if($type == null) {
-            $this -> _type = $auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
+            $this -> type = $auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
             return;
         }
 
-        $this -> _type = $type;
+        $this -> type = $type;
     }
 
     /**
@@ -60,15 +70,15 @@ class User {
      */
 
     public function loginAsUserIfNeeded() {
-        if($this -> _email == $this -> _auth -> getEmail()) {
-            return $this -> _email;
+        if($this -> email == $this -> auth -> getEmail()) {
+            return $this -> email;
         }
 
-        $currentAuthEmail = $this -> _auth -> getEmail();
-        $this -> _auth -> admin() -> logInAsUserByEmail($this -> _email);
+        $currentAuthEmail = $this -> auth -> getEmail();
+        $this -> auth -> admin() -> logInAsUserByEmail($this -> email);
 
-        $this -> _username = $this -> _auth -> getUsername();
-        $this -> _type = $this -> _auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
+        $this -> username = $this -> auth -> getUsername();
+        $this -> type = $this -> auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
 
         return $currentAuthEmail;
     }
@@ -80,7 +90,7 @@ class User {
      */
 
     public function getAuth() {
-        return $this -> _auth;
+        return $this -> auth;
     }
 
     /**
@@ -90,7 +100,7 @@ class User {
      */
 
     public function getEmail() {
-        return $this -> _email;
+        return $this -> email;
     }
 
     /**
@@ -108,19 +118,19 @@ class User {
      */
 
     public function setEmail($email, $verify = true) {
-        $this -> _email = $email;
+        $this -> email = $email;
 
-        if($this -> _auth -> getEmail() == $email) {
+        if($this -> auth -> getEmail() == $email) {
             return;
         }
 
-        $this -> _auth -> changeEmail($email, function($selector, $token) use ($verify) {
+        $this -> auth -> changeEmail($email, function($selector, $token) use ($verify) {
             if(!$verify) {
-                $this -> _auth -> confirmEmailAndSignIn($selector, $token);
+                $this -> auth -> confirmEmailAndSignIn($selector, $token);
                 return;
             }
 
-            self::sendEmail(AdSky::getInstance() -> getLanguageString('EMAIL_TITLE_UPDATE'), $this -> _email, 'update.twig', [
+            self::sendEmail(AdSky::getInstance() -> getLanguageString('EMAIL_TITLE_UPDATE'), $this -> email, 'update.twig', [
                 'selector' => $selector,
                 'token' => $token
             ]);
@@ -134,7 +144,7 @@ class User {
      */
 
     public function getUsername() {
-        return $this -> _username;
+        return $this -> username;
     }
 
     /**
@@ -144,7 +154,7 @@ class User {
      */
 
     public function getType() {
-        return $this -> _type;
+        return $this -> type;
     }
 
     /**
@@ -154,7 +164,7 @@ class User {
      */
 
     public function isAdmin() {
-        return $this -> _type == self::TYPE_ADMIN;
+        return $this -> type == self::TYPE_ADMIN;
     }
 
     /**
@@ -176,18 +186,18 @@ class User {
      */
 
     public function setType($type = self::TYPE_PUBLISHER) {
-        $this -> _type = $type;
-        $currentAuthType = $this -> _auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
+        $this -> type = $type;
+        $currentAuthType = $this -> auth -> hasRole(Auth\Role::ADMIN) ? self::TYPE_ADMIN : self::TYPE_PUBLISHER;
 
         if($currentAuthType == $type) {
             return;
         }
 
         if($currentAuthType == self::TYPE_ADMIN) {
-            $this -> _auth -> admin() -> removeRoleForUserByEmail($this -> _email, Auth\Role::ADMIN);
+            $this -> auth -> admin() -> removeRoleForUserByEmail($this -> email, Auth\Role::ADMIN);
         }
         else {
-            $this -> _auth -> admin() -> addRoleForUserByEmail($this -> _email, Auth\Role::ADMIN);
+            $this -> auth -> admin() -> addRoleForUserByEmail($this -> email, Auth\Role::ADMIN);
         }
     }
 
@@ -278,9 +288,9 @@ class User {
 
     public function toArray() {
         return [
-            'username' => $this -> _username,
-            'email' => $this -> _email,
-            'type' => $this -> _type
+            'username' => $this -> username,
+            'email' => $this -> email,
+            'type' => $this -> type
         ];
     }
 

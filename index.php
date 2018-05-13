@@ -1,17 +1,17 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
-
-require_once __DIR__ . '/core/AdSky.php';
-
-require_once __DIR__ . '/core/objects/Ad.php';
-require_once __DIR__ . '/core/objects/User.php';
-
-require_once __DIR__ . '/core/Response.php';
-
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Objects\Ad;
+use AdSky\Core\Objects\User;
+use AdSky\Core\Response;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
 
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/core/Autoloader.php';
+
+Autoloader::register();
 $router = new \Bramus\Router\Router();
 
 $router -> set404(function() {
@@ -245,7 +245,7 @@ function handlePayment($errorLink, $successLink, callable $action) {
         $user = AdSky::getInstance() -> getCurrentUserObject();
 
         if($user == null) {
-            (new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+            Response::createAndReturn('API_ERROR_NOT_LOGGEDIN');
         }
 
         $apiContext = $adsky -> getPayPalSettings() -> getPayPalAPIContext();

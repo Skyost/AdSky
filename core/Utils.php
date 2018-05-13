@@ -1,5 +1,7 @@
 <?php
 
+namespace AdSky\Core;
+
 /**
  * Utils methods.
  */

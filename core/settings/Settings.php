@@ -1,12 +1,14 @@
 <?php
 
+namespace AdSky\Core\Settings;
+
 /**
  * A key-value Settings class.
  */
 
 class Settings {
 
-    protected $_data = [];
+    protected $data = [];
 
     /**
      * Puts some settings.
@@ -16,7 +18,7 @@ class Settings {
      */
 
     protected function putSettings($key, $value) {
-        $this -> _data[$key] = $value;
+        $this -> data[$key] = $value;
     }
 
     /**
@@ -28,7 +30,7 @@ class Settings {
      */
 
     public function getSettings($key) {
-        return $this -> _data[$key];
+        return $this -> data[$key];
     }
 
     /**
@@ -38,7 +40,7 @@ class Settings {
      */
 
     public function getSettingsArray() {
-        return $this -> _data;
+        return $this -> data;
     }
 
 }

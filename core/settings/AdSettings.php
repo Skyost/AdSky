@@ -1,5 +1,9 @@
 <?php
 
+namespace AdSky\Core\Settings;
+
+use AdSky\Core\Objects\Ad;
+
 class AdSettings extends Settings {
 
     public function __construct() {

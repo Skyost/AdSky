@@ -1,6 +1,13 @@
 <?php
 
-require_once __DIR__ . '/../Utils.php';
+namespace AdSky\Core\Objects;
+
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Utils;
+use ZipArchive;
+
+require_once __DIR__ . '/../Autoloader.php';
 
 /**
  * A Github update check and downloader.
@@ -10,7 +17,7 @@ class GithubUpdater {
 
     const UPDATES_FOLDER = '../../updates/';
 
-    private $_repo;
+    private $repo;
 
     /**
      * Creates a new GithubUpdater instance.
@@ -19,7 +26,9 @@ class GithubUpdater {
      */
 
     function __construct($repo = 'AdSky') {
-        $this -> _repo = $repo;
+        Autoloader::register();
+
+        $this -> repo = $repo;
     }
 
     /**
@@ -29,7 +38,7 @@ class GithubUpdater {
      */
 
     public function check() {
-        $response = self::githubApiRequest('https://api.github.com/repos/Skyost/' . $this -> _repo . '/releases/latest');
+        $response = self::githubApiRequest('https://api.github.com/repos/Skyost/' . $this -> repo . '/releases/latest');
         if(empty($response)) {
             return null;
         }

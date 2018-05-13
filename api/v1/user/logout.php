@@ -13,10 +13,14 @@
  * None.
  */
 
-require_once __DIR__ . '/../../../core/objects/User.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Response;
+use Delight\Auth;
 
-require_once __DIR__ . '/../../../core/Response.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
+Autoloader::register();
 $adsky = AdSky::getInstance();
 
 try {
@@ -28,11 +32,8 @@ try {
 
     // If yes, let's logout !
     $user -> getAuth() -> logOut();
-
-    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
-    $response -> returnResponse();
+    Response::createAndReturn(null, 'API_SUCCESS');
 }
-catch(\Delight\Auth\AuthError $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
-    $response -> returnResponse();
+catch(Auth\AuthError $error) {
+    Response::createAndReturn('API_ERROR_GENERIC_AUTH_ERROR', null, $error);
 }

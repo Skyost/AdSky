@@ -1,5 +1,13 @@
 
 
+namespace AdSky\Core\Settings;
+
+use AdSky\Core\AdSky;
+
+use AdSky\Core\Response;
+use Medoo\Medoo;
+use PDOException;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 class MySQLSettings extends Settings {
@@ -44,7 +52,7 @@ class MySQLSettings extends Settings {
 
     public function constructMedoo() {
         try {
-            return new Medoo\Medoo([
+            return new Medoo([
                 'database_type' => 'mysql',
                 'database_name' => $this -> getMySQLDataBase(),
                 'server' => $this -> getMySQLHost(),

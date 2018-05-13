@@ -13,13 +13,16 @@
  * [P][O] page : Current page (to see how many users are displayed by page, go to core/settings/WebsiteSettings.php and check the WEBSITE_PAGINATOR_ITEMS_PER_PAGE parameter).
  */
 
-require_once __DIR__ . '/../../../core/AdSky.php';
-require_once __DIR__ . '/../../../core/objects/User.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Objects\User;
+use AdSky\Core\Response;
+use AdSky\Core\Utils;
+use Delight\Auth;
 
-require_once __DIR__ . '/../../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
-require_once __DIR__ . '/../../../core/Response.php';
-
+Autoloader::register();
 $adsky = AdSky::getInstance();
 
 try {
@@ -33,8 +36,7 @@ try {
 
     // We check if the current user is an admin.
     if($user == null || !$user -> isAdmin()) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'));
-        $response -> returnResponse();
+        Response::createAndReturn('API_ERROR_NOT_ADMIN');
     }
 
     // Throttle protection.
@@ -57,11 +59,9 @@ try {
         ];
     }, $page, ['ORDER' => 'last_login']) -> returnResponse();
 }
-catch(Delight\Auth\TooManyRequestsException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_TOOMANYREQUESTS'), null, $error);
-    $response -> returnResponse();
+catch(Auth\TooManyRequestsException $error) {
+    Response::createAndReturn('API_ERROR_TOOMANYREQUESTS', null, $error);
 }
-catch(Delight\Auth\AuthError $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
-    $response -> returnResponse();
+catch(Auth\AuthError $error) {
+    Response::createAndReturn('API_ERROR_GENERIC_AUTH_ERROR', null, $error);
 }

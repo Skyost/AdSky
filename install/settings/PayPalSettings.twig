@@ -1,13 +1,19 @@
 
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+namespace AdSky\Core\Settings;
+
+use AdSky\Core\AdSky;
+use AdSky\Core\Objects\Ad;
 
 use PayPal\Api\Amount;
 use PayPal\Api\Payment;
 use PayPal\Api\Transaction;
 use PayPal\Api\RedirectUrls;
+use PayPal\Api\Payer;
 
 use PayPal\Rest\ApiContext;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 class PayPalSettings extends Settings {
 
@@ -52,7 +58,7 @@ class PayPalSettings extends Settings {
             -> setReturnUrl($url . '&success=true')
             -> setCancelUrl($url . '&success=false');
 
-        $payer = new PayPal\Api\Payer();
+        $payer = new Payer();
         $payer -> setPaymentMethod('paypal');
 
         $payment = new Payment();

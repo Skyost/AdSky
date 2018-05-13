@@ -1,8 +1,12 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+namespace AdSky\Core\Objects;
 
-require_once __DIR__ . '/../AdSky.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use PDOException;
+
+require_once __DIR__ . '/../Autoloader.php';
 
 /**
  * Represents an ad.
@@ -13,15 +17,15 @@ class Ad {
     const TYPE_TITLE = 0;
     const TYPE_CHAT = 1;
 
-    private $_username;
-    private $_type;
-    private $_title;
-    private $_message;
-    private $_interval;
-    private $_expiration;
-    private $_duration;
+    private $username;
+    private $type;
+    private $title;
+    private $message;
+    private $interval;
+    private $expiration;
+    private $duration;
 
-    private $_isDeleted = false;
+    private $isDeleted = false;
 
     /**
      * Creates a new ad instance.
@@ -36,13 +40,15 @@ class Ad {
      */
 
     public function __construct($username = null, $type = null, $title = null, $message = null, $interval = null, $expiration = null, $duration = null) {
-        $this -> _username = $username;
-        $this -> _type = intval($type);
-        $this -> _title = $title;
-        $this -> _message = $message;
-        $this -> _interval = intval($interval);
-        $this -> _expiration = intval($expiration);
-        $this -> _duration = intval($duration);
+        Autoloader::register();
+
+        $this -> username = $username;
+        $this -> type = intval($type);
+        $this -> title = $title;
+        $this -> message = $message;
+        $this -> interval = intval($interval);
+        $this -> expiration = intval($expiration);
+        $this -> duration = intval($duration);
     }
 
     /**
@@ -52,7 +58,7 @@ class Ad {
      */
 
     public function getUsername() {
-        return $this -> _username;
+        return $this -> username;
     }
 
     /**
@@ -64,7 +70,7 @@ class Ad {
      */
 
     public function setUsername($username) {
-        $this -> _username = $username;
+        $this -> username = $username;
         return true;
     }
 
@@ -75,7 +81,7 @@ class Ad {
      */
 
     public function getType() {
-        return $this -> _type;
+        return $this -> type;
     }
 
     /**
@@ -91,7 +97,7 @@ class Ad {
             return false;
         }
 
-        $this -> _type = intval($type);
+        $this -> type = intval($type);
         return true;
     }
 
@@ -102,7 +108,7 @@ class Ad {
      */
 
     public function isTitleAd() {
-        return $this -> _type == self::TYPE_TITLE;
+        return $this -> type == self::TYPE_TITLE;
     }
 
     /**
@@ -122,7 +128,7 @@ class Ad {
      */
 
     public function getTitle() {
-        return $this -> _title;
+        return $this -> title;
     }
 
     /**
@@ -134,11 +140,11 @@ class Ad {
      */
 
     public function setTitle($title) {
-        if(!AdSky::getInstance() -> getAdSettings() -> validateTitle($title, $this -> _type)) {
+        if(!AdSky::getInstance() -> getAdSettings() -> validateTitle($title, $this -> type)) {
             return false;
         }
 
-        $this -> _title = $title;
+        $this -> title = $title;
         return true;
     }
 
@@ -149,7 +155,7 @@ class Ad {
      */
 
     public function getMessage() {
-        return $this -> _message;
+        return $this -> message;
     }
 
     /**
@@ -161,11 +167,11 @@ class Ad {
      */
 
     public function setMessage($message) {
-        if(!AdSky::getInstance() -> getAdSettings() -> validateMessage($message, $this -> _type)) {
+        if(!AdSky::getInstance() -> getAdSettings() -> validateMessage($message, $this -> type)) {
             return false;
         }
 
-        $this -> _message = $message;
+        $this -> message = $message;
         return true;
     }
 
@@ -176,7 +182,7 @@ class Ad {
      */
 
     public function getInterval() {
-        return $this -> _interval;
+        return $this -> interval;
     }
 
     /**
@@ -188,11 +194,11 @@ class Ad {
      */
 
     public function setInterval($interval = 0) {
-        if(!AdSky::getInstance() -> getAdSettings() -> validateInterval($interval, $this -> _type)) {
+        if(!AdSky::getInstance() -> getAdSettings() -> validateInterval($interval, $this -> type)) {
             return false;
         }
 
-        $this -> _interval = intval($interval);
+        $this -> interval = intval($interval);
         return true;
     }
 
@@ -203,7 +209,7 @@ class Ad {
      */
 
     public function getExpiration() {
-        return $this -> _expiration;
+        return $this -> expiration;
     }
 
     /**
@@ -215,11 +221,11 @@ class Ad {
      */
 
     public function setExpiration($expiration = 0) {
-        if(!AdSky::getInstance() -> getAdSettings() -> validateExpiration($expiration, $this -> _type)) {
+        if(!AdSky::getInstance() -> getAdSettings() -> validateExpiration($expiration, $this -> type)) {
             return false;
         }
 
-        $this -> _expiration = intval($expiration);
+        $this -> expiration = intval($expiration);
         return true;
     }
 
@@ -232,7 +238,7 @@ class Ad {
      */
 
     public function renew($days = 0) {
-        return $this -> setExpiration($this -> _expiration + ($days * 24 * 60 * 60));
+        return $this -> setExpiration($this -> expiration + ($days * 24 * 60 * 60));
     }
 
     /**
@@ -242,7 +248,7 @@ class Ad {
      */
 
     public function getDuration() {
-        return $this -> _duration;
+        return $this -> duration;
     }
 
     /**
@@ -258,7 +264,7 @@ class Ad {
             return false;
         }
 
-        $this -> _duration = intval($duration);
+        $this -> duration = intval($duration);
         return true;
     }
 
@@ -269,7 +275,7 @@ class Ad {
      */
 
     public function setDeleted($isDeleted = true) {
-        $this -> _isDeleted = $isDeleted;
+        $this -> isDeleted = $isDeleted;
     }
 
     /**
@@ -282,7 +288,7 @@ class Ad {
         $adsky = AdSky::getInstance();
 
         // If the ad has been deleted, then we trigger the delete on the database.
-        if($this -> _isDeleted) {
+        if($this -> isDeleted) {
             $adsky -> getMedoo() -> delete($adsky -> getMySQLSettings() -> getAdsTable(), ['id' => $id]);
             return;
         }
@@ -294,7 +300,7 @@ class Ad {
 
         // If ads does not exist, then we have to insert it.
         if(!self::adExists($id)) {
-            if(!$adsky -> getAdSettings() -> validate($this -> _title, $this -> _message, $this -> _interval, $this -> _expiration, $this -> _duration, $this -> _type)) {
+            if(!$adsky -> getAdSettings() -> validate($this -> title, $this -> message, $this -> interval, $this -> expiration, $this -> duration, $this -> type)) {
                 return;
             }
 
@@ -367,13 +373,13 @@ class Ad {
 
     public function toArray() {
         return [
-            'title' => $this -> _title,
-            'message' => $this -> _message,
-            'username' => $this -> _username,
-            'interval' => $this -> _interval,
-            'expiration' => $this -> _expiration,
-            'type' => $this -> _type,
-            'duration' => $this -> _duration
+            'title' => $this -> title,
+            'message' => $this -> message,
+            'username' => $this -> username,
+            'interval' => $this -> interval,
+            'expiration' => $this -> expiration,
+            'type' => $this -> type,
+            'duration' => $this -> duration
         ];
     }
 

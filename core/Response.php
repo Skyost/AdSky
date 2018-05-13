@@ -1,14 +1,16 @@
 <?php
 
+namespace AdSky\Core;
+
 /**
  * Represents an API response.
  */
 
 class Response {
 
-    public $_error;
-    public $_message;
-    public $_object;
+    public $error;
+    public $message;
+    public $object;
 
     /**
      * Creates a new response instance.
@@ -19,9 +21,9 @@ class Response {
      */
 
     public function __construct($error = null, $message = null, $object = null) {
-        $this -> _error = $error;
-        $this -> _message = $message;
-        $this -> _object = $object;
+        $this -> error = $error;
+        $this -> message = $message;
+        $this -> object = $object;
     }
 
     /**
@@ -31,7 +33,7 @@ class Response {
      */
 
     public function getError() {
-        return $this -> _error;
+        return $this -> error;
     }
 
     /**
@@ -41,7 +43,7 @@ class Response {
      */
 
     public function setError($error) {
-        $this -> _error = $error;
+        $this -> error = $error;
     }
 
     /**
@@ -51,7 +53,7 @@ class Response {
      */
 
     public function getMessage() {
-        return $this -> _message;
+        return $this -> message;
     }
 
     /**
@@ -61,7 +63,7 @@ class Response {
      */
 
     public function setMessage($message) {
-        $this -> _message = $message;
+        $this -> message = $message;
     }
 
     /**
@@ -71,7 +73,7 @@ class Response {
      */
 
     public function getObject() {
-        return $this -> _object;
+        return $this -> object;
     }
 
     /**
@@ -81,7 +83,7 @@ class Response {
      */
 
     public function setObject($object) {
-        $this -> _object = $object;
+        $this -> object = $object;
     }
 
     /**
@@ -97,11 +99,40 @@ class Response {
         die($this);
     }
 
+    /**
+     * Creates a new response instance and call returnResponse();
+     *
+     * @param string $error If there is an error, specify it here (must be a Language key).
+     * @param string $message If there is a message, specify it here (must be a Language key).
+     * @param mixed $object If there is an object, specify it here.
+     */
+
+    public static function createAndReturn($error = null, $message = null, $object = null) {
+        $language = AdSky::getInstance() -> getLanguage();
+
+        if($error != null) {
+            if(is_array($error)) {
+                $errorContent = [];
+                foreach($error as $errorKey) {
+                    array_push($errorContent, $language -> getSettings($errorKey));
+                }
+
+                $error = $language -> formatNotSet($errorContent);
+            }
+            else {
+                $error = $language -> getSettings($error);
+            }
+        }
+
+        $response = new Response($error, $message == null ? null : $language -> getSettings($message), $object);
+        $response -> returnResponse();
+    }
+
     public function __toString() {
         return json_encode([
-            'error' => $this -> _error,
-            'message' => $this -> _message,
-            'object' => !AdSky::APP_DEBUG && $this -> _error != null ? null : $this -> _object
+            'error' => $this -> error,
+            'message' => $this -> message,
+            'object' => !AdSky::APP_DEBUG && $this -> error != null ? null : $this -> object
         ]);
     }
 

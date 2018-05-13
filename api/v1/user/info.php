@@ -13,50 +13,50 @@
  * [P] email : User's email. Don't specify it (or just use "current") to see your own data.
  */
 
-require_once __DIR__ . '/../../../core/objects/User.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Objects\User;
+use AdSky\Core\Response;
+use AdSky\Core\Utils;
+use Delight\Auth;
 
-require_once __DIR__ . '/../../../core/Response.php';
-require_once __DIR__ . '/../../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
 try {
+    Autoloader::register();
     $adsky = AdSky ::getInstance();
     $user = $adsky -> getCurrentUserObject();
 
     if($user == null) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_LOGGEDIN'));
-        $response -> returnResponse();
+        Response::createAndReturn('API_ERROR_NOT_LOGGEDIN');
     }
 
+    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'));
     $email = Utils::notEmptyOrNull($_POST, 'email');
     $currentEmail = $user -> getEmail();
     if($email != 'current' && $email != $currentEmail) {
         if(!$user -> isAdmin()) {
-            $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_ADMIN'));
-            $response -> returnResponse();
+            Response::createAndReturn('API_ERROR_NOT_ADMIN');
         }
 
         $target = new User($adsky -> getAuth(), $email, null, null);
         $target -> loginAsUserIfNeeded();
 
-        $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $target -> toArray());
-
+        $response -> setObject($target -> toArray());
         $user -> loginAsUserIfNeeded();
     }
     else {
-        $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $user -> toArray());
+        $response -> setObject($user -> toArray());
     }
 
     $response -> returnResponse();
 }
-catch(\Delight\Auth\EmailNotVerifiedException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_NOT_VERIFIED'), null, $error);
-    $response -> returnResponse();
+catch(Auth\EmailNotVerifiedException $error) {
+    Response::createAndReturn('API_ERROR_NOT_VERIFIED', null, $error);
 }
-catch(\Delight\Auth\InvalidEmailException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_EMAIL'), null, $error);
-    $response -> returnResponse();
+catch(Auth\InvalidEmailException $error) {
+    Response::createAndReturn('API_ERROR_INVALID_EMAIL', null, $error);
 }
 catch(Exception $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_GENERIC_ERROR'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_GENERIC_ERROR', null, $error);
 }

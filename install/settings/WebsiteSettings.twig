@@ -1,10 +1,16 @@
 
 
-require_once __DIR__ . '/../Utils.php';
+namespace AdSky\Core\Settings;
+
+use AdSky\Core\Utils;
+
+require_once __DIR__ . '/../Autoloader.php';
 
 class WebsiteSettings extends Settings {
 
     public function __construct() {
+        Autoloader::register();
+
         $this -> putSettings('WEBSITE_TITLE', '{{ attribute(post, 'form-website-title') | escape }}');
         $this -> putSettings('WEBSITE_SUBTITLE', '{{ attribute(post, 'form-website-subtitle') | escape }}');
         $this -> putSettings('WEBSITE_ROOT', '{{ attribute(post, 'form-website-root') }}');

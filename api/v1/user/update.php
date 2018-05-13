@@ -18,17 +18,17 @@
  * [P][O] type : New account's type.
  */
 
-require_once __DIR__ . '/../../../core/AdSky.php';
-require_once __DIR__ . '/../../../core/objects/User.php';
-
-require_once __DIR__ . '/../../../core/Response.php';
-
-require_once __DIR__ . '/../../../core/Utils.php';
-
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Objects\User;
+use AdSky\Core\Response;
+use AdSky\Core\Utils;
 use Delight\Auth;
 
+require_once __DIR__ . '/../../../core/Autoloader.php';
+
+Autoloader::register();
 $adsky = AdSky::getInstance();
-$language = $adsky -> getLanguage();
 
 try {
     $auth = $adsky -> getAuth();
@@ -36,21 +36,19 @@ try {
 
     // We check if the current user is logged in.
     if($user == null) {
-        (new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'))) -> returnResponse();
+        Response::createAndReturn('API_ERROR_NOT_LOGGEDIN');
     }
 
     // We also have to check if the force parameter is set to true.
     if(isset($_POST['force']) && $_POST['force'] == true) {
         // The user must be an admin to use the force mode.
         if(!$user -> isAdmin()) {
-            $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
-            $response -> returnResponse();
+            Response::createAndReturn('API_ERROR_NOT_ADMIN');
         }
 
         // We check if a valid type has been sent.
         if(!Utils::trueEmpty($_POST, 'type') && ($_POST['type'] != User::TYPE_ADMIN && $_POST['type'] != User::TYPE_PUBLISHER)) {
-            $response = new Response($language -> getSettings('API_ERROR_INVALID_TYPE'));
-            $response -> returnResponse();
+            Response::createAndReturn('API_ERROR_INVALID_TYPE');
         }
 
         // We prepare our target.
@@ -74,16 +72,13 @@ try {
 
         // We login back our admin.
         $user -> loginAsUserIfNeeded();
-
-        $response = new Response(null, $language -> getSettings('API_SUCCESS'));
-        $response -> returnResponse();
+        Response::createAndReturn(null, 'API_SUCCESS');
         return;
     }
 
     // If we are not in force mode, we must have an old password.
     if(empty($_POST['oldpassword'])) {
-        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_OLDPASSWORD')]));
-        $response -> returnResponse();
+        Response::createAndReturn(['API_ERROR_NOT_SET_OLDPASSWORD']);
     }
 
     // We check if the old password is okay.
@@ -100,34 +95,26 @@ try {
         $auth -> changePassword($_POST['oldpassword'], $_POST['password']);
     }
 
-    $response = new Response(null, $language -> getSettings('API_SUCCESS'));
-    $response -> returnResponse();
+    Response::createAndReturn(null, 'API_SUCCESS');
 }
 catch(Auth\AuthError $error) {
-    $response = new Response($language -> getSettings('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_GENERIC_AUTH_ERROR', null, $error);
 }
 catch(Auth\EmailNotVerifiedException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_VERIFIED'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_NOT_VERIFIED', null, $error);
 }
 catch(Auth\InvalidEmailException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_INVALID_EMAIL'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_INVALID_EMAIL', null, $error);
 }
 catch(Auth\NotLoggedInException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_LOGGEDIN'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_NOT_LOGGEDIN', null, $error);
 }
 catch(Auth\TooManyRequestsException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_TOOMANYREQUESTS'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_TOOMANYREQUESTS', null, $error);
 }
 catch(Auth\UserAlreadyExistsException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_EMAIL_ALREADYEXISTS'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_EMAIL_ALREADYEXISTS', null, $error);
 }
 catch(Auth\InvalidPasswordException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_INVALID_PASSWORD'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_INVALID_PASSWORD', null, $error);
 }

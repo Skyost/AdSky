@@ -1,6 +1,10 @@
 <?php
 
-require __DIR__ . '/../settings/Settings.php';
+namespace AdSky\Core\Lang;
+
+use AdSky\Core\Settings\Settings;
+
+require_once __DIR__ . '/../Autoloader.php';
 
 /**
  * Represents a language.
@@ -18,7 +22,7 @@ abstract class Language extends Settings {
      */
 
     public function getSettings($key) {
-        if(!array_key_exists($key, $this -> _data)) {
+        if(!array_key_exists($key, $this -> data)) {
             return 'Translation not found ("' . $key . '")."';
         }
         return parent::getSettings($key);

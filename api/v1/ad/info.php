@@ -13,13 +13,15 @@
  * [P] id : Ad ID.
  */
 
-require_once __DIR__ . '/../../../core/AdSky.php';
-require_once __DIR__ . '/../../../core/objects/Ad.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Objects\Ad;
+use AdSky\Core\Response;
+use AdSky\Core\Utils;
 
-require_once __DIR__ . '/../../../core/Response.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
-require_once __DIR__ . '/../../../core/Utils.php';
-
+Autoloader::register();
 $adsky = AdSky::getInstance();
 
 try {
@@ -33,33 +35,27 @@ try {
 
     // We get the ID.
     if(Utils::trueEmpty($_POST, 'id')) {
-        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_ID')]));
-        $response -> returnResponse();
+        Response::createAndReturn(['API_ERROR_NOT_SET_ID']);
     }
 
     // Now we can get our ad.
     $ad = Ad::getFromDatabase($_POST['id']);
 
     if($ad == null) {
-        $response = new Response($language -> getSettings('API_ERROR_AD_NOT_FOUND'));
-        $response -> returnResponse();
+        Response::createAndReturn('API_ERROR_AD_NOT_FOUND');
     }
 
     // We check if the current user is an admin.
     $user = $adsky -> getCurrentUserObject();
     if($user == null || ($ad -> getUsername() != $user -> getUsername() && !$user -> isAdmin())) {
-        $response = new Response($language -> getSettings('API_ERROR_NOT_ADMIN'));
-        $response -> returnResponse();
+        Response::createAndReturn('API_ERROR_NOT_ADMIN');
     }
 
-    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $ad -> toArray());
-    $response -> returnResponse();
+    Response::createAndReturn(null, 'API_SUCCESS');
 }
 catch(Delight\Auth\TooManyRequestsException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_TOOMANYREQUESTS'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_TOOMANYREQUESTS', null, $error);
 }
 catch(Delight\Auth\AuthError $error) {
-    $response = new Response($language -> getSettings('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_GENERIC_AUTH_ERROR', null, $error);
 }

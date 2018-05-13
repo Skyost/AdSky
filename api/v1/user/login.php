@@ -15,55 +15,48 @@
  * [P][O] rememberduration : Remember duration in seconds.
  */
 
-require_once __DIR__ . '/../../../core/AdSky.php';
-require_once __DIR__ . '/../../../core/objects/User.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Response;
+use AdSky\Core\Utils;
+use Delight\Auth;
 
-require_once __DIR__ . '/../../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
-require_once __DIR__ . '/../../../core/Response.php';
-
+Autoloader::register();
 $adsky = AdSky::getInstance();
-$language = AdSky::getInstance() -> getLanguage();
 
 try {
     // We check if an email and a password have been sent.
     if(empty($_POST['email']) || empty($_POST['password'])) {
-        $response = new Response($language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_EMAIL'), $language -> getSettings('API_ERROR_NOT_SET_PASSWORD')]));
-        $response -> returnResponse();
+        Response::createAndReturn(['API_ERROR_NOT_SET_EMAIL', 'API_ERROR_NOT_SET_PASSWORD']);
     }
 
     // If yes, we check if the user is already logged in.
     if($adsky -> getCurrentUserObject() != null) {
-        throw new \Delight\Auth\AuthError();
+        throw new Auth\AuthError();
     }
 
     // Else, we try to login him.
     $adsky -> getAuth() -> login($_POST['email'], $_POST['password'], Utils::notEmptyOrNull($_POST, 'rememberduration'));
 
-    $response = new Response(null, $language -> getSettings('API_SUCCESS'));
-    $response -> returnResponse();
+    Response::createAndReturn(null, 'API_SUCCESS');
 }
-catch(\Delight\Auth\AttemptCancelledException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_ATTEMPT_CANCELLED'), null, $error);
-    $response -> returnResponse();
+catch(Auth\AttemptCancelledException $error) {
+    Response::createAndReturn('API_ERROR_ATTEMPT_CANCELLED', null, $error);
 }
-catch(\Delight\Auth\AuthError $error) {
-    $response = new Response($language -> getSettings('API_ERROR_GENERIC_AUTH_ERROR'), null, $error);
-    $response -> returnResponse();
+catch(Auth\AuthError $error) {
+    Response::createAndReturn('API_ERROR_GENERIC_AUTH_ERROR', null, $error);
 }
-catch(\Delight\Auth\EmailNotVerifiedException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_VERIFIED'), null, $error);
-    $response -> returnResponse();
+catch(Auth\EmailNotVerifiedException $error) {
+    Response::createAndReturn('API_ERROR_NOT_VERIFIED', null, $error);
 }
-catch(\Delight\Auth\InvalidEmailException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_INVALID_EMAIL'), null, $error);
-    $response -> returnResponse();
+catch(Auth\InvalidEmailException $error) {
+    Response::createAndReturn('API_ERROR_INVALID_EMAIL', null, $error);
 }
-catch(\Delight\Auth\InvalidPasswordException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_INVALID_PASSWORD'), null, $error);
-    $response -> returnResponse();
+catch(Auth\InvalidPasswordException $error) {
+    Response::createAndReturn('API_ERROR_INVALID_PASSWORD', null, $error);
 }
-catch(\Delight\Auth\TooManyRequestsException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_TOOMANYREQUESTS'), null, $error);
-    $response -> returnResponse();
+catch(Auth\TooManyRequestsException $error) {
+    Response::createAndReturn('API_ERROR_TOOMANYREQUESTS', null, $error);
 }

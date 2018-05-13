@@ -13,18 +13,19 @@
  * [P] key : Plugin key.
  */
 
-require_once __DIR__ . '/../../core/AdSky.php';
-require_once __DIR__ . '/../../core/objects/Ad.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Response;
 
-require_once __DIR__ . '/../../core/Response.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
+Autoloader::register();
 $adsky = AdSky::getInstance();
 
 try {
     // We try to validate the sent key.
     if(empty($_POST['key']) || $_POST['key'] != $adsky -> getPluginSettings() -> getPluginKey()) {
-        $response = new Response($adsky -> getLanguageString('API_ERROR_INVALID_PLUGIN_KEY'));
-        $response -> returnResponse();
+        Response::createAndReturn('API_ERROR_INVALID_PLUGIN_KEY');
     }
 
     // If everything is okay, we can query our database.
@@ -43,10 +44,8 @@ try {
         ]);
     }
 
-    $response = new Response(null, $adsky -> getLanguageString('API_SUCCESS'), $object);
-    $response -> returnResponse();
+    Response::createAndReturn(null, 'API_SUCCESS');
 }
 catch(PDOException $error) {
-    $response = new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
-    $response -> returnResponse();
+    Response::createAndReturn('API_ERROR_MYSQL_ERROR', null, $error);
 }

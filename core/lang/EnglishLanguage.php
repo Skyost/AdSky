@@ -1,6 +1,10 @@
 <?php
 
-require __DIR__ . '/Language.php';
+namespace AdSky\Core\Lang;
+
+use AdSky\Core\Autoloader;
+
+require_once __DIR__ . '/../Autoloader.php';
 
 /**
  * English translation of AdSky.
@@ -9,6 +13,8 @@ require __DIR__ . '/Language.php';
 class EnglishLanguage extends Language {
     
     public function __construct() {
+        Autoloader::register();
+
         $this -> putSettings('AD_TYPE_TITLE', 'Title');
         $this -> putSettings('AD_TYPE_CHAT', 'Chat');
 

@@ -1,10 +1,13 @@
 <?php
 
-require_once __DIR__ . '/lang/EnglishLanguage.php';
+namespace AdSky\Core;
 
-require_once __DIR__ . '/settings/AdSettings.php';
+use AdSky\Core\Lang\EnglishLanguage;
+use AdSky\Core\Objects\User;
+use Delight\Auth\Auth;
+use PDO;
 
-require_once __DIR__ . '/objects/User.php';
+require_once __DIR__ . '/Autoloader.php';
 
 /**
  * Core application class.
@@ -17,25 +20,27 @@ class AdSky {
     const APP_WEBSITE = 'https://github.com/Skyost/AdSky';
     const APP_DEBUG = true;
 
-    private static $_instance;
+    private static $instance;
 
-    private $_medoo;
-    private $_auth;
+    private $medoo;
+    private $auth;
 
-    private $_adSettings;
-    private $_mySQLSettings;
-    private $_payPalSettings;
-    private $_pluginSettings;
-    private $_websiteSettings;
+    private $adSettings;
+    private $mySQLSettings;
+    private $payPalSettings;
+    private $pluginSettings;
+    private $websiteSettings;
 
-    private $_language;
+    private $language;
 
     /**
      * Constructs a new AdSky instance.
      */
 
     public function __construct() {
-        $this -> _language = new EnglishLanguage();
+        Autoloader::register();
+
+        $this -> language = new EnglishLanguage();
     }
 
     /**
@@ -45,11 +50,11 @@ class AdSky {
      */
 
     public static function getInstance() {
-        if(self::$_instance == null) {
-            self::$_instance = new AdSky();
+        if(self::$instance == null) {
+            self::$instance = new AdSky();
         }
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     /**
@@ -63,11 +68,11 @@ class AdSky {
             return null;
         }
 
-        if($this -> _medoo == null) {
-            $this -> _medoo = $this -> getMySQLSettings() -> constructMedoo();
+        if($this -> medoo == null) {
+            $this -> medoo = $this -> getMySQLSettings() -> constructMedoo();
         }
 
-        return $this -> _medoo;
+        return $this -> medoo;
     }
 
     /**
@@ -96,12 +101,12 @@ class AdSky {
             return null;
         }
 
-        if($this -> _auth == null) {
+        if($this -> auth == null) {
             $mySQLSettings = $this -> getMySQLSettings();
-            $this -> _auth = new \Delight\Auth\Auth($this -> getPDO(), null, $mySQLSettings -> getMySQLTablesPrefixes(), $mySQLSettings -> isThrottlingEnabled());
+            $this -> auth = new Auth($this -> getPDO(), null, $mySQLSettings -> getMySQLTablesPrefixes(), $mySQLSettings -> isThrottlingEnabled());
         }
 
-        return $this -> _auth;
+        return $this -> auth;
     }
 
     /**
@@ -137,15 +142,15 @@ class AdSky {
     /**
      * Gets the ad settings.
      *
-     * @return AdSettings The ad settings.
+     * @return Settings\AdSettings The ad settings.
      */
 
     public function getAdSettings() {
-        if($this -> _adSettings == null && $this -> hasAdSettings()) {
-            $this -> _adSettings = new AdSettings();
+        if($this -> adSettings == null && $this -> hasAdSettings()) {
+            $this -> adSettings = new Settings\AdSettings();
         }
 
-        return $this -> _adSettings;
+        return $this -> adSettings;
     }
 
     /**
@@ -161,17 +166,17 @@ class AdSky {
     /**
      * Gets the MySQL settings.
      *
-     * @return MySQLSettings The MySQL settings.
+     * @return Settings\MySQLSettings The MySQL settings.
      */
 
     public function getMySQLSettings() {
-        if($this -> _mySQLSettings == null && $this -> hasMySQLSettings()) {
+        if($this -> mySQLSettings == null && $this -> hasMySQLSettings()) {
             require_once __DIR__ . '/settings/MySQLSettings.php';
 
-            $this -> _mySQLSettings = new MySQLSettings();
+            $this -> mySQLSettings = new Settings\MySQLSettings();
         }
 
-        return $this -> _mySQLSettings;
+        return $this -> mySQLSettings;
     }
 
     /**
@@ -187,17 +192,17 @@ class AdSky {
     /**
      * Gets the PayPal settings.
      *
-     * @return PayPalSettings The PayPal settings.
+     * @return Settings\PayPalSettings The PayPal settings.
      */
 
     public function getPayPalSettings() {
-        if($this -> _payPalSettings == null && $this -> hasPayPalSettings()) {
+        if($this -> payPalSettings == null && $this -> hasPayPalSettings()) {
             require_once __DIR__ . '/settings/PayPalSettings.php';
 
-            $this -> _payPalSettings = new PayPalSettings();
+            $this -> payPalSettings = new Settings\PayPalSettings();
         }
 
-        return $this -> _payPalSettings;
+        return $this -> payPalSettings;
     }
 
     /**
@@ -213,17 +218,17 @@ class AdSky {
     /**
      * Gets the plugin settings.
      *
-     * @return PluginSettings The plugin settings.
+     * @return Settings\PluginSettings The plugin settings.
      */
 
     public function getPluginSettings() {
-        if($this -> _pluginSettings == null && $this -> hasPluginSettings()) {
+        if($this -> pluginSettings == null && $this -> hasPluginSettings()) {
             require_once __DIR__ . '/settings/PluginSettings.php';
 
-            $this -> _pluginSettings = new PluginSettings();
+            $this -> pluginSettings = new Settings\PluginSettings();
         }
 
-        return $this -> _pluginSettings;
+        return $this -> pluginSettings;
     }
 
     /**
@@ -239,17 +244,17 @@ class AdSky {
     /**
      * Gets the website settings.
      *
-     * @return WebsiteSettings The website settings.
+     * @return Settings\WebsiteSettings The website settings.
      */
 
     public function getWebsiteSettings() {
-        if($this -> _websiteSettings == null && $this -> hasWebsiteSettings()) {
+        if($this -> websiteSettings == null && $this -> hasWebsiteSettings()) {
             require_once __DIR__ . '/settings/WebsiteSettings.php';
 
-            $this -> _websiteSettings = new WebsiteSettings();
+            $this -> websiteSettings = new Settings\WebsiteSettings();
         }
 
-        return $this -> _websiteSettings;
+        return $this -> websiteSettings;
     }
 
     /**
@@ -269,7 +274,7 @@ class AdSky {
      */
 
     public function getLanguage() {
-        return $this -> _language;
+        return $this -> language;
     }
 
     /**

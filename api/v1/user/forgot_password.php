@@ -13,21 +13,21 @@
  * [P] email : Where the password reset request should be sent.
  */
 
-require_once __DIR__ . '/../../../core/AdSky.php';
-require_once __DIR__ . '/../../../core/objects/User.php';
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Objects\User;
+use AdSky\Core\Response;
+use Delight\Auth;
 
-require_once __DIR__ . '/../../../core/Utils.php';
+require_once __DIR__ . '/../../../core/Autoloader.php';
 
-require_once __DIR__ . '/../../../core/Response.php';
-
+Autoloader::register();
 $adsky = AdSky::getInstance();
-$language = $adsky -> getLanguage();
 
 try {
     // We check if an email has been sent.
     if(empty($_POST['email'])) {
-        $response = new Response(null, $language -> formatNotSet([$language -> getSettings('API_ERROR_NOT_SET_EMAIL')]));
-        $response -> returnResponse();
+        Response::createAndReturn(['API_ERROR_NOT_SET_EMAIL']);
     }
 
     // If it's okay, we can send the request.
@@ -39,26 +39,20 @@ try {
         ]);
     });
 
-    $response = new Response(null, $language -> getSettings('API_SUCCESS'));
-    $response -> returnResponse();
+    Response::createAndReturn(null, 'API_SUCCESS');
 }
-catch(\Delight\Auth\AuthError $error) {
-    $response = new Response($language -> getSettings('API_ERROR_GENERIC_ERROR'), null, $error);
-    $response -> returnResponse();
+catch(Auth\AuthError $error) {
+    Response::createAndReturn('API_ERROR_GENERIC_ERROR', null, $error);
 }
-catch(\Delight\Auth\EmailNotVerifiedException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_NOT_VERIFIED'), null, $error);
-    $response -> returnResponse();
+catch(Auth\EmailNotVerifiedException $error) {
+    Response::createAndReturn('API_ERROR_NOT_VERIFIED', null, $error);
 }
-catch(\Delight\Auth\InvalidEmailException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_INVALID_EMAIL'), null, $error);
-    $response -> returnResponse();
+catch(Auth\InvalidEmailException $error) {
+    Response::createAndReturn('API_ERROR_INVALID_EMAIL', null, $error);
 }
-catch(\Delight\Auth\ResetDisabledException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_RESET_DISABLED'), null, $error);
-    $response -> returnResponse();
+catch(Auth\ResetDisabledException $error) {
+    Response::createAndReturn('API_ERROR_RESET_DISABLED', null, $error);
 }
-catch(\Delight\Auth\TooManyRequestsException $error) {
-    $response = new Response($language -> getSettings('API_ERROR_TOOMANYREQUESTS'), null, $error);
-    $response -> returnResponse();
+catch(Auth\TooManyRequestsException $error) {
+    Response::createAndReturn('API_ERROR_TOOMANYREQUESTS', null, $error);
 }
