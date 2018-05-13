@@ -22,10 +22,10 @@ use Delight\Auth;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // We get the required page.
     $page = Utils::notEmptyOrNull($_POST, 'page');
     if($page == null || intval($page) < 1) {

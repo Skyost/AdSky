@@ -27,10 +27,10 @@ use Delight\Auth;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     $auth = $adsky -> getAuth();
 
     // Throttle protection.

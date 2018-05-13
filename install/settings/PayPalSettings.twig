@@ -11,6 +11,8 @@ use PayPal\Api\Transaction;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Payer;
 
+use PayPal\Auth\OAuthTokenCredential;
+
 use PayPal\Rest\ApiContext;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -36,7 +38,7 @@ class PayPalSettings extends Settings {
     }
 
     public function getPayPalAPIContext() {
-        return new ApiContext(new \PayPal\Auth\OAuthTokenCredential($this -> getPayPalClientID(), $this -> getPayPalClientSecret()));
+        return new ApiContext(new OAuthTokenCredential($this -> getPayPalClientID(), $this -> getPayPalClientSecret()));
     }
 
     public function createApprovalLink($url, $type, $interval, $totalDays) {

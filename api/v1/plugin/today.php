@@ -19,10 +19,10 @@ use AdSky\Core\Response;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // We try to validate the sent key.
     if(empty($_POST['key']) || $_POST['key'] != $adsky -> getPluginSettings() -> getPluginKey()) {
         Response::createAndReturn('API_ERROR_INVALID_PLUGIN_KEY');

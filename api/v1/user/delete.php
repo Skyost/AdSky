@@ -20,10 +20,10 @@ use Delight\Auth;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     $user = $adsky -> getCurrentUserObject();
 
     // We check if the current user is logged in.

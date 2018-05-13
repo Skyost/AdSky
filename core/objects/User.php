@@ -7,12 +7,11 @@ require_once __DIR__ . '/../Autoloader.php';
 
 use AdSky\Core\AdSky;
 use AdSky\Core\Autoloader;
+use AdSky\Core\Renderer;
 use Delight\Auth;
-use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Error_Runtime;
 use Twig_Error_Syntax;
-use Twig_Loader_Filesystem;
 
 /**
  * Represents an user.
@@ -244,22 +243,15 @@ class User {
      * @param string $title Email's title.
      * @param string $email Target's email.
      * @param string $template Template file.
-     * @param array $parameters Parameters (used by twig).
+     * @param array $additionalParameters Additional parameters (used by twig).
      */
 
-    public static function sendEmail($title, $email, $template, $parameters = []) {
+    public static function sendEmail($title, $email, $template, $additionalParameters = []) {
         try {
-            $adsky = AdSky::getInstance();
-            $loader = new Twig_Loader_Filesystem(__DIR__ . '/../../views/emails/');
-            $twig = new Twig_Environment($loader);
+            $websiteSettings = AdSky::getInstance() -> getWebsiteSettings();
 
-            $websiteSettings = $adsky -> getWebsiteSettings();
-
-            $parameters['url'] = $websiteSettings -> getWebsiteRoot();
-
-            $settings = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $websiteSettings]);
-            $settings['PAYPAL_CURRENCY'] = $adsky -> getPayPalSettings() -> getPayPalCurrency();
-            $parameters['settings'] = $settings;
+            $renderer = new Renderer();
+            $renderer -> addRelativePath('emails/');
 
             $sender = $websiteSettings -> getWebsiteEmail();
             $headers = 'From: ' . $sender . "\r\n";
@@ -267,7 +259,8 @@ class User {
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
-            mail($email, $title, $twig -> render($template, $parameters), $headers);
+            $additionalParameters['url'] = $websiteSettings -> getWebsiteRoot();
+            mail($email, $title, $renderer -> renderWithDefaultSettings($template, $additionalParameters), $headers);
         }
         catch(Twig_Error_Loader $error) {
             mail($email, $title, $error);

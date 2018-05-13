@@ -4,7 +4,9 @@ use AdSky\Core\AdSky;
 use AdSky\Core\Autoloader;
 use AdSky\Core\Objects\Ad;
 use AdSky\Core\Objects\User;
+use AdSky\Core\Renderer;
 use AdSky\Core\Response;
+use AdSky\Core\Utils;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
 
@@ -16,15 +18,15 @@ $router = new \Bramus\Router\Router();
 
 $router -> set404(function() {
     header('HTTP/1.1 404 Not Found');
-    echo twigTemplate('errors', '404.twig');
+    echo twigTemplate('errors/', '404.twig');
 });
 
 $router -> all('/404.html', function() {
-    echo twigTemplate('errors', '404.twig');
+    echo twigTemplate('errors/', '404.twig');
 });
 
 $router -> all('/', function() {
-    echo twigTemplate('index');
+    echo twigTemplate('index/');
 });
 
 $router -> all('/login/', function() {
@@ -41,7 +43,7 @@ $router -> all('/login/', function() {
         die();
     }
 
-    echo twigTemplate('login');
+    echo twigTemplate('login/');
 });
 
 $router -> all('/admin/', function() {
@@ -58,7 +60,7 @@ $router -> all('/admin/', function() {
         die();
     }
 
-    echo twigTemplate('admin', 'content.twig', ['user' => $user]);
+    echo twigTemplate('admin/', 'content.twig', ['user' => $user]);
 });
 
 $router -> mount('/api/v1/ads', function() use ($router) {
@@ -207,26 +209,22 @@ $router -> all('/payment/renew(.*)', function() {
 $router -> run();
 
 function twigTemplate($folder, $file = 'content.twig', $parameters = []) {
-    $adsky = AdSky::getInstance();
-
-    if(!$adsky -> isInstalled()) {
-        header('Location: install/');
-        die();
-    }
-
-    $loader = new Twig_Loader_Filesystem('views/');
-    $twig = new Twig_Environment($loader);
-
-    $settings = $adsky -> buildSettingsArray([$adsky -> getAdSettings(), $adsky -> getWebsiteSettings()]);
-    $settings['PAYPAL_CURRENCY'] = $adsky -> getPayPalSettings() -> getPayPalCurrency();
-    $parameters['settings'] = $settings;
-
-    if(!empty($_GET['message'])) {
-        $parameters['message'] = $_GET['message'];
-    }
-
     try {
-        return $twig -> render($folder . '/' . $file, $parameters);
+        $adsky = AdSky::getInstance();
+
+        if(!$adsky -> isInstalled()) {
+            header('Location: install/');
+            die();
+        }
+
+        $renderer = new Renderer();
+        $renderer -> addRelativePath($folder);
+
+        if(!empty($_GET['message'])) {
+            $parameters['message'] = $_GET['message'];
+        }
+
+        return $renderer -> render($file, $parameters);
     }
     catch(Exception $error) {
         return $error;
@@ -257,7 +255,7 @@ function handlePayment($errorLink, $successLink, callable $action) {
 
         $payment -> execute($execution, $apiContext);
 
-        $ad = isset($_GET['id']) ? Ad::getFromDatabase($_GET['id']) : new Ad($user -> getUsername(), intval($_GET['type']), $_GET['title'], $_GET['message'], intval($_GET['interval']), intval($_GET['expiration']), Utils ::notEmptyOrNull($_GET, 'duration'));
+        $ad = isset($_GET['id']) ? Ad::getFromDatabase($_GET['id']) : new Ad($user -> getUsername(), intval($_GET['type']), $_GET['title'], $_GET['message'], intval($_GET['interval']), intval($_GET['expiration']), Utils::notEmptyOrNull($_GET, 'duration'));
 
         $response = call_user_func_array($action, [$ad]);
         if($response -> _error != null) {

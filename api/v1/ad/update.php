@@ -27,10 +27,10 @@ use AdSky\Core\Utils;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // Throttle protection.
     $adsky -> getAuth() -> throttle([
         'ad-update',

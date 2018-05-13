@@ -17,14 +17,14 @@ use AdSky\Core\AdSky;
 use AdSky\Core\Autoloader;
 use AdSky\Core\Objects\Ad;
 use AdSky\Core\Response;
+use AdSky\Core\Utils;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-$language = $adsky -> getLanguage();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // Throttle protection.
     $adsky -> getAuth() -> throttle([
         'ad-delete',
@@ -38,8 +38,8 @@ try {
     }
 
     // We get the ad ID.
-    if(!isset($_POST['id'])) {
-        Response::createAndReturn([$language -> getSettings('API_ERROR_NOT_SET_ID')]);
+    if(Utils::trueEmpty($_POST, 'id')) {
+        Response::createAndReturn(['API_ERROR_NOT_SET_ID']);
     }
 
     // Now we can get our ad.

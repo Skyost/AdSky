@@ -23,10 +23,10 @@ use Delight\Auth;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // We check if all required parameters have been sent.
     if(empty($_POST['username']) || empty($_POST['email']) || empty($_POST['password'])) {
         Response::createAndReturn('API_ERROR_NOT_SET_USERNAME', 'API_ERROR_NOT_SET_EMAIL', 'API_ERROR_NOT_SET_PASSWORD');

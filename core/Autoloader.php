@@ -2,11 +2,25 @@
 
 namespace AdSky\Core;
 
+/**
+ * Autoloader class.
+ */
+
 class Autoloader {
+
+    /**
+     * Registers the autoloader.
+     */
 
     public static function register() {
         spl_autoload_register([__CLASS__, 'autoload']);
     }
+
+    /**
+     * Allows PHP to loads a class.
+     *
+     * @param string $class The class.
+     */
 
     public static function autoload($class) {
         $namespace = explode('\\', $class);

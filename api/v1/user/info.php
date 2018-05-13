@@ -25,6 +25,7 @@ require_once __DIR__ . '/../../../core/Autoloader.php';
 try {
     Autoloader::register();
     $adsky = AdSky ::getInstance();
+
     $user = $adsky -> getCurrentUserObject();
 
     if($user == null) {

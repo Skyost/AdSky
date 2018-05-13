@@ -21,10 +21,10 @@ use Delight\Auth;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // We check if an email has been sent.
     if(empty($_POST['email'])) {
         Response::createAndReturn(['API_ERROR_NOT_SET_EMAIL']);

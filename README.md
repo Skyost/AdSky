@@ -243,7 +243,7 @@ Sample output :
 
 ### Update
 
-Here are the available AdSky update operations :
+Below are the available AdSky update operations. These operations are accessible for administrators only :
 
 #### Check for updates
 

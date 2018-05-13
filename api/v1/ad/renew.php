@@ -23,10 +23,10 @@ use Delight\Auth;
 
 require_once __DIR__ . '/../../../core/Autoloader.php';
 
-Autoloader::register();
-$adsky = AdSky::getInstance();
-
 try {
+    Autoloader::register();
+    $adsky = AdSky::getInstance();
+
     // We check if all arguments are okay.
     if(Utils::trueEmpty($_POST, 'id') || empty($_POST['days'])) {
         Response::createAndReturn(['API_ERROR_NOT_SET_ID', 'API_ERROR_NOT_SET_DAYS']);

@@ -231,7 +231,7 @@
             while(quote == null || quote == currentQuote);
             currentQuote = quote;
 
-            figureQuote = figuresQuote[currentQuote];
+            let figureQuote = figuresQuote[currentQuote];
             document.querySelector('#quote-block figure div').innerHTML = figureQuote.figure;
             document.querySelector('#quote-block figure q').innerHTML = figureQuote.quote;
 

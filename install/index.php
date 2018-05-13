@@ -17,18 +17,21 @@
 
 <?php
 
+use AdSky\Core\AdSky;
+use AdSky\Core\Autoloader;
+use AdSky\Core\Renderer;
+use AdSky\Core\Utils;
+
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../core/AdSky.php';
+require_once __DIR__ . '/../core/Autoloader.php';
 
-require_once __DIR__ . '/../core/Utils.php';
-
+Autoloader::register();
 if(empty($_POST['step'])) {
     $_POST['step'] = 1;
 }
 
 $adsky = AdSky::getInstance();
-$loader = new Twig_Loader_Filesystem('settings/');
-$twig = new Twig_Environment($loader);
+$renderer = new Renderer('settings/');
 
 $parameters = [];
 
@@ -58,7 +61,7 @@ else if($_POST['step'] == 2) {
                 $parameters['error'] = 'mysql';
             }
             else {
-                file_put_contents('../core/settings/MySQLSettings.php', '<?php' . $twig -> render('MySQLSettings.twig', ['post' => $_POST]));
+                file_put_contents('../core/settings/MySQLSettings.php', '<?php' . $renderer -> render('MySQLSettings.twig', ['post' => $_POST]));
             }
         }
         catch(Exception $error) {
@@ -93,7 +96,7 @@ else if($_POST['step'] == 4) {
         $parameters['error'] = 'form';
     }
     else {
-        file_put_contents('../core/settings/WebsiteSettings.php', '<?php' . $twig -> render('WebsiteSettings.twig', ['post' => $_POST]));
+        file_put_contents('../core/settings/WebsiteSettings.php', '<?php' . $renderer -> render('WebsiteSettings.twig', ['post' => $_POST]));
 
         $auth = $adsky -> getAuth();
         if(!$auth -> isLoggedIn()) {
@@ -117,7 +120,7 @@ else if($_POST['step'] == 5) {
         $parameters['error'] = 'form';
     }
     else {
-        file_put_contents('../core/settings/PayPalSettings.php', '<?php' . $twig -> render('PayPalSettings.twig', ['post' => $_POST]));
+        file_put_contents('../core/settings/PayPalSettings.php', '<?php' . $renderer -> render('PayPalSettings.twig', ['post' => $_POST]));
 
         $pluginSettings = $adsky -> getPluginSettings();
 
@@ -125,7 +128,7 @@ else if($_POST['step'] == 5) {
             $salt = str_shuffle(md5(microtime()));
             $parameters['data'] = crypt(microtime().rand(), substr($salt, 0, rand(5, strlen($salt))));
 
-            file_put_contents('../core/settings/PluginSettings.php', '<?php' . $twig -> render('PluginSettings.twig', ['plugin_key' => $parameters['data']]));
+            file_put_contents('../core/settings/PluginSettings.php', '<?php' . $renderer -> render('PluginSettings.twig', ['plugin_key' => $parameters['data']]));
         }
         else {
             $parameters['data'] = $pluginSettings -> getPluginKey();

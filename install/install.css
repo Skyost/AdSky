@@ -10,7 +10,7 @@ header {
 
 header h1 {
     text-transform: none;
-    font-family: 'SaturdayNights';
+    font-family: 'SaturdayNights', cursive;
     font-size: 5em;
     text-align: center;
     font-weight: normal;
