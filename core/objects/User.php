@@ -262,14 +262,14 @@ class User {
             $additionalParameters['url'] = $websiteSettings -> getWebsiteRoot();
             mail($email, $title, $renderer -> renderWithDefaultSettings($template, $additionalParameters), $headers);
         }
-        catch(Twig_Error_Loader $error) {
-            mail($email, $title, $error);
+        catch(Twig_Error_Loader $ex) {
+            mail($email, $title, $ex);
         }
-        catch(Twig_Error_Syntax $error) {
-            mail($email, $title, $error);
+        catch(Twig_Error_Syntax $ex) {
+            mail($email, $title, $ex);
         }
-        catch(Twig_Error_Runtime $error) {
-            mail($email, $title, $error);
+        catch(Twig_Error_Runtime $ex) {
+            mail($email, $title, $ex);
         }
     }
 

@@ -64,7 +64,7 @@ else if($_POST['step'] == 2) {
                 file_put_contents('../core/settings/MySQLSettings.php', '<?php' . $renderer -> render('MySQLSettings.twig', ['post' => $_POST]));
             }
         }
-        catch(Exception $error) {
+        catch(Exception $ex) {
             $_POST['step'] = 1;
             $parameters['error'] = 'form';
         }
@@ -83,10 +83,10 @@ else if($_POST['step'] == 3) {
         $statement -> execute();
         $statement -> closeCursor();
     }
-    catch(Exception $error) {
+    catch(Exception $ex) {
         $_POST['step'] = 2;
         $parameters['error'] = 'tables';
-        $parameters['data'] = $error;
+        $parameters['data'] = $ex;
     }
 }
 
@@ -105,10 +105,10 @@ else if($_POST['step'] == 4) {
                 $auth -> login($_POST['form-user-email'], $_POST['form-user-password'], (int)(60 * 60 * 24 * 365.25));
                 $auth -> admin() -> addRoleForUserById($userId, \Delight\Auth\Role::ADMIN);
             }
-            catch(Exception $error) {
+            catch(Exception $ex) {
                 $_POST['step'] = 3;
                 $parameters['error'] = 'auth';
-                $parameters['data'] = $error;
+                $parameters['data'] = $ex;
             }
         }
     }
@@ -148,8 +148,8 @@ function showStep($step = 1, $parameters) {
     try {
         echo $twig -> render('step-' . $step . '.twig', $parameters);
     }
-    catch(Exception $error) {
-        echo $error;
+    catch(Exception $ex) {
+        echo $ex;
     }
 
     echo '</div>';

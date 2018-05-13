@@ -48,7 +48,7 @@ Please make sure that your web server meets the following requirements :
  - **MySQL 5.5.3+**.
  - **[mail()](http://php.net/manual/function.mail.php) and [URL Rewriting](https://gist.github.com/bramus/5332525) support**.
  
-If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files (located in `views/` and `assets/css/`, respectively).
+If you want to edit messages and the global look of AdSky, do not hesitate to edit `.twig` and `.css` files (located in `core/views/` and `assets/css/`, respectively).
  
 Oh, and I forgot one thing : **everything is configurable**. Just go to `core/settings/` and open the PHP file you want.
 
@@ -430,7 +430,11 @@ Sample output :
 {
    "error":null,
    "message":"Success.",
-   "object":null
+   "object":{
+      "username":"Skyost",
+      "email":"my@mail.com",
+      "type":0
+   }
 }
 ```
 

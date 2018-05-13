@@ -34,7 +34,7 @@ class Utils {
      */
 
     public static function notEmptyOrNull($array, $index) {
-        return empty($array[$index]) ? null : $array[$index];
+        return self::trueEmpty($array, $index) ? null : $array[$index];
     }
 
     /**

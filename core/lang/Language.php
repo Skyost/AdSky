@@ -12,6 +12,8 @@ require_once __DIR__ . '/../Autoloader.php';
 
 abstract class Language extends Settings {
 
+    const STRING_NOT_FOUND = 'Translation not found ("%s").';
+
     abstract public function getLanguage();
 
     /**
@@ -23,7 +25,7 @@ abstract class Language extends Settings {
 
     public function getSettings($key) {
         if(!array_key_exists($key, $this -> data)) {
-            return 'Translation not found ("' . $key . '")."';
+            return sprintf(self::STRING_NOT_FOUND, $key);
         }
         return parent::getSettings($key);
     }

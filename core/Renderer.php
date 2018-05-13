@@ -19,7 +19,7 @@ class Renderer {
      * @param array $paths Where to find templates.
      */
 
-    public function __construct($paths = [__DIR__ . '/../views/']) {
+    public function __construct($paths = [__DIR__ . '/views/']) {
         $this -> loader = new \Twig_Loader_Filesystem($paths);
         $this -> twig = new \Twig_Environment($this -> loader);
     }
@@ -43,7 +43,7 @@ class Renderer {
      */
 
     public function addRelativePath($path) {
-        $this -> addPath(__DIR__ . '/../views/' . $path);
+        $this -> addPath(__DIR__ . '/views/' . $path);
     }
 
     /**

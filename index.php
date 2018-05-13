@@ -1,11 +1,21 @@
 <?php
 
+use AdSky\Core\Actions;
+use AdSky\Core\Actions\Ad\PayAction;
+use AdSky\Core\Actions\Ad\RenewAction;
+use AdSky\Core\Actions\Plugin\DeleteExpiredAction;
+use AdSky\Core\Actions\Plugin\TodayAdsAction;
+use AdSky\Core\Actions\Response;
+use AdSky\Core\Actions\Update\CheckAction;
+use AdSky\Core\Actions\User\ForgotPasswordAction;
+use AdSky\Core\Actions\User\LoginAction;
+use AdSky\Core\Actions\User\LogoutAction;
+use AdSky\Core\Actions\User\RegisterAction;
 use AdSky\Core\AdSky;
 use AdSky\Core\Autoloader;
 use AdSky\Core\Objects\Ad;
 use AdSky\Core\Objects\User;
 use AdSky\Core\Renderer;
-use AdSky\Core\Response;
 use AdSky\Core\Utils;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
@@ -60,99 +70,92 @@ $router -> all('/admin/', function() {
         die();
     }
 
-    echo twigTemplate('admin/', 'content.twig', ['user' => $user]);
+    echo twigTemplate('admin/', 'content.twig', ['user' => $user -> toArray()]);
 });
 
 $router -> mount('/api/v1/ads', function() use ($router) {
     $router -> all('/', function() {
-        include __DIR__ . '/api/v1/ad/list.php';
+        (new Actions\Ad\ListAction(null, Utils::notEmptyOrNull($_POST, 'page'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/pay', function() {
-        include __DIR__ . '/api/v1/ad/pay.php';
+        (new PayAction(Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration')))
+            -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)', function($id) {
-        $_POST['id'] = $id;
-        include __DIR__ . '/api/v1/ad/info.php';
+        (new Actions\Ad\InfoAction($id)) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/delete', function($id) {
-        $_POST['id'] = $id;
-        include __DIR__ . '/api/v1/ad/delete.php';
+        (new Actions\Ad\DeleteAction($id)) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/renew', function($id) {
-        $_POST['id'] = $id;
-        include __DIR__ . '/api/v1/ad/renew.php';
+        (new RenewAction($id, Utils::notEmptyOrNull($_POST, 'days'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/update', function($id) {
-        $_POST['id'] = $id;
-        include __DIR__ . '/api/v1/ad/update.php';
+        (new Actions\Ad\UpdateAction($id, Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'title'), Utils::notEmptyOrNull($_POST, 'message'), Utils::notEmptyOrNull($_POST, 'interval'), Utils::notEmptyOrNull($_POST, 'expiration'), Utils::notEmptyOrNull($_POST, 'duration')))
+            -> execute() -> returnResponse();
     });
 });
 
 $router -> mount('/api/v1/plugin', function() use ($router) {
     $router -> all('/delete-expired', function() {
-        include __DIR__ . '/api/v1/plugin/delete_expired.php';
+        (new DeleteExpiredAction(Utils::notEmptyOrNull($_POST, 'key'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/today', function() {
-        include __DIR__ . '/api/v1/plugin/today.php';
+        (new TodayAdsAction(Utils::notEmptyOrNull($_POST, 'key'))) -> execute() -> returnResponse();
     });
 });
 
 $router -> mount('/api/v1/update', function() use ($router) {
     $router -> all('/check', function() {
-        include __DIR__ . '/api/v1/update/check.php';
+        (new CheckAction()) -> execute() -> returnResponse();
     });
 
     $router -> all('/update', function() {
-        include __DIR__ . '/api/v1/update/update.php';
+        (new Actions\Update\UpdateAction()) -> execute() -> returnResponse();
     });
 });
 
 $router -> mount('/api/v1/users', function() use ($router) {
     $router -> all('/', function() {
-        include __DIR__ . '/api/v1/user/list.php';
+        (new Actions\User\ListAction(Utils::notEmptyOrNull($_POST, 'page'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/login', function() {
-        include __DIR__ . '/api/v1/user/login.php';
+        (new LoginAction(Utils::notEmptyOrNull($_POST, 'email'), Utils::notEmptyOrNull($_POST, 'password'), Utils::notEmptyOrNull($_POST, 'rememberduration'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/logout', function() {
-        include __DIR__ . '/api/v1/user/logout.php';
+        (new LogoutAction()) -> execute() -> returnResponse();
     });
 
     $router -> all('/register', function() {
-        include __DIR__ . '/api/v1/user/register.php';
+        (new RegisterAction(Utils::notEmptyOrNull($_POST, 'username'), Utils::notEmptyOrNull($_POST, 'email'), Utils::notEmptyOrNull($_POST, 'password'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)', function($email) {
-        $_POST['email'] = $email;
-        include __DIR__ . '/api/v1/user/info.php';
+        (new Actions\User\InfoAction($email)) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/ads', function($email) {
-        $_POST['email'] = $email;
-        include __DIR__ . '/api/v1/ad/list.php';
+        (new Actions\Ad\ListAction($email, Utils::notEmptyOrNull($_POST, 'page'))) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/delete', function($email) {
-        $_POST['email'] = $email;
-        include __DIR__ . '/api/v1/user/delete.php';
+        (new Actions\User\DeleteAction($email)) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/forgot', function($email) {
-        $_POST['email'] = $email;
-        include __DIR__ . '/api/v1/user/forgot_password.php';
+        (new ForgotPasswordAction($email)) -> execute() -> returnResponse();
     });
 
     $router -> all('/([^/]+)/update', function($email) {
-        $_POST['oldemail'] = $email;
-        include __DIR__ . '/api/v1/user/update.php';
+        (new Actions\User\UpdateAction($email, Utils::notEmptyOrNull($_POST, 'oldpassword'), Utils::notEmptyOrNull($_POST, 'email'), Utils::notEmptyOrNull($_POST, 'password'), Utils::notEmptyOrNull($_POST, 'type'), Utils::notEmptyOrNull($_POST, 'force'))) -> execute() -> returnResponse();
     });
 });
 
@@ -191,18 +194,18 @@ $router -> all('/email/update/([^/]+)/(.*)', function($selector, $token) {
 $router -> all('/payment/register(.*)', function() {
     handlePayment('admin/?message=create_error#create', 'admin/?message=create_success#create', function(Ad $ad) {
         $ad -> sendUpdateToDatabase();
-        return new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'));
+        return new Response(null, 'API_SUCCESS');
     });
 });
 
 $router -> all('/payment/renew(.*)', function() {
     handlePayment('admin/?message=renew_error#list', 'admin/?message=renew_success#list', function(Ad $ad) {
         if(!$ad -> renew($_GET['days'])) {
-            return new Response(AdSky::getInstance() -> getLanguageString('API_ERROR_INVALID_RENEWDAY'));
+            return new Response('API_ERROR_INVALID_RENEWDAY');
         }
 
         $ad -> sendUpdateToDatabase($_GET['id']);
-        return new Response(null, AdSky::getInstance() -> getLanguageString('API_SUCCESS'));
+        return new Response(null, 'API_SUCCESS');
     });
 });
 
@@ -224,18 +227,18 @@ function twigTemplate($folder, $file = 'content.twig', $parameters = []) {
             $parameters['message'] = $_GET['message'];
         }
 
-        return $renderer -> render($file, $parameters);
+        return $renderer -> renderWithDefaultSettings($file, $parameters);
     }
-    catch(Exception $error) {
-        return $error;
+    catch(Exception $ex) {
+        return $ex;
     }
 }
 
-function handlePayment($errorLink, $successLink, callable $action) {
+function handlePayment($exLink, $successLink, callable $action) {
     try {
         $root = AdSky::getInstance() -> getWebsiteSettings() -> getWebsiteRoot();
         if($_GET['success'] != true) {
-            header('Location: ' . $root . $errorLink);
+            header('Location: ' . $root . $exLink);
             die();
         }
 
@@ -243,7 +246,7 @@ function handlePayment($errorLink, $successLink, callable $action) {
         $user = AdSky::getInstance() -> getCurrentUserObject();
 
         if($user == null) {
-            Response::createAndReturn('API_ERROR_NOT_LOGGEDIN');
+            (new Response('API_ERROR_NOT_LOGGEDIN')) -> returnResponse();
         }
 
         $apiContext = $adsky -> getPayPalSettings() -> getPayPalAPIContext();
@@ -264,8 +267,8 @@ function handlePayment($errorLink, $successLink, callable $action) {
 
         header('Location: ' . $root . $successLink);
     }
-    catch(Exception $error) {
-        echo $error;
+    catch(Exception $ex) {
+        echo $ex;
     }
     die();
 }

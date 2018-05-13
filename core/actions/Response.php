@@ -1,6 +1,9 @@
 <?php
 
-namespace AdSky\Core;
+namespace AdSky\Core\Actions;
+
+use AdSky\Core\AdSky;
+use AdSky\Core\Lang\Language;
 
 /**
  * Represents an API response.
@@ -8,9 +11,11 @@ namespace AdSky\Core;
 
 class Response {
 
-    public $error;
-    public $message;
-    public $object;
+    private $language;
+
+    private $error;
+    private $message;
+    private $object;
 
     /**
      * Creates a new response instance.
@@ -18,12 +23,15 @@ class Response {
      * @param string $error If there is an error, specify it here.
      * @param string $message If there is a message, specify it here.
      * @param mixed $object If there is an object, specify it here.
+     * @param Language language If you have a language instance, specify it here.
      */
 
-    public function __construct($error = null, $message = null, $object = null) {
-        $this -> error = $error;
-        $this -> message = $message;
-        $this -> object = $object;
+    public function __construct($error = null, $message = null, $object = null, $language = null) {
+        $this -> language = $language == null ? AdSky::getInstance() -> getLanguage() : $language;
+
+        $this -> setError($error);
+        $this -> setMessage($message);
+        $this -> setObject($object);
     }
 
     /**
@@ -39,11 +47,11 @@ class Response {
     /**
      * Sets the error.
      *
-     * @param string $error The error.
+     * @param string $error The error (language key or not).
      */
 
     public function setError($error) {
-        $this -> error = $error;
+        $this -> error = $error != null && $this -> language -> has($error) ? $this -> language -> getSettings($error) : $error;
     }
 
     /**
@@ -59,11 +67,11 @@ class Response {
     /**
      * Sets the message.
      *
-     * @param string $message The message.
+     * @param string $message The message (language key or not).
      */
 
     public function setMessage($message) {
-        $this -> message = $message;
+        $this -> message = $message != null && $this -> language -> has($message) ? $this -> language -> getSettings($message) : $message;
     }
 
     /**
@@ -100,32 +108,25 @@ class Response {
     }
 
     /**
-     * Creates a new response instance and call returnResponse();
+     * Creates a new "xxxx not set" error.
      *
-     * @param string $error If there is an error, specify it here (must be a Language key).
-     * @param string $message If there is a message, specify it here (must be a Language key).
-     * @param mixed $object If there is an object, specify it here.
+     * @param array $keys The not set keys.
+     * @param Language $language The language.
+     *
+     * @return Response The error Response.
      */
 
-    public static function createAndReturn($error = null, $message = null, $object = null) {
-        $language = AdSky::getInstance() -> getLanguage();
-
-        if($error != null) {
-            if(is_array($error)) {
-                $errorContent = [];
-                foreach($error as $errorKey) {
-                    array_push($errorContent, $language -> getSettings($errorKey));
-                }
-
-                $error = $language -> formatNotSet($errorContent);
-            }
-            else {
-                $error = $language -> getSettings($error);
-            }
+    public static function notSet($keys, $language = null) {
+        if($language == null) {
+            $language = AdSky::getInstance() -> getLanguage();
         }
 
-        $response = new Response($error, $message == null ? null : $language -> getSettings($message), $object);
-        $response -> returnResponse();
+        $content = [];
+        foreach($keys as $key) {
+            array_push($content, $language -> getSettings($key));
+        }
+
+        return new Response($language -> formatNotSet($content), null, null, $language);
     }
 
     public function __toString() {

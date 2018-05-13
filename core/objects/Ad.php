@@ -328,7 +328,7 @@ class Ad {
                 'LIMIT' => 1
             ]));
         }
-        catch(PDOException $error) {
+        catch(PDOException $ex) {
             return false;
         }
     }

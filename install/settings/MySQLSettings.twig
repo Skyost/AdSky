@@ -4,7 +4,7 @@ namespace AdSky\Core\Settings;
 
 use AdSky\Core\AdSky;
 
-use AdSky\Core\Response;
+use AdSky\Core\Actions\Response;
 use Medoo\Medoo;
 use PDOException;
 
@@ -64,7 +64,7 @@ class MySQLSettings extends Settings {
                 'option' => [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
             ]);
         }
-        catch(PDOException $error) {
+        catch(PDOException $ex) {
             die('Unable to connect to MySQL database. Please check your settings in core/settings/MySQLSettings.php.');
         }
     }
@@ -129,8 +129,8 @@ class MySQLSettings extends Settings {
                 'hasNext' => $page < $maxPage
             ]);
         }
-        catch(PDOException $error) {
-            return new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $error);
+        catch(PDOException $ex) {
+            return new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $ex);
         }
     }
 
