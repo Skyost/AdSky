@@ -1,4 +1,3 @@
-const BASE_TITLE = $('title').text();
 const ENTITY_MAP = {
     '&': '&amp;',
     '<': '&lt;',
@@ -80,10 +79,6 @@ $(document).ready(function() {
         }
 
         defaultPostRequest('../api/v1/users/current/update', data, 'profile', function() {
-            if(changeEmail) {
-                window.location.href = '../login/?message=updated';
-                return;
-            }
             goToOrReload('?message=profile_updated#profile');
         })
     });
@@ -354,11 +349,8 @@ function showFragment(fragment) {
     let currentMenu = $('[data-show="' + fragment + '"]');
     currentMenu.addClass('active');
 
-    document.title = BASE_TITLE + ' - ' + element.find('h1').text();
     window.location.hash = fragment;
-
     $('html').scrollTop(0);
-
     $(document).trigger('fragmentChanged', fragment);
 }
 

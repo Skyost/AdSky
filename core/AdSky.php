@@ -18,7 +18,7 @@ class AdSky {
     const APP_NAME = 'AdSky';
     const APP_VERSION = 'v0.1';
     const APP_WEBSITE = 'https://github.com/Skyost/AdSky';
-    const APP_DEBUG = true;
+    const APP_DEBUG = false;
 
     private static $instance;
 

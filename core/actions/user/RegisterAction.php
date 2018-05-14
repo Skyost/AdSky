@@ -43,7 +43,7 @@ class RegisterAction extends APIAction {
 
             // We check if all required parameters have been sent.
             if($this -> username == null || $this -> email == null || $this -> password == null) {
-                return new Response(['API_ERROR_NOT_SET_USERNAME', 'API_ERROR_NOT_SET_EMAIL', 'API_ERROR_NOT_SET_PASSWORD']);
+                return Response::notSet(['API_ERROR_NOT_SET_USERNAME', 'API_ERROR_NOT_SET_EMAIL', 'API_ERROR_NOT_SET_PASSWORD']);
             }
 
             // We also check if the user is not logged in.

@@ -42,13 +42,7 @@
         <small class="visible-login">Not registered ? <a class="form-switch" href="#">Create an account</a>.</small>
         <small class="visible-register">Already have an account ? <a class="form-switch" href="#">Login yourself</a>.</small>
         <small class="visible-login">Forgot your password ? <a id="forgot-password" href="#">Click here</a>.</small>
-        {% if message == 'updated' %}
-            <small id="form-message" style="color: var(--success);">
-                Your profile has been updated with success.
-                You can now reconnect to the admin panel.
-                If you have changed your email address, you must reconfirm it first.
-            </small>
-        {% elseif message == 'registered' %}
+        {% if message == 'registered' %}
             <small id="form-message" style="color: var(--success);">
                 Registered with success ! Please confirm your email.
             </small>

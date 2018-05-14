@@ -96,7 +96,7 @@ class UpdateAction extends APIAction {
 
             // If we are not in force mode, we must have an old password.
             if($this -> oldPassword == null) {
-                return new Response(['API_ERROR_NOT_SET_OLDPASSWORD']);
+                return Response::notSet(['API_ERROR_NOT_SET_OLDPASSWORD']);
             }
 
             // We check if the old password is okay.

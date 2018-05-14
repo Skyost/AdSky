@@ -15,7 +15,7 @@ require_once __DIR__ . '/../Autoloader.php';
 
 class GithubUpdater {
 
-    const UPDATES_FOLDER = '../../updates/';
+    const UPDATES_FOLDER = __DIR__ . '/../../updates/';
 
     private $repo;
 
@@ -124,7 +124,8 @@ class GithubUpdater {
                 'method' => 'GET',
                 'header' => [
                     'User-Agent: ' . AdSky::APP_NAME . ' ' . AdSky::APP_VERSION
-                ]
+                ],
+                'timeout' => 10
             ]
         ];
 
