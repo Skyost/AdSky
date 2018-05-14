@@ -264,7 +264,25 @@ public abstract class AbstractAd {
 	 * @return An array containing all ads.
 	 */
 
-	public abstract AbstractAd[] multiply();
+	public AbstractAd[] multiply() {
+		final int interval = this.getInterval();
+
+		AbstractAd[] array = new AbstractAd[interval];
+		array[0] = this;
+		for(int i = 1; i < interval; i++) {
+			array[i] = this.copy();
+		}
+
+		return array;
+	}
+
+	/**
+	 * Copies this ad instance.
+	 *
+	 * @return A copy of this instance.
+	 */
+
+	public abstract AbstractAd copy();
 
 	/**
 	 * Evaluates the distribution function at the given hour.

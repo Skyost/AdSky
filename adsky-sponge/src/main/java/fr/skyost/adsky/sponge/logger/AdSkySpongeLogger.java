@@ -3,9 +3,23 @@ package fr.skyost.adsky.sponge.logger;
 import fr.skyost.adsky.core.AdSkyLogger;
 import org.slf4j.Logger;
 
+/**
+ * Default plugin logger.
+ */
+
 public class AdSkySpongeLogger implements AdSkyLogger {
 
+	/**
+	 * The plugin's logger instance.
+	 */
+
 	private final Logger logger;
+
+	/**
+	 * Creates a new logger instance.
+	 *
+	 * @param logger The plugin's logger.
+	 */
 
 	public AdSkySpongeLogger(final Logger logger) {
 		this.logger = logger;

@@ -8,6 +8,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.util.List;
 
+/**
+ * Default plugin configuration.
+ */
+
 @ConfigSerializable
 public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 

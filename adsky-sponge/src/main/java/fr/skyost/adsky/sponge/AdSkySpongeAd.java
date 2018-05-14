@@ -9,6 +9,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
+import org.spongepowered.api.world.World;
 
 public class AdSkySpongeAd extends AbstractAd {
 
@@ -51,39 +52,32 @@ public class AdSkySpongeAd extends AbstractAd {
 	
 	@Override
 	public void broadcast() {
-		if(this.isTitleAd()) {
-			final Title title = Title.builder().title(Text.of(this.getTitle())).subtitle(Text.of(this.getMessage())).stay(this.getDuration() * 20).build();
-			for(final Player player : Sponge.getServer().getOnlinePlayers()) {
-				if(player.hasPermission("adsky.bypass") || config.ads.worldBlackList.contains(player.getWorld().getName())) {
-					continue;
-				}
-
-				player.sendTitle(title);
-			}
-			return;
-		}
-
+		final Title title = Title.builder().title(Text.of(this.getTitle())).subtitle(Text.of(this.getMessage())).stay(this.getDuration() * 20).build();
 		final Text message = Text.of(this.getTitle(), this.getMessage());
-		for(final Player player : Sponge.getServer().getOnlinePlayers()) {
-			if(player.hasPermission("adsky.bypass") || config.ads.worldBlackList.contains(player.getWorld().getName())) {
+
+		for(final World world : Sponge.getServer().getWorlds()) {
+			if(config.ads.worldBlackList.contains(world.getName())) {
 				continue;
 			}
 
-			player.sendMessage(message);
+			for(final Player player : world.getPlayers()) {
+				if(player.hasPermission("adsky.bypass")) {
+					continue;
+				}
+
+				if(this.isTitleAd()) {
+					player.sendTitle(title);
+					continue;
+				}
+
+				player.sendMessage(message);
+			}
 		}
 	}
 
 	@Override
-	public AbstractAd[] multiply() {
-		final int interval = this.getInterval();
-
-		AbstractAd[] array = new AbstractAd[interval];
-		array[0] = this;
-		for(int i = 1; i < interval; i++) {
-			array[i] = new AdSkySpongeAd(this);
-		}
-
-		return array;
+	public AdSkySpongeAd copy() {
+		return new AdSkySpongeAd(this);
 	}
 
 	/**

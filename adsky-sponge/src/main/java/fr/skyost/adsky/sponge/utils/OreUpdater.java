@@ -8,11 +8,29 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import java.util.Optional;
 
+/**
+ * Ore update checker.
+ */
+
 public class OreUpdater extends Thread {
+
+	/**
+	 * Plugin ID.
+	 */
 
 	private static final String PLUGIN_ID = "adsky-sponge";
 
+	/**
+	 * The plugin's logger instance.
+	 */
+
 	private final Logger logger;
+
+	/**
+	 * Creates a new updater instance.
+	 *
+	 * @param logger The plugin's logger.
+	 */
 
 	public OreUpdater(final Logger logger) {
 		this.logger = logger;
@@ -23,20 +41,25 @@ public class OreUpdater extends Thread {
 		try {
 			logger.info("Checking for updates...");
 
+			// Let's get the plugin.
 			final Optional<PluginContainer> optionalPluginContainer = Sponge.getPluginManager().getPlugin(PLUGIN_ID);
 			if(!optionalPluginContainer.isPresent()) {
 				throw new NullPointerException("No plugin found for \"" + PLUGIN_ID + "\".");
 			}
+
+			// We have to get the plugin's version.
 			final Optional<String> optionalLocalVersion = optionalPluginContainer.get().getVersion();
 			if(!optionalLocalVersion.isPresent()) {
 				return;
 			}
 
+			// Now we can request the remote version.
 			final Webb webb = Webb.create();
 			webb.setBaseUri("https://ore.spongepowered.org/api/v1");
 
 			final String version = Json.parse(webb.get("/projects/" + PLUGIN_ID).ensureSuccess().asString().getBody()).asObject().get("recommended").asObject().get("name").asString();
 
+			// And we can compare them.
 			if(versionCompare(optionalLocalVersion.get(), version) >= 0) {
 				logger.info("No update found.");
 				return;

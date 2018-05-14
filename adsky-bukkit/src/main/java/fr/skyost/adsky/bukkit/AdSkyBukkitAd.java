@@ -6,6 +6,7 @@ import fr.skyost.adsky.bukkit.config.AdSkyBukkitConfiguration;
 import fr.skyost.adsky.core.ad.AbstractAd;
 import fr.skyost.adsky.core.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -53,39 +54,32 @@ public class AdSkyBukkitAd extends AbstractAd {
 
 	@Override
 	public void broadcast() {
-		if(this.isTitleAd()) {
-			final int stay = this.getDuration() * 20;
-			for(final Player player : Bukkit.getOnlinePlayers()) {
-				if(player.hasPermission("adsky.bypass") || config.adsWorldBlackList.contains(player.getWorld().getName())) {
-					continue;
-				}
-
-				player.sendTitle(this.getTitle(), this.getMessage(), 10, stay, 20);
-			}
-			return;
-		}
-
+		final int stay = this.getDuration() * 20;
 		final String[] message = new String[]{this.getTitle(), this.getMessage()};
-		for(final Player player : Bukkit.getOnlinePlayers()) {
-			if(player.hasPermission("adsky.bypass") || config.adsWorldBlackList.contains(player.getWorld().getName())) {
+
+		for(final World world : Bukkit.getWorlds()) {
+			if(config.adsWorldBlackList.contains(world.getName())) {
 				continue;
 			}
 
-			player.sendMessage(message);
+			for(final Player player : world.getPlayers()) {
+				if(player.hasPermission("adsky.bypass")) {
+					continue;
+				}
+
+				if(this.isTitleAd()) {
+					player.sendTitle(this.getTitle(), this.getMessage(), 10, stay, 20);
+					continue;
+				}
+
+				player.sendMessage(message);
+			}
 		}
 	}
 
 	@Override
-	public AbstractAd[] multiply() {
-		final int interval = this.getInterval();
-
-		AbstractAd[] array = new AbstractAd[interval];
-		array[0] = this;
-		for(int i = 1; i < interval; i++) {
-			array[i] = new AdSkyBukkitAd(this);
-		}
-
-		return array;
+	public AdSkyBukkitAd copy() {
+		return new AdSkyBukkitAd(this);
 	}
 
 	/**
