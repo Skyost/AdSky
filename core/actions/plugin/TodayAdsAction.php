@@ -54,7 +54,7 @@ class TodayAdsAction extends APIAction {
                 ]);
             }
 
-            return new Response(null, 'API_SUCCESS');
+            return new Response(null, 'API_SUCCESS', $object);
         }
         catch(\PDOException $ex) {
             return new Response('API_ERROR_MYSQL_ERROR', null, $ex);
