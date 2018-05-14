@@ -9,7 +9,7 @@ permissions:
     description: Gives access to all AdSky permissions.
     default: op
     children:
-      adsky.bypass
+      adsky.bypass: true
   adsky.bypass:
     description: Allows to not see ads.
     default: op

@@ -15,23 +15,23 @@ import java.util.List;
 public class AdSkyBukkitConfiguration extends Skyoconfig implements AdSkyConfiguration {
 
 	@ConfigOptions(name = "enable.updater")
-	public final boolean enableUpdater = true;
+	public boolean enableUpdater = true;
 	@ConfigOptions(name = "enable.metrics")
-	public final boolean enableMetrics = true;
+	public boolean enableMetrics = true;
 
 	@ConfigOptions(name = "server.url")
-	public final String serverUrl = "http://yourwebsite.com/adsky/";
+	public String serverUrl = "http://yourwebsite.com/adsky/";
 	@ConfigOptions(name = "server.plugin-key")
-	public final String serverPluginKey = "Paste your plugin key here.";
+	public String serverPluginKey = "Paste your plugin key here.";
 	@ConfigOptions(name = "server.event-scheduled")
-	public final boolean serverEventScheduled = false;
+	public boolean serverEventScheduled = false;
 
 	@ConfigOptions(name = "ads.preferred-hour")
 	public int adsPreferredHour = 12;
 	@ConfigOptions(name = "ads.distribution-function")
-	public final String adsDistributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
+	public String adsDistributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
 	@ConfigOptions(name = "ads.world-blacklist")
-	public final List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
+	public List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
 
 	/**
 	 * Creates a new plugin configuration instance.
