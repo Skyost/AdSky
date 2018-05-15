@@ -90,7 +90,7 @@ class MySQLSettings extends Settings {
             $rows = $medoo -> count($table, []);
 
             if($rows <= 0) {
-                return new Response(null, $adsky -> getLanguageString('API_SUCCESS'), [
+                return new Response(null, 'API_SUCCESS', [
                     'data' => [],
                     'page' => 1,
                     'minPage' => 1,
@@ -120,7 +120,7 @@ class MySQLSettings extends Settings {
                 array_push($data, $row);
             }
 
-            return new Response(null, $adsky -> getLanguageString('API_SUCCESS'), [
+            return new Response(null, 'API_SUCCESS', [
                 'data' => $data,
                 'page' => $page,
                 'minPage' => 1,
@@ -130,7 +130,7 @@ class MySQLSettings extends Settings {
             ]);
         }
         catch(PDOException $ex) {
-            return new Response($adsky -> getLanguageString('API_ERROR_MYSQL_ERROR'), null, $ex);
+            return new Response('API_ERROR_MYSQL_ERROR', null, $ex);
         }
     }
 

@@ -40,7 +40,7 @@ AdSky is built to be lightweight, but it still has a lot of features :
 ## Installation
 To install the plugin part, please check the [*Installation*](https://github.com/Skyost/AdSky/tree/plugin#installation) section of the plugin branch's README.
 
-To install the server part, you have to download [this archive](https://github.com/Skyost/AdSky/archive/server.zip) and unzip it on your web server. Once uncompressed, go to `http://yourwebsite.com/adsky/install/` and follow the steps.
+To install the server part, you have to download the latest [adsky-server.zip](https://github.com/Skyost/AdSky/releases/latest) and unzip it on your web server. Once uncompressed, go to `http://yourwebsite.com/adsky/install/` and follow the steps.
 
 Please make sure that your web server meets the following requirements :
 
