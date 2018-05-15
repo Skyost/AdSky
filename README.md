@@ -45,13 +45,13 @@ To install the server part, please check the [*Installation*](https://github.com
 
 To install the Bukkit plugin, you have to download [the JAR](https://dev.bukkit.org/projects/adsky/files) and put it inside the `plugins` folder located in your server directory.
 
-You need either Bukkit or Spigot. Any version above _1.8_ should work.
+You need either CraftBukkit or Spigot. Any version above _1.8_ should work.
 
 ### Sponge
 
 To install the Sponge plugin, you have to download [the JAR](https://ore.spongepowered.org/Skyost/AdSky/versions/recommended/download) and put it inside the `mods` folder located in your server directory.
 
-Any version Sponge version above _7.0.0_ (included) should work.
+Any Sponge version above _7.0.0_ (included) should work.
 
 ## Configuration
 The configuration file is `plugins/AdSky/config.yml` for CraftBukkit and `config/adsky-sponge.conf` for Sponge. Open it and configure it as you want :

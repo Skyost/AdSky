@@ -58,7 +58,7 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 		public final int preferredHour = 12;
 
 		@Setting("distribution-function")
-		public final String distributionFunction = "(sqrt(n/2)/log10(n)) * e^(-((x-h)^2) / (2*log10(n)))";
+		public final String distributionFunction = "(sqrt(n/2)/log10(n+2)) * e^(-((x-h)^2) / (2*log10(n+2)))";
 
 		@Setting("world-blacklist")
 		public final List<String> worldBlackList = ImmutableList.of();
