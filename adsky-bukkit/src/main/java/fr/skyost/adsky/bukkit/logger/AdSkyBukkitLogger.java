@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Default plugin logger.
  */
@@ -40,7 +43,11 @@ public class AdSkyBukkitLogger implements AdSkyLogger {
 	@Override
 	public final void error(final String message, final Throwable throwable) {
 		error(message);
-		throwable.printStackTrace();
+
+		final StringWriter writer = new StringWriter();
+		throwable.printStackTrace(new PrintWriter(writer));
+
+		error(writer.toString());
 	}
 
 	@Override

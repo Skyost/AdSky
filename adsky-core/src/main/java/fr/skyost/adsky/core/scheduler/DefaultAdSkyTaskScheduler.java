@@ -13,7 +13,7 @@ public class DefaultAdSkyTaskScheduler implements AdSkyTaskScheduler {
 
 	@Override
 	public void schedule(final Runnable task, final long delay) {
-		Executors.newScheduledThreadPool(1).schedule(task, delay < 0 ? 0 : delay, TimeUnit.MILLISECONDS);
+		Executors.newScheduledThreadPool(1).schedule(task, delay, TimeUnit.MILLISECONDS);
 	}
 
 }

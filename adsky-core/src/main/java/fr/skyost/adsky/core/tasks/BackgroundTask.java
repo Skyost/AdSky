@@ -68,45 +68,51 @@ public class BackgroundTask implements Runnable {
 
 	@Override
 	public void run() {
-		// Let's get required ad.
 		final AdSkyLogger logger = app.getLogger();
-		final AdSkyConfiguration config = app.getConfiguration();
 
-		// If adScheduler is null, it means this is the first time of the day that this tasks is running.
-		if(adScheduler == null) {
+		try {
+			// Let's get required ad.
+			final AdSkyConfiguration config = app.getConfiguration();
 
-			// So let's delete expired ads if needed.
-			if(config.shouldAutoDeleteAds()) {
-				deleteExpiredAds();
+			// If adScheduler is null, it means this is the first time of the day that this tasks is running.
+			if(adScheduler == null) {
+				// So let's delete expired ads if needed.
+				if(config.shouldAutoDeleteAds()) {
+					deleteExpiredAds();
+				}
+
+				// And let's get ads of the day and schedule them.
+				logger.message(lang.gettingAds());
+				final HashSet<AbstractAd> ads = requestAds();
+
+				if(ads != null) {
+					logger.success(lang.foundAds(ads.size()));
+					adScheduler = new AdScheduler(app, new ArrayList<>(ads));
+					adScheduler.schedule();
+				}
+			}
+			else {
+				// Here we are going to broadcast a random ad from the list.
+				logger.success(lang.broadcastingRandomAd());
+				adScheduler.broadcastRandomAd();
+
+				if(!adScheduler.hasRemaining()) {
+					adScheduler = null;
+				}
+				logger.success(lang.success());
 			}
 
-			// And let's get ads of the day and schedule them.
-			logger.message(lang.gettingAds());
-			final HashSet<AbstractAd> ads = requestAds();
 
-			if(ads != null) {
-				logger.success(lang.foundAds(ads.size()));
-				adScheduler = new AdScheduler(app, new ArrayList<>(ads));
-				adScheduler.schedule();
-			}
+			// And then let's reschedule the tasks.
+			final Calendar nextSchedule = adScheduler == null ? Utils.tomorrowMidnight() : adScheduler.getNextSchedule();
+			logger.success(lang.scheduledAt(nextSchedule));
+
+			final long delay = nextSchedule.getTimeInMillis() - System.currentTimeMillis();
+			app.getTaskScheduler().schedule(this, delay <= 0 ? 1000L : delay);
 		}
-		else {
-			// Here we are going to broadcast a random ad from the list.
-			logger.success(lang.broadcastingRandomAd());
-			adScheduler.broadcastRandomAd();
-
-			if(!adScheduler.hasRemaining()) {
-				adScheduler = null;
-			}
-			logger.success(lang.success());
+		catch(final Exception ex) {
+			logger.error("An error occurred while running the background task :", ex);
 		}
-
-		// And then let's reschedule the tasks.
-		final Calendar nextSchedule = adScheduler == null ? Utils.tomorrowMidnight() : adScheduler.getNextSchedule();
-		logger.success(lang.scheduledAt(nextSchedule));
-
-		final long delay = nextSchedule.getTimeInMillis() - System.currentTimeMillis();
-		app.getTaskScheduler().schedule(this, delay <= 0 ? (System.currentTimeMillis() + 1000) : delay);
 	}
 
 	/**

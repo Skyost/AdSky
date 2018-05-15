@@ -6,6 +6,7 @@ import fr.skyost.adsky.bukkit.config.AdSkyBukkitConfiguration;
 import fr.skyost.adsky.core.ad.AbstractAd;
 import fr.skyost.adsky.core.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -55,7 +56,7 @@ public class AdSkyBukkitAd extends AbstractAd {
 	@Override
 	public void broadcast() {
 		final int stay = this.getDuration() * 20;
-		final String[] message = new String[]{this.getTitle(), this.getMessage()};
+		final String[] message = new String[]{ChatColor.translateAlternateColorCodes('&', this.getTitle()), ChatColor.translateAlternateColorCodes('&', this.getMessage())};
 
 		for(final World world : Bukkit.getWorlds()) {
 			if(config.adsWorldBlackList.contains(world.getName())) {

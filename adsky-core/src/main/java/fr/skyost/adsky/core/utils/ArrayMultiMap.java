@@ -72,7 +72,11 @@ public class ArrayMultiMap<K, V> {
 			return false;
 		}
 
-		return values.remove(value);
+		final boolean result = values.remove(value);
+		if(values.isEmpty()) {
+			map.remove(key);
+		}
+		return result;
 	}
 
 	/**

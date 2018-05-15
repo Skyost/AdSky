@@ -8,6 +8,7 @@ import fr.skyost.adsky.sponge.config.AdSkySpongeConfiguration;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.World;
 
@@ -52,8 +53,16 @@ public class AdSkySpongeAd extends AbstractAd {
 	
 	@Override
 	public void broadcast() {
-		final Title title = Title.builder().title(Text.of(this.getTitle())).subtitle(Text.of(this.getMessage())).stay(this.getDuration() * 20).build();
-		final Text message = Text.of(this.getTitle(), this.getMessage());
+		final Text deserializedTitle = TextSerializers.formattingCode('&').deserialize(this.getTitle());
+		final Text deserializedMessage = TextSerializers.formattingCode('&').deserialize(this.getMessage());
+
+		final Title title = Title
+				.builder()
+				.title(deserializedTitle)
+				.subtitle(deserializedMessage)
+				.stay(this.getDuration() * 20)
+				.build();
+		final Text message = Text.of(deserializedTitle, deserializedMessage);
 
 		for(final World world : Sponge.getServer().getWorlds()) {
 			if(config.ads.worldBlackList.contains(world.getName())) {
