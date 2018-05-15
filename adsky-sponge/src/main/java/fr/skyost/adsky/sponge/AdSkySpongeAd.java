@@ -62,7 +62,7 @@ public class AdSkySpongeAd extends AbstractAd {
 				.subtitle(deserializedMessage)
 				.stay(this.getDuration() * 20)
 				.build();
-		final Text message = Text.of(deserializedTitle, deserializedMessage);
+		final Text chat = Text.of(deserializedTitle, deserializedMessage);
 
 		for(final World world : Sponge.getServer().getWorlds()) {
 			if(config.ads.worldBlackList.contains(world.getName())) {
@@ -79,7 +79,7 @@ public class AdSkySpongeAd extends AbstractAd {
 					continue;
 				}
 
-				player.sendMessage(message);
+				player.sendMessage(chat);
 			}
 		}
 	}

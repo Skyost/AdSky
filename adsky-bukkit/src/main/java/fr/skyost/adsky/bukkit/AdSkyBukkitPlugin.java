@@ -31,7 +31,7 @@ public class AdSkyBukkitPlugin extends JavaPlugin {
 
 			// Enables required options.
 			if(config.enableUpdater) {
-				new Skyupdater(this, 0, this.getFile(), true, true);
+				new Skyupdater(this, 294002, this.getFile(), true, true);
 			}
 			if(config.enableMetrics) {
 				System.setProperty("bstats.relocatecheck", "false");
