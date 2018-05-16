@@ -47,6 +47,8 @@ To install the Bukkit plugin, you have to download [the JAR](https://dev.bukkit.
 
 You need either CraftBukkit or Spigot. Any version above _1.8_ should work.
 
+[![YouTube Tutorial](https://img.youtube.com/vi/MlggG9q8t_Y/0.jpg)](https://www.youtube.com/watch?v=MlggG9q8t_Y)
+
 ### Sponge
 
 To install the Sponge plugin, you have to download [the JAR](https://ore.spongepowered.org/Skyost/AdSky/versions/recommended/download) and put it inside the `mods` folder located in your server directory.
