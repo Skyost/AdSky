@@ -13,6 +13,18 @@ import fr.skyost.adsky.core.tasks.BackgroundTask;
 public abstract class AbstractAdSkyApplication {
 
 	/**
+	 * Default AdSky scheduler instance.
+	 */
+
+	private AdSkyTaskScheduler defaultScheduler;
+
+	/**
+	 * Default AdSky language.
+	 */
+
+	private AdSkyLanguage englishLanguage;
+
+	/**
 	 * Gets a logger instance.
 	 *
 	 * @return A logger instance.
@@ -35,7 +47,11 @@ public abstract class AbstractAdSkyApplication {
 	 */
 
 	public AdSkyTaskScheduler getTaskScheduler() {
-		return new DefaultAdSkyTaskScheduler();
+		if(defaultScheduler == null) {
+			defaultScheduler = new DefaultAdSkyTaskScheduler();
+		}
+
+		return defaultScheduler;
 	}
 
 	/**
@@ -45,7 +61,11 @@ public abstract class AbstractAdSkyApplication {
 	 */
 
 	public AdSkyLanguage getLanguage() {
-		return new AdSkyEnglishLanguage();
+		if(englishLanguage == null) {
+			englishLanguage = new AdSkyEnglishLanguage();
+		}
+
+		return englishLanguage;
 	}
 
 	/**
@@ -71,7 +91,7 @@ public abstract class AbstractAdSkyApplication {
 	 */
 
 	public void startMainTask() {
-		new Thread(new BackgroundTask(this)).start();
+		getTaskScheduler().schedule(new BackgroundTask(this), 1L);
 	}
 
 }

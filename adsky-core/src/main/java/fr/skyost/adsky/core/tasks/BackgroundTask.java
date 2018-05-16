@@ -108,7 +108,7 @@ public class BackgroundTask implements Runnable {
 			logger.success(lang.scheduledAt(nextSchedule));
 
 			final long delay = nextSchedule.getTimeInMillis() - System.currentTimeMillis();
-			app.getTaskScheduler().schedule(this, delay <= 0 ? 1000L : delay);
+			app.getTaskScheduler().schedule(this, delay <= 0 ? 5000L : delay);
 		}
 		catch(final Exception ex) {
 			logger.error("An error occurred while running the background task :", ex);

@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-@Plugin(id = "adsky-sponge", name = "AdSky", description = "Monetize your Minecraft server !", version = "0.1", url = "https://github.com/Skyost/AdSky", authors = "Skyost")
+@Plugin(id = "adsky-sponge", name = "AdSky", description = "Monetize your Minecraft server !", version = "0.1.1", url = "https://github.com/Skyost/AdSky", authors = "Skyost")
 public class AdSkySpongePlugin extends AbstractAdSkyApplication {
 
 	@Inject
@@ -46,6 +46,7 @@ public class AdSkySpongePlugin extends AbstractAdSkyApplication {
 	@Inject
 	private Game game;
 
+	private final AdSkySpongeTaskScheduler adSkySpongeTaskScheduler = new AdSkySpongeTaskScheduler(this);
 	private AdSkySpongeConfiguration adSkySpongeConfiguration;
 	private AdSkySpongeLogger adskySpongeLogger;
 
@@ -118,7 +119,7 @@ public class AdSkySpongePlugin extends AbstractAdSkyApplication {
 
 	@Override
 	public final AdSkySpongeTaskScheduler getTaskScheduler() {
-		return new AdSkySpongeTaskScheduler(this);
+		return adSkySpongeTaskScheduler;
 	}
 
 	private void mapDefault() {

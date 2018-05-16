@@ -33,7 +33,7 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 	public static class Enable {
 
 		@Setting
-		public final boolean updater = true;
+		public boolean updater = true;
 
 	}
 
@@ -41,13 +41,13 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 	public static class Server {
 
 		@Setting
-		public final String url = "http://yourwebsite.com/adsky/";
+		public String url = "http://yourwebsite.com/adsky/";
 
 		@Setting("plugin-key")
-		public final String pluginKey = "Paste your plugin key here.";
+		public String pluginKey = "Paste your plugin key here.";
 
 		@Setting("event-scheduled")
-		public final boolean eventScheduled = false;
+		public boolean eventScheduled = false;
 
 	}
 
@@ -55,13 +55,13 @@ public class AdSkySpongeConfiguration implements AdSkyConfiguration {
 	public static class Ads {
 
 		@Setting("preferred-hour")
-		public final int preferredHour = 12;
+		public int preferredHour = 12;
 
 		@Setting("distribution-function")
-		public final String distributionFunction = "(sqrt(n/2)/log10(n+2)) * e^(-((x-h)^2) / (2*log10(n+2)))";
+		public String distributionFunction = "(sqrt(n/2)/log10(n+2)) * e^(-((x-h)^2) / (2*log10(n+2)))";
 
 		@Setting("world-blacklist")
-		public final List<String> worldBlackList = ImmutableList.of();
+		public List<String> worldBlackList = ImmutableList.of();
 
 	}
 

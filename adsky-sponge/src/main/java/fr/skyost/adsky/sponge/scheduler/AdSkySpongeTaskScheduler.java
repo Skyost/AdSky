@@ -30,7 +30,7 @@ public class AdSkySpongeTaskScheduler implements AdSkyTaskScheduler {
 
 	@Override
 	public final void schedule(final Runnable task, final long delay) {
-		Task.builder().delay(delay, TimeUnit.MILLISECONDS).async().execute(task).submit(plugin);
+		Task.builder().delay(delay, TimeUnit.MILLISECONDS).execute(task).submit(plugin);
 	}
 
 }

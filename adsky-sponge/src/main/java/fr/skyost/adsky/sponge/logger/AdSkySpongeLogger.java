@@ -47,7 +47,7 @@ public class AdSkySpongeLogger implements AdSkyLogger {
 
 	@Override
 	public final void log(final String message) {
-		logger.debug(message);
+		logger.info(message);
 	}
 
 }
