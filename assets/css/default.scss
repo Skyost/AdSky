@@ -151,9 +151,12 @@ ul {
 		bottom: 2px;
 	}
 
-	.content p {
+	.content {
 		font-size: 1.1em;
-		text-align: justify;
+		
+		p {
+			text-align: justify;
+		}
 	}
 	
 	&:last-of-type {
