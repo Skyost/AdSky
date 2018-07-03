@@ -24,14 +24,13 @@ class Autoloader {
 
     public static function autoload($class) {
         $namespace = explode('\\', $class);
+        $class = end($namespace);
         $namespace = array_map('strtolower', $namespace);
 
-        $index = count($namespace) - 1;
+        $namespace[count($namespace) - 1] = $class;
+        $class = implode('\\', $namespace);
 
-        $namespace[$index] = ucfirst($namespace[$index]);
-        $class = implode(DIRECTORY_SEPARATOR, $namespace);
-
-        require_once __DIR__ . '/' . str_replace(strtolower(__NAMESPACE__), '', $class) . '.php';
+        require_once __DIR__ . '/' . str_replace('\\', DIRECTORY_SEPARATOR, substr(str_replace(strtolower(__NAMESPACE__), '', $class), 1)) . '.php';
     }
 
 }
