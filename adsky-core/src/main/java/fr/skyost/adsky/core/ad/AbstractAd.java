@@ -1,7 +1,9 @@
 package fr.skyost.adsky.core.ad;
 
-import com.udojava.evalex.Expression;
 import fr.skyost.adsky.core.AdSkyConfiguration;
+import xyz.algogo.core.evaluator.ExpressionEvaluator;
+import xyz.algogo.core.evaluator.variable.Variable;
+import xyz.algogo.core.evaluator.variable.VariableType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -296,12 +298,12 @@ public abstract class AbstractAd {
 	 */
 
 	public static int getAdsPerHour(final AdSkyConfiguration config, final int preferredHour, final int hour, final int adsNumber) {
-		final Expression expression = new Expression(config.getAdsDistributionFunction());
-		final BigDecimal result = expression.with("h", new BigDecimal(preferredHour))
-											.with("x", new BigDecimal(hour))
-											.with("n", new BigDecimal(adsNumber))
-											.eval();
+		final ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		evaluator.putVariable(new Variable("h", VariableType.NUMBER, new BigDecimal(preferredHour)));
+		evaluator.putVariable(new Variable("x", VariableType.NUMBER, new BigDecimal(hour)));
+		evaluator.putVariable(new Variable("n", VariableType.NUMBER, new BigDecimal(adsNumber)));
 
+		final BigDecimal result = (BigDecimal)evaluator.evaluate(config.getAdsDistributionFunction()).getValue();
 		return result.setScale(0, RoundingMode.UP).intValue();
 	}
 

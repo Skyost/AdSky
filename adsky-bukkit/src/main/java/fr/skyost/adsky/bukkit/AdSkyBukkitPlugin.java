@@ -34,7 +34,6 @@ public class AdSkyBukkitPlugin extends JavaPlugin {
 				new Skyupdater(this, 294002, this.getFile(), true, true);
 			}
 			if(config.enableMetrics) {
-				System.setProperty("bstats.relocatecheck", "false");
 				new MetricsLite(this);
 			}
 

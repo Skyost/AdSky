@@ -1,6 +1,18 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 version '0.1.1'
 
+sourceCompatibility = 1.8
+
 dependencies {
-    extraLibs 'com.udojava:EvalEx:2.0'
-    extraLibs 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
+    testCompile 'junit:junit:4.12'
+
+    compile 'eu.skyost.algogo:core:v1.0.3'
+    compile 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
 }
