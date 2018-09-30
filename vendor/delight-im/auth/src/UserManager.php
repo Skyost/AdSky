@@ -45,6 +45,8 @@ abstract class UserManager {
 
 	/** @var PdoDatabase the database connection to operate on */
 	protected $db;
+	/** @var string|null the schema name for all database tables used by this component */
+	protected $dbSchema;
 	/** @var string the prefix for the names of all database tables used by this component */
 	protected $dbTablePrefix;
 
@@ -70,8 +72,9 @@ abstract class UserManager {
 	/**
 	 * @param PdoDatabase|PdoDsn|\PDO $databaseConnection the database connection to operate on
 	 * @param string|null $dbTablePrefix (optional) the prefix for the names of all database tables used by this component
+	 * @param string|null $dbSchema (optional) the schema name for all database tables used by this component
 	 */
-	protected function __construct($databaseConnection, $dbTablePrefix = null) {
+	protected function __construct($databaseConnection, $dbTablePrefix = null, $dbSchema = null) {
 		if ($databaseConnection instanceof PdoDatabase) {
 			$this->db = $databaseConnection;
 		}
@@ -87,6 +90,7 @@ abstract class UserManager {
 			throw new \InvalidArgumentException('The database connection must be an instance of either `PdoDatabase`, `PdoDsn` or `PDO`');
 		}
 
+		$this->dbSchema = $dbSchema !== null ? (string) $dbSchema : null;
 		$this->dbTablePrefix = (string) $dbTablePrefix;
 	}
 
@@ -140,7 +144,7 @@ abstract class UserManager {
 			if ($username !== null) {
 				// count the number of users who do already have that specified username
 				$occurrencesOfUsername = $this->db->selectValue(
-					'SELECT COUNT(*) FROM ' . $this->dbTablePrefix . 'users WHERE username = ?',
+					'SELECT COUNT(*) FROM ' . $this->makeTableName('users') . ' WHERE username = ?',
 					[ $username ]
 				);
 
@@ -157,7 +161,7 @@ abstract class UserManager {
 
 		try {
 			$this->db->insert(
-				$this->dbTablePrefix . 'users',
+				$this->makeTableNameComponents('users'),
 				[
 					'email' => $email,
 					'password' => $password,
@@ -197,7 +201,7 @@ abstract class UserManager {
 
 		try {
 			$affected = $this->db->update(
-				$this->dbTablePrefix . 'users',
+				$this->makeTableNameComponents('users'),
 				[ 'password' => $newPassword ],
 				[ 'id' => $userId ]
 			);
@@ -258,7 +262,7 @@ abstract class UserManager {
 			$projection = \implode(', ', $requestedColumns);
 
 			$users = $this->db->select(
-				'SELECT ' . $projection . ' FROM ' . $this->dbTablePrefix . 'users WHERE username = ? LIMIT 2 OFFSET 0',
+				'SELECT ' . $projection . ' FROM ' . $this->makeTableName('users') . ' WHERE username = ? LIMIT 2 OFFSET 0',
 				[ $username ]
 			);
 		}
@@ -345,7 +349,7 @@ abstract class UserManager {
 
 		try {
 			$this->db->insert(
-				$this->dbTablePrefix . 'users_confirmations',
+				$this->makeTableNameComponents('users_confirmations'),
 				[
 					'user_id' => (int) $userId,
 					'email' => $email,
@@ -385,7 +389,7 @@ abstract class UserManager {
 
 		try {
 			$this->db->delete(
-				$this->dbTablePrefix . 'users_remembered',
+				$this->makeTableNameComponents('users_remembered'),
 				$whereMappings
 			);
 		}
@@ -403,9 +407,50 @@ abstract class UserManager {
 	protected function forceLogoutForUserById($userId) {
 		$this->deleteRememberDirectiveForUserById($userId);
 		$this->db->exec(
-			'UPDATE ' . $this->dbTablePrefix . 'users SET force_logout = force_logout + 1 WHERE id = ?',
+			'UPDATE ' . $this->makeTableName('users') . ' SET force_logout = force_logout + 1 WHERE id = ?',
 			[ $userId ]
 		);
+	}
+
+	/**
+	 * Builds a (qualified) full table name from an optional qualifier, an optional prefix, and the table name itself
+	 *
+	 * The optional qualifier may be a database name or a schema name, for example
+	 *
+	 * @param string $name the name of the table
+	 * @return string[] the components of the (qualified) full name of the table
+	 */
+	protected function makeTableNameComponents($name) {
+		$components = [];
+
+		if (!empty($this->dbSchema)) {
+			$components[] = $this->dbSchema;
+		}
+
+		if (!empty($name)) {
+			if (!empty($this->dbTablePrefix)) {
+				$components[] = $this->dbTablePrefix . $name;
+			}
+			else {
+				$components[] = $name;
+			}
+		}
+
+		return $components;
+	}
+
+	/**
+	 * Builds a (qualified) full table name from an optional qualifier, an optional prefix, and the table name itself
+	 *
+	 * The optional qualifier may be a database name or a schema name, for example
+	 *
+	 * @param string $name the name of the table
+	 * @return string the (qualified) full name of the table
+	 */
+	protected function makeTableName($name) {
+		$components = $this->makeTableNameComponents($name);
+
+		return \implode('.', $components);
 	}
 
 }

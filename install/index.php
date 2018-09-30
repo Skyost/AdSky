@@ -6,7 +6,7 @@
 
     <link rel="icon" type="image/png" href="../assets/img/logo.png"/>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
 
     <link rel="stylesheet" href="install.css">
@@ -102,7 +102,7 @@ else if($_POST['step'] == 4) {
         if(!$auth -> isLoggedIn()) {
             try {
                 $userId = $auth -> registerWithUniqueUsername($_POST['form-user-email'], $_POST['form-user-password'], $_POST['form-user-username']);
-                $auth -> login($_POST['form-user-email'], $_POST['form-user-password'], (int)(60 * 60 * 24 * 365.25));
+                //$auth -> login($_POST['form-user-email'], $_POST['form-user-password'], (int)(60 * 60 * 24 * 365.25));
                 $auth -> admin() -> addRoleForUserById($userId, \Delight\Auth\Role::ADMIN);
             }
             catch(Exception $ex) {

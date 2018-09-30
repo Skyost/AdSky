@@ -71,8 +71,8 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $hostname the hostname where the database can be accessed, e.g. `db.example.com`
 	 * @return static this instance for chaining
 	 */
-	public function setHostname($hostname) {
-		$this->hostname = (string) $hostname;
+	public function setHostname($hostname = null) {
+		$this->hostname = $hostname !== null ? (string) $hostname : null;
 
 		return $this;
 	}
@@ -83,8 +83,8 @@ final class PdoDataSource implements DataSource {
 	 * @param int|null $port the port number to use at the given host, e.g. `3306` or `5432`
 	 * @return static this instance for chaining
 	 */
-	public function setPort($port) {
-		$this->port = (int) $port;
+	public function setPort($port = null) {
+		$this->port = $port !== null ? (int) $port : null;
 
 		return $this;
 	}
@@ -95,8 +95,8 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $unixSocket the UNIX socket to use, e.g. `/tmp/db.sock`
 	 * @return static this instance for chaining
 	 */
-	public function setUnixSocket($unixSocket) {
-		$this->unixSocket = (string) $unixSocket;
+	public function setUnixSocket($unixSocket = null) {
+		$this->unixSocket = $unixSocket !== null ? (string) $unixSocket : null;
 
 		return $this;
 	}
@@ -107,8 +107,8 @@ final class PdoDataSource implements DataSource {
 	 * @param bool|null $memory whether to keep the database in memory only
 	 * @return static this instance for chaining
 	 */
-	public function setMemory($memory) {
-		$this->memory = (bool) $memory;
+	public function setMemory($memory = null) {
+		$this->memory = $memory !== null ? (bool) $memory : null;
 
 		return $this;
 	}
@@ -119,8 +119,8 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $filePath the path to the file where the database can be accessed on disk, e.g. `/opt/databases/mydb.ext`
 	 * @return static this instance for chaining
 	 */
-	public function setFilePath($filePath) {
-		$this->filePath = (string) $filePath;
+	public function setFilePath($filePath = null) {
+		$this->filePath = $filePath !== null ? (string) $filePath : null;
 
 		return $this;
 	}
@@ -131,8 +131,8 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $databaseName the name of the database, e.g. `my_application`
 	 * @return static this instance for chaining
 	 */
-	public function setDatabaseName($databaseName) {
-		$this->databaseName = (string) $databaseName;
+	public function setDatabaseName($databaseName = null) {
+		$this->databaseName = $databaseName !== null ? (string) $databaseName : null;
 
 		return $this;
 	}
@@ -143,8 +143,8 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $charset the character encoding, e.g. `utf8`
 	 * @return static this instance for chaining
 	 */
-	public function setCharset($charset) {
-		$this->charset = (string) $charset;
+	public function setCharset($charset = null) {
+		$this->charset = $charset !== null ? (string) $charset : null;
 
 		return $this;
 	}
@@ -155,7 +155,7 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $username the name of a user that can access the database
 	 * @return static this instance for chaining
 	 */
-	public function setUsername($username) {
+	public function setUsername($username = null) {
 		$this->username = $username;
 
 		return $this;
@@ -167,7 +167,7 @@ final class PdoDataSource implements DataSource {
 	 * @param string|null $password the password corresponding to the username
 	 * @return static this instance for chaining
 	 */
-	public function setPassword($password) {
+	public function setPassword($password = null) {
 		$this->password = $password;
 
 		return $this;
@@ -237,7 +237,12 @@ final class PdoDataSource implements DataSource {
 		}
 
 		if (isset($this->charset)) {
-			$components[] = 'charset='.$this->charset;
+			if ($this->driverName === self::DRIVER_NAME_POSTGRESQL) {
+				$components[] = 'client_encoding='.$this->charset;
+			}
+			else {
+				$components[] = 'charset='.$this->charset;
+			}
 		}
 
 		if (isset($this->username)) {

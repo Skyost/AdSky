@@ -20,9 +20,10 @@ final class Administration extends UserManager {
 	/**
 	 * @param PdoDatabase|PdoDsn|\PDO $databaseConnection the database connection to operate on
 	 * @param string|null $dbTablePrefix (optional) the prefix for the names of all database tables used by this component
+	 * @param string|null $dbSchema (optional) the schema name for all database tables used by this component
 	 */
-	public function __construct($databaseConnection, $dbTablePrefix = null) {
-		parent::__construct($databaseConnection, $dbTablePrefix);
+	public function __construct($databaseConnection, $dbTablePrefix = null, $dbSchema = null) {
+		parent::__construct($databaseConnection, $dbTablePrefix, $dbSchema);
 	}
 
 	/**
@@ -270,17 +271,22 @@ final class Administration extends UserManager {
 	 * @see Role
 	 */
 	public function doesUserHaveRole($userId, $role) {
+		if (empty($role) || !\is_numeric($role)) {
+			return false;
+		}
+
 		$userId = (int) $userId;
-		$role = (int) $role;
 
 		$rolesBitmask = $this->db->selectValue(
-			'SELECT roles_mask FROM ' . $this->dbTablePrefix . 'users WHERE id = ?',
+			'SELECT roles_mask FROM ' . $this->makeTableName('users') . ' WHERE id = ?',
 			[ $userId ]
 		);
 
 		if ($rolesBitmask === null) {
 			throw new UnknownIdException();
 		}
+
+		$role = (int) $role;
 
 		return ($rolesBitmask & $role) === $role;
 	}
@@ -298,7 +304,7 @@ final class Administration extends UserManager {
 		$userId = (int) $userId;
 
 		$rolesBitmask = $this->db->selectValue(
-			'SELECT roles_mask FROM ' . $this->dbTablePrefix . 'users WHERE id = ?',
+			'SELECT roles_mask FROM ' . $this->makeTableName('users') . ' WHERE id = ?',
 			[ $userId ]
 		);
 
@@ -425,7 +431,7 @@ final class Administration extends UserManager {
 	private function deleteUsersByColumnValue($columnName, $columnValue) {
 		try {
 			return $this->db->delete(
-				$this->dbTablePrefix . 'users',
+				$this->makeTableNameComponents('users'),
 				[
 					$columnName => $columnValue
 				]
@@ -452,7 +458,7 @@ final class Administration extends UserManager {
 	private function modifyRolesForUserByColumnValue($columnName, $columnValue, callable $modification) {
 		try {
 			$userData = $this->db->selectRow(
-				'SELECT id, roles_mask FROM ' . $this->dbTablePrefix . 'users WHERE ' . $columnName . ' = ?',
+				'SELECT id, roles_mask FROM ' . $this->makeTableName('users') . ' WHERE ' . $columnName . ' = ?',
 				[ $columnValue ]
 			);
 		}
@@ -468,7 +474,7 @@ final class Administration extends UserManager {
 
 		try {
 			$this->db->exec(
-				'UPDATE ' . $this->dbTablePrefix . 'users SET roles_mask = ? WHERE id = ?',
+				'UPDATE ' . $this->makeTableName('users') . ' SET roles_mask = ? WHERE id = ?',
 				[
 					$newRolesBitmask,
 					(int) $userData['id']
@@ -544,7 +550,7 @@ final class Administration extends UserManager {
 	private function logInAsUserByColumnValue($columnName, $columnValue) {
 		try {
 			$users = $this->db->select(
-				'SELECT verified, id, email, username, status, roles_mask FROM ' . $this->dbTablePrefix . 'users WHERE ' . $columnName . ' = ? LIMIT 2 OFFSET 0',
+				'SELECT verified, id, email, username, status, roles_mask FROM ' . $this->makeTableName('users') . ' WHERE ' . $columnName . ' = ? LIMIT 2 OFFSET 0',
 				[ $columnValue ]
 			);
 		}

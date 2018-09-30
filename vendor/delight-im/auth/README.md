@@ -124,6 +124,8 @@ During development, you may want to disable the request limiting or throttling p
 
 During the lifetime of a session, some user data may be changed remotely, either by a client in another session or by an administrator. That means this information must be regularly resynchronized with its authoritative source in the database, which this library does automatically. By default, this happens every five minutes. If you want to change this interval, pass a custom interval in seconds to the constructor as the fifth argument, which is named `$sessionResyncInterval`.
 
+If all your database tables need a common database name, schema name, or other qualifier that must be specified explicitly, you can optionally pass that qualifier to the constructor as the sixth parameter, which is named `$dbSchema`.
+
 ### Registration (sign up)
 
 ```php
@@ -147,6 +149,8 @@ catch (\Delight\Auth\TooManyRequestsException $e) {
     // too many requests
 }
 ```
+
+**Note:** The anonymous callback function is a [closure](http://php.net/manual/en/functions.anonymous.php). Thus, besides its own parameters, only [superglobals](http://php.net/manual/en/language.variables.superglobals.php) like `$_GET`, `$_POST`, `$_COOKIE` and `$_SERVER` are available inside. For any other variable from the parent scope, you need to explicitly make a copy available inside by adding a `use` clause after the parameter list.
 
 The username in the third parameter is optional. You can pass `null` there if you don’t want to manage usernames.
 
@@ -260,6 +264,8 @@ catch (\Delight\Auth\TooManyRequestsException $e) {
     // too many requests
 }
 ```
+
+**Note:** The anonymous callback function is a [closure](http://php.net/manual/en/functions.anonymous.php). Thus, besides its own parameters, only [superglobals](http://php.net/manual/en/language.variables.superglobals.php) like `$_GET`, `$_POST`, `$_COOKIE` and `$_SERVER` are available inside. For any other variable from the parent scope, you need to explicitly make a copy available inside by adding a `use` clause after the parameter list.
 
 You should build an URL with the selector and token and send it to the user, e.g.:
 
@@ -395,6 +401,8 @@ catch (\Delight\Auth\TooManyRequestsException $e) {
 }
 ```
 
+**Note:** The anonymous callback function is a [closure](http://php.net/manual/en/functions.anonymous.php). Thus, besides its own parameters, only [superglobals](http://php.net/manual/en/language.variables.superglobals.php) like `$_GET`, `$_POST`, `$_COOKIE` and `$_SERVER` are available inside. For any other variable from the parent scope, you need to explicitly make a copy available inside by adding a `use` clause after the parameter list.
+
 For email verification, you should build an URL with the selector and token and send it to the user, e.g.:
 
 ```php
@@ -402,6 +410,8 @@ $url = 'https://www.example.com/verify_email?selector=' . \urlencode($selector) 
 ```
 
 After the request to change the email address has been made, or even better, after the change has been confirmed by the user, you should send an email to their account’s *previous* email address as an out-of-band notification informing the account owner about this critical change.
+
+**Note:** Changes to a user’s email address take effect in the local session immediately, as expected. In other sessions (e.g. on other devices), the changes may need up to five minutes to take effect, though. This increases performance and usually poses no problem. If you want to change this behavior, nevertheless, simply decrease (or perhaps increase) the value that you pass to the [`Auth` constructor](#creating-a-new-instance) as the argument named `$sessionResyncInterval`.
 
 ### Re-sending confirmation requests
 
@@ -441,6 +451,8 @@ catch (\Delight\Auth\TooManyRequestsException $e) {
 }
 ```
 
+**Note:** The anonymous callback function is a [closure](http://php.net/manual/en/functions.anonymous.php). Thus, besides its own parameters, only [superglobals](http://php.net/manual/en/language.variables.superglobals.php) like `$_GET`, `$_POST`, `$_COOKIE` and `$_SERVER` are available inside. For any other variable from the parent scope, you need to explicitly make a copy available inside by adding a `use` clause after the parameter list.
+
 Usually, you should build an URL with the selector and token and send it to the user, e.g. as follows:
 
 ```php
@@ -476,6 +488,8 @@ Additionally, if you store custom information in the session as well, and if you
 ```php
 $auth->destroySession();
 ```
+
+**Note:** Global logouts take effect in the local session immediately, as expected. In other sessions (e.g. on other devices), the changes may need up to five minutes to take effect, though. This increases performance and usually poses no problem. If you want to change this behavior, nevertheless, simply decrease (or perhaps increase) the value that you pass to the [`Auth` constructor](#creating-a-new-instance) as the argument named `$sessionResyncInterval`.
 
 ### Accessing user information
 
@@ -704,19 +718,19 @@ function canEditArticle(\Delight\Auth\Auth $auth) {
 
 // ...
 
-if (canEditArticle($app->auth())) {
+if (canEditArticle($auth)) {
     // the user can edit articles here
 }
 
 // ...
 
-if (canEditArticle($app->auth())) {
+if (canEditArticle($auth)) {
     // ... and here
 }
 
 // ...
 
-if (canEditArticle($app->auth())) {
+if (canEditArticle($auth)) {
     // ... and here
 }
 ```
@@ -927,6 +941,8 @@ catch (\Delight\Auth\AmbiguousUsernameException $e) {
 }
 ```
 
+**Note:** Changes to a user’s set of roles take effect in the local session immediately, as expected. In other sessions (e.g. on other devices), the changes may need up to five minutes to take effect, though. This increases performance and usually poses no problem. If you want to change this behavior, nevertheless, simply decrease (or perhaps increase) the value that you pass to the [`Auth` constructor](#creating-a-new-instance) as the argument named `$sessionResyncInterval`.
+
 #### Taking roles away from users
 
 ```php
@@ -958,6 +974,8 @@ catch (\Delight\Auth\AmbiguousUsernameException $e) {
     // ambiguous username
 }
 ```
+
+**Note:** Changes to a user’s set of roles take effect in the local session immediately, as expected. In other sessions (e.g. on other devices), the changes may need up to five minutes to take effect, though. This increases performance and usually poses no problem. If you want to change this behavior, nevertheless, simply decrease (or perhaps increase) the value that you pass to the [`Auth` constructor](#creating-a-new-instance) as the argument named `$sessionResyncInterval`.
 
 #### Checking roles
 

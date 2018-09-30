@@ -16,7 +16,7 @@ require_once __DIR__ . '/Autoloader.php';
 class AdSky {
 
     const APP_NAME = 'AdSky';
-    const APP_VERSION = 'v0.1';
+    const APP_VERSION = 'v0.1.1';
     const APP_WEBSITE = 'https://github.com/Skyost/AdSky';
     const APP_DEBUG = false;
 
