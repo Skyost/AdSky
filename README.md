@@ -7,7 +7,7 @@
 ----------
 
 ![License](https://img.shields.io/github/license/Skyost/AdSky.svg?style=flat-square)
-![Tag](https://img.shields.io/github/tag/Skyost/AdSky.svg?style=flat-square)
+![Code size](https://img.shields.io/github/languages/code-size/Skyost/AdSky.svg?style=flat-square)
 
 ## Table of contents
  1. [Introduction](#introduction)
