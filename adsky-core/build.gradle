@@ -13,6 +13,6 @@ sourceCompatibility = 1.8
 dependencies {
     testCompile 'junit:junit:4.12'
 
-    compile 'eu.skyost.algogo:core:v1.0.3'
+    compile 'eu.skyost.algogo:core:v1.0.4'
     compile 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
 }

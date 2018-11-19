@@ -1,12 +1,13 @@
 package fr.skyost.adsky.bukkit.config;
 
-import fr.skyost.adsky.bukkit.utils.Skyoconfig;
-import fr.skyost.adsky.core.AdSkyConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
+import fr.skyost.adsky.bukkit.utils.Skyoconfig;
+import fr.skyost.adsky.core.AdSkyConfiguration;
 
 /**
  * Default plugin configuration.
@@ -29,7 +30,7 @@ public class AdSkyBukkitConfiguration extends Skyoconfig implements AdSkyConfigu
 	@ConfigOptions(name = "ads.preferred-hour")
 	public int adsPreferredHour = 12;
 	@ConfigOptions(name = "ads.distribution-function")
-	public String adsDistributionFunction = "(sqrt(n/2)/log10(n+2)) * e^(-((x-h)^2) / (2*log10(n+2)))";
+	public String adsDistributionFunction = "(SQRT(n/2)/LOG10(n+2)) * e^(-((x-h)^2) / (2*LOG10(n+2)))";
 	@ConfigOptions(name = "ads.world-blacklist")
 	public List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
 

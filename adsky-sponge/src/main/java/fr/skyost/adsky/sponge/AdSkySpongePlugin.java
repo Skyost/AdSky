@@ -1,6 +1,23 @@
 package fr.skyost.adsky.sponge;
 
 import com.eclipsesource.json.JsonObject;
+import com.google.inject.Inject;
+
+import org.slf4j.Logger;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.asset.Asset;
+import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.plugin.Plugin;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
 import fr.skyost.adsky.core.AbstractAdSkyApplication;
 import fr.skyost.adsky.core.AdSkyConfiguration;
 import fr.skyost.adsky.core.AdSkyLogger;
@@ -13,23 +30,8 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.asset.Asset;
-import org.spongepowered.api.config.DefaultConfig;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.plugin.Plugin;
 
-import com.google.inject.Inject;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-
-@Plugin(id = "adsky-sponge", name = "AdSky", description = "Monetize your Minecraft server !", version = "0.1.1", url = "https://github.com/Skyost/AdSky", authors = "Skyost")
+@Plugin(id = "adsky-sponge", name = "AdSky", description = "Monetize your Minecraft server !", version = "0.1.2", url = "https://github.com/Skyost/AdSky", authors = "Skyost")
 public class AdSkySpongePlugin extends AbstractAdSkyApplication {
 
 	@Inject
