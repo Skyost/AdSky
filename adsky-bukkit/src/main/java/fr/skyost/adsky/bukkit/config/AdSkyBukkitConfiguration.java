@@ -1,13 +1,13 @@
 package fr.skyost.adsky.bukkit.config;
 
+import fr.skyost.adsky.bukkit.utils.Skyoconfig;
+import fr.skyost.adsky.core.AdSkyConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import fr.skyost.adsky.bukkit.utils.Skyoconfig;
-import fr.skyost.adsky.core.AdSkyConfiguration;
 
 /**
  * Default plugin configuration.
@@ -41,7 +41,7 @@ public class AdSkyBukkitConfiguration extends Skyoconfig implements AdSkyConfigu
 	 */
 
 	public AdSkyBukkitConfiguration(final Plugin plugin) {
-		super(new File(plugin.getDataFolder(), "config.yml"), Arrays.asList(plugin.getName() + " configuration file"));
+		super(new File(plugin.getDataFolder(), "config.yml"), Collections.singletonList(plugin.getName() + " configuration file"));
 	}
 
 	@Override

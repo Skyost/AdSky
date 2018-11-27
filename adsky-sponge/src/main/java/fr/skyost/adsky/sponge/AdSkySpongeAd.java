@@ -53,8 +53,8 @@ public class AdSkySpongeAd extends AbstractAd {
 	
 	@Override
 	public void broadcast() {
-		final Text deserializedTitle = TextSerializers.formattingCode('&').deserialize(this.getTitle());
-		final Text deserializedMessage = TextSerializers.formattingCode('&').deserialize(this.getMessage());
+		final Text deserializedTitle = TextSerializers.FORMATTING_CODE.deserialize(this.getTitle());
+		final Text deserializedMessage = TextSerializers.FORMATTING_CODE.deserialize(this.getMessage());
 
 		final Title title = Title
 				.builder()
@@ -64,7 +64,7 @@ public class AdSkySpongeAd extends AbstractAd {
 				.build();
 
 		for(final World world : Sponge.getServer().getWorlds()) {
-			if(config.ads.worldBlackList.contains(world.getName())) {
+			if(config.adsWorldBlackList.contains(world.getName())) {
 				continue;
 			}
 

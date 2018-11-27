@@ -1,11 +1,10 @@
 package fr.skyost.adsky.sponge.config;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.reflect.TypeToken;
 import fr.skyost.adsky.core.AdSkyConfiguration;
-import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,76 +12,53 @@ import java.util.List;
  */
 
 @ConfigSerializable
-public class AdSkySpongeConfiguration implements AdSkyConfiguration {
+public class AdSkySpongeConfiguration extends SpongeConfig implements AdSkyConfiguration {
 
-	public static final TypeToken<AdSkySpongeConfiguration> TYPE = TypeToken.of(AdSkySpongeConfiguration.class);
+	@ConfigOptions(name = "enable.updater")
+	public boolean enableUpdater = true;
 
-	@Setting
-	public String version;
+	@ConfigOptions(name = "server.url")
+	public String serverUrl = "http://yourwebsite.com/adsky/";
+	@ConfigOptions(name = "server.plugin-key")
+	public String serverPluginKey = "Paste your plugin key here.";
+	@ConfigOptions(name = "server.event-scheduled")
+	public boolean serverEventScheduled = false;
 
-	@Setting
-	public Enable enable;
+	@ConfigOptions(name = "ads.preferred-hour")
+	public int adsPreferredHour = 12;
+	@ConfigOptions(name = "ads.distribution-function")
+	public String adsDistributionFunction = "(SQRT(n/2)/LOG10(n+2)) * e^(-((x-h)^2) / (2*LOG10(n+2)))";
+	@ConfigOptions(name = "ads.world-blacklist")
+	public List<String> adsWorldBlackList = Arrays.asList("WorldA", "WorldB", "WorldC");
 
-	@Setting
-	public Server server;
+	/**
+	 * Creates a new plugin configuration instance.
+	 *
+	 * @param file The config file.
+	 */
 
-	@Setting
-	public Ads ads;
-
-	@ConfigSerializable
-	public static class Enable {
-
-		@Setting
-		public boolean updater = true;
-
-	}
-
-	@ConfigSerializable
-	public static class Server {
-
-		@Setting
-		public String url = "http://yourwebsite.com/adsky/";
-
-		@Setting("plugin-key")
-		public String pluginKey = "Paste your plugin key here.";
-
-		@Setting("event-scheduled")
-		public boolean eventScheduled = false;
-
-	}
-
-	@ConfigSerializable
-	public static class Ads {
-
-		@Setting("preferred-hour")
-		public int preferredHour = 12;
-
-		@Setting("distribution-function")
-		public String distributionFunction = "(sqrt(n/2)/log10(n+2)) * e^(-((x-h)^2) / (2*log10(n+2)))";
-
-		@Setting("world-blacklist")
-		public List<String> worldBlackList = ImmutableList.of();
-
+	public AdSkySpongeConfiguration(final Path file) {
+		super(file, "AdSky Configuration");
 	}
 
 	@Override
 	public final String getServerURL() {
-		return server.url;
+		return serverUrl;
 	}
 
 	@Override
 	public final boolean shouldAutoDeleteAds() {
-		return !server.eventScheduled;
+		return !serverEventScheduled;
 	}
 
 	@Override
 	public final String getAdsDistributionFunction() {
-		return ads.distributionFunction;
+		return adsDistributionFunction;
 	}
 
 	@Override
 	public final int getAdsPreferredHour() {
-		return ads.preferredHour;
+		return adsPreferredHour;
 	}
 
 }
