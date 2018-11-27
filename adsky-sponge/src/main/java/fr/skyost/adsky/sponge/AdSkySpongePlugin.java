@@ -19,15 +19,14 @@ import org.spongepowered.api.plugin.Plugin;
 
 import java.nio.file.Path;
 
-@Plugin(
-		id = "adsky-sponge",
-		name = "AdSky",
-		description = "Monetize your Minecraft server !",
-		version = "0.1.2",
-		url = "https://github.com/Skyost/AdSky",
-		authors = "Skyost",
-		dependencies = {@Dependency(id = "spongeapi", version = "7.1.0")}
-		)
+@Plugin(id = "adsky-sponge",
+	name = "AdSky",
+	description = "Monetize your Minecraft server !",
+	version = "0.1.2",
+	url = "https://github.com/Skyost/AdSky",
+	authors = "Skyost",
+	dependencies = {@Dependency(id = "spongeapi", version = "7.1.0")}
+)
 public class AdSkySpongePlugin extends AbstractAdSkyApplication {
 
 	@Inject
